@@ -1,0 +1,19 @@
+## HAB simulations
+
+Data objects with the output from `system.simulate` for HAB perturbations. 
+
+Each simulation included 50,000 stable matrices.
+
+
+
+
+*internal versioning:*
+
+- townsQNM_StatusQuo_x_HABhi_WinterFishingImp_50kSystemSimulate
+- townsQNM_Insurance_x_HABhi_WinterFishingImp_50kSystemSimulate
+- townsQNM_DisasterRelief1_x_HABhi_WinterFishingImp_50kSystemSimulate
+- townsQNM_DisasterRelief2_x_HABhi_WinterFishingImp_50kSystemSimulate
+- townsQNM_FishDiversification1_x_HABhi_50kSystemSimulate
+- FisheryDiversification_x_HABhi_50kSystemSimulate
+- townsQNM_SuppDiversification_x_HABhi_WinterFishingImpStress_50kSystemSimulate
+- townsQNM_LivelihoodDiv_x_HABhi_50kSystemSimulate

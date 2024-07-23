@@ -1,0 +1,43 @@
+variable,group,start_point,group_order,specific_order,plot_name
+Material wealth & security,well-being,0,1,1,Material wealth & security
+Subsistence,well-being,0,1,2,Subsistence
+Intangible connections to nature,well-being,0,1,3,Intangible connections to nature
+Cultural values & practices,well-being,0,1,4,Cultural values & practices
+Identity,well-being,0,1,5,Identity
+Job satisfaction,well-being 2,0,3,12,Job satisfaction
+Job quality,well-being,0,3,13,Job quality
+Shoreside infrastructure & support services,capacity,0,2,6,Shoreside infrastructure & support services
+Trust in institutions & management,well-being,1,1,9,Trust in institutions & management
+Equity in resource access,well-being,1,1,11,Equity in resource access
+Physical health,well-being,1,1,7,Physical health
+Physical safety,well-being,1,1,8,Physical safety
+Entry of next generation,capacity,1,2,10,Entry of next generation
+Family,well-being,0,1,14,Family
+Community,well-being,0,1,15,Community
+Emotional & mental health,well-being 3,0,4,17,Emotional & mental health
+Social relationships,well-being 3,0,4,18,Social relationships
+Tangible connections to nature,well-being 4,0,5,19,Tangible connections to nature
+Community learning & cooperation,capacity,0,4,16,Community learning & cooperation
+Livelihood & activities,well-being 4,0,5,20,Livelihood & activities
+Culture & Identity,well-being 4,0,5,21,Culture & Identity
+Total non-fishing income,employment,0,6,23,Total non-fishing income
+Non.fishing employment activity,employment,0,6,24,Non-fishing employment activity
+Total crab harvest,fishing,0,7,25,Total crab harvest
+Crab fishing activity,fishing,0,7,25,Crab fishing activity
+Spr/Sum crab harvest,fishing,0,7,25,Late season crab harvest
+Spr/Sum crab fishery participation,fishing,0,7,25,Late season crab fishery participation
+Winter crab harvest,fishing,0,7,25,Early season crab harvest
+Total non.crab harvest,fishing,0,7,25,Total other harvest
+Non.crab fishing activity,fishing,0,7,25,Other fishing activity
+Spr/Sum non.crab fishery participation,fishing,0,7,25,Late season other fishery participation
+Winter non.crab fishery participation,fishing,0,7,25,Early season other fishery participation
+Winter (primary) crab fishery participation,fishing,0,7,25,Early season crab fishery participation
+Fuel & Labor costs,socioeconomic,0,8,26,Fuel & Labor costs
+Labor availability,socioeconomic,0,8,26,Crew availability
+Crab processing capacity,socioeconomic,0,8,26,Crab processing capacity
+Opening dock price,socioeconomic,0,8,26,Opening dock price
+Housing disruption,socioeconomic,0,8,26,Housing disruption
+Non.crab Start.up Costs,socioeconomic,0,8,26,Other Start.up Costs
+New fishery,fishing,0,8,26,New fishery
+Crab abundance,ecosystem,0,9,27,Crab abundance
+Target species abundance,ecosystem,0,9,27,Target species abundance

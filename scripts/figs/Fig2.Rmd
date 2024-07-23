@@ -1,0 +1,206 @@
+---
+title: 'Figure 1: HAB simulation'
+author: "M Fisher"
+date: "2023-07-25"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE)
+
+#---- libraries ----
+library(here)
+library(tidyverse)
+library(ggplot2)
+#Load XML first--dependency not included in QPress
+#To install QPress: 
+#   library(remotes)
+#   remotes::install_github("SWotherspoon/QPress")
+library(XML)
+library(tcltk2)
+library(gridExtra)
+library(cowplot)
+library(QPress)
+# library(igraph)
+library(gridExtra)
+
+#---- custom functions ----
+source(here('R','compare.models.impact.dataframe.R'))
+
+source(here('R','get.score.matrix.R') )
+
+```
+
+
+
+## Data
+
+Simulations required:
+```{r echo=TRUE}
+# ---- status quo ----
+sq.list <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
+
+sq.HABhi.sim <- sq.list[[1]]
+
+# ---- insurance ----
+insure.list <- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
+
+insure.HABhi.sim <- insure.list[[1]]
+
+# ---- disaster relief 1 (direct assistance) ----
+dr1.list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds'))
+
+dr1.HABhi.sim <- dr1.list[[1]]
+
+
+# ---- disaster relief 2 (multi-objective) ----
+dr2.list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds'))
+
+dr2.HABhi.sim <- dr2.list[[1]]
+
+# ---- fisheries diversification 1 (existing) ----
+fdiv1.list <- readRDS(here('data','HAB_sim_out','ExistingFishDiv1_x_HABhi_50k.rds'))
+
+fdiv1.HABhi.sim <- fdiv1.list[[1]]
+
+
+# ---- fisheries diversification 2 (new) ----
+fdiv2.list <- readRDS(here('data','HAB_sim_out','NewFishDiv2_x_HABhi_50k.rds'))
+
+fdiv2.HABhi.sim <- fdiv2.list[[1]]
+
+
+# ---- supplemental diversification ----
+sdiv.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
+
+sdiv.HABhi.sim <- sdiv.list[[1]]
+
+# ---- imposed livelihood diversification ----
+ldiv.list <- readRDS(here('data','HAB_sim_out','LivelihoodDiv_x_HABhi_50k.rds'))
+ldiv.HABhi.sim <- ldiv.list[[1]]
+
+# ---- invested livelihood diversification ----
+ldiv2.HABhi.sim <- ldiv.list[[2]]
+```
+
+
+```{r}
+# optional clean up
+rm(sdiv.list,dr2.list,dr1.list,fdiv1.list, fdiv2.list,insure.list,sq.list, ldiv.list)
+```
+
+
+### Prep to graph
+
+
+Read in a variable key. This tells the `impact.table` function which variables to report results for, and in what order. There is a separate key for the supplementary diversification adaptation. 
+```{r}
+sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
+```
+
+
+semi-qualitative categories, and color palette
+```{r}
+score.df <- data.frame(response=c("Negative-Strong","Negative-Weak","Equivocal","Positive-Strong","Positive-Weak","None"),response.num=c(-2,-1,0,2,1,NA))
+
+table.palette.orange <- c("#04BC09", "#ABF1AD","grey85", "#dfc27d","#a6611a","black") # for plotting fx
+table.palette.legend <- c("#04BC09", "#ABF1AD","#a6611a","#dfc27d","grey85","black")  # for custom legend
+```
+
+
+Sub-select variables to include in figures
+```{r}
+fig1_vars <- sqkey %>% 
+# add a hab variable to the sqkey
+  bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
+  filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
+  filter(!(variable %in% c("Physical health","Physical safety","Entry of next generation","Equity in resource access"))) %>% 
+  pull(variable)
+```
+
+
+### 2a: coping --> adaptive maintenance
+
+```{r}
+tmplist <- list(sq.HABhi.sim,insure.HABhi.sim,
+                dr1.HABhi.sim,dr2.HABhi.sim,
+                fdiv1.HABhi.sim,fdiv2.HABhi.sim,
+                sdiv.HABhi.sim)
+names(tmplist) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Existing Fisheries Diversification","New Fisheries Diversification","Supplementary Diversification")
+hab.strat.outA <- compare.models.impact.df(sim.list=tmplist,
+                                          perturb.list=list(c(`HAB`=1),
+                                                            c(`HAB`=1,`insurance`=1),
+                                                            c(`HAB`=1, `disaster relief (direct)`=1),
+                                                            c(`HAB`=1, `disaster relief (direct)`=1, `disaster relief (invest)`=1),
+                                                            c(`HAB`=1),
+                                                            c(`HAB`=1,`New fishery`=1),
+                                                            c(`HAB`=1)),
+                                          monitor.list=list(NA,NA,NA,NA,NA,NA,NA),
+                         strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                         plot=TRUE,plot.perturbed=FALSE,main.axis="Y",
+                         common.variables=FALSE,variable.key=subvars.cft %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order",
+                         table.palette = table.palette.orange)
+```
+
+add extra formatting
+```{r}
+hab.strat.plotA <- hab.strat.outA[[3]]+
+  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  # write over legend to change order of colors
+  scale_fill_discrete(name="Response",type=table.palette.legend, drop=FALSE, na.translate=FALSE, 
+                      limits=c("Positive-Strong","Positive-Weak","Negative-Strong","Negative-Weak","Equivocal")) + 
+  guides(fill = guide_legend(order = 1, nrow=2), shape = guide_legend(order = 0)) +
+  theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0,size=8),
+                     axis.text.y=element_text(size=9),
+                     legend.title=element_text(size=9),
+                     legend.text=element_text(size=8),
+                     legend.position="bottom",
+                     plot.margin=margin(unit(c(5.5, 100.5, 5.5, 5.5), "points")))
+```
+
+
+
+### Fig 2b: transformative
+ 
+```{r}
+tmplist2 <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
+names(tmplist2) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
+hab.ldiv.out <- compare.models.impact.df(sim.list=tmplist2,
+                                          perturb.list=list(c(`HAB`=1),
+                                                            c(`HAB`=1,`Transition support`=1)),
+                                          monitor.list=list(NA,NA),
+                         strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                         plot=TRUE,plot.perturbed=FALSE,
+                         common.variables=FALSE,variable.key=subvars.cft %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order", main.axis="Y",
+                         table.palette = table.palette.orange)
+
+```
+
+add extra formatting
+```{r}
+hab.ldiv.plot <- hab.ldiv.out[[3]] +
+  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
+  theme(legend.position = "none",axis.text.x=element_text(angle=45,hjust=1),
+        plot.margin=margin(unit(c(5.5, 100.5, 5.5, 38), "points"))) 
+```
+
+
+
+### final plot
+
+```{r}
+
+png(here('figs','Fig2.png'),res=300,width=2200,height=2400)
+plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
+dev.off()
+
+```
+

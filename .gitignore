@@ -1,0 +1,12 @@
+.Rproj.user
+.Rproj
+.Rhistory
+.RData
+.Ruserdata
+
+# data files that are too large
+data/*.rds
+data/*/*.rds
+data/sensitivity/gbm_details/**
+data/sensitivity/gbmOut**
+data/sensitivity/gbmIn**
