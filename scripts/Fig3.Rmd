@@ -8,6 +8,7 @@ output:
     toc_float: yes
 ---
 
+**Figure 3.**
 
 
 ```{r setup, include=FALSE}
@@ -26,11 +27,13 @@ library(tcltk2)
 library(gridExtra)
 library(cowplot)
 library(QPress)
+library(magrittr)
 # library(igraph)
 library(gridExtra)
 
 #---- custom functions ----
 source(here('R','compare.models.impact.dataframe.R'))
+source(here('R','compare.baseline.impact.dataframe.R'))
 
 source(here('R','get.score.matrix.R') )
 
@@ -118,12 +121,11 @@ fig3_vars <- sqkey %>%
 # add a hab variable to the sqkey
   bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
   filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
-  filter(!(variable %in% c("Physical health","Physical safety","Entry of next generation","Equity in resource access"))) %>% 
-  pull(variable)
+  filter(!(variable %in% c("Physical health","Physical safety","Entry of next generation","Equity in resource access")))
 ```
 
 
-### Fig 3: Influential dynamic 
+### Fig 3: All responses
 
 ```{r}
 list3a <- list(sq.cf.HABhi.sim,insure.cf.HABhi.sim,dr1.cf.HABhi.sim,dr2.cf.HABhi.sim,sdiv.cf.HABhi.sim)
@@ -211,9 +213,115 @@ p3 <- plot3c[[3]] + scale_x_discrete(position = "bottom",expand = c(0.05, 0.05))
 ```
 ```{r}
 
-png(here('figs','fig3.png'),res=200,height=1820,width=1400)
+png(here('drafts','Fig3.png'),res=200,height=1820,width=1400)
 plot_grid(plotlist=list(p1,p2,p3),nrow=3,rel_heights=c(1,0.43,0.9),rel_widths=c(1,0.05),
           labels=c("(a) Waiting for crab","(b) No Effect","(c) Switching targets",""),label_x=c(-0.1,-0.06,-0.115),label_y=c(0.42,1,1.05))
+dev.off()
+
+```
+
+
+### Fig 3: Change from baseline
+
+```{r}
+list3a <- list(sq.cf.HABhi.sim,insure.cf.HABhi.sim,dr1.cf.HABhi.sim,dr2.cf.HABhi.sim,sdiv.cf.HABhi.sim)
+names(list3a) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
+                   "Multi-Objective Disaster Relief","Supplementary Diversification")
+plot3a <- compare.baseline.impact.df(list3a,
+                                      perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = fig3_vars, variable.order="specific_order",
+                                   plot=TRUE,main.axis="Y",table.palette = table.palette.orange)
+
+plot3a[[3]] + theme(legend.position="top") + guides(
+  fill = guide_legend(order = 1,ncol=2,title.vjust=0.9, vjust=-5),
+  shape = guide_legend(order = 0))
+```
+
+
+
+```{r}
+list3b <- list(sq.none.HABhi.sim,insure.none.HABhi.sim,dr1.none.HABhi.sim,dr2.none.HABhi.sim,sdiv.none.HABhi.sim)
+names(list3b) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
+                   "Multi-Objective Disaster Relief","Supplementary Diversification")
+plot3b <- compare.baseline.impact.df(list3b,
+                                      perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = fig3_vars, variable.order="specific_order",
+                                   plot=TRUE,main.axis="Y",table.palette = table.palette.orange)
+plot3b[[3]]
+```
+
+
+```{r}
+list3c <- list(sq.one.HABhi.sim,insure.one.HABhi.sim,dr1.one.HABhi.sim,dr2.one.HABhi.sim,sdiv.one.HABhi.sim)
+names(list3c) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
+                   "Multi-Objective Disaster Relief","Supplementary Diversification")
+plot3c <- compare.baseline.impact.df(list3c,
+                                      perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key =fig3_vars, variable.order="specific_order",
+                                   plot=TRUE,main.axis="Y",table.palette = table.palette.orange)
+
+plot3c[[3]]
+```
+
+**final plot - panel 1 with legend**
+
+```{r}
+
+table.palette.legend <- c("#04BC09", "#ABF1AD","#a6611a","#dfc27d","grey85")
+
+
+p1 <- plot3a[[3]] + 
+  # write over legend to change order of colors
+  scale_fill_discrete(name="Response",type=table.palette.legend, drop=FALSE, na.translate=FALSE, 
+                      limits=c("Positive-Strong","Positive-Weak","Negative-Strong","Negative-Weak","Equivocal")) + 
+  theme(legend.position="top",legend.title=element_text(size=8),legend.text=element_text(size=8),
+        legend.margin=margin(t=0, r=0, b=-1.5, l=0, unit="cm"), legend.byrow = FALSE,
+        plot.margin=margin(unit(c(5.5, 100.5, 5.5, 5.5), "points"))) +
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5)+ guides(
+    fill = guide_legend(order = 1,ncol=3,title.vjust=0.9, vjust=-5),
+    shape = guide_legend(order = 0))
+```
+
+
+
+**final plot - panels 2 & 3**
+```{r}
+p2 <- plot3b[[3]] + 
+  theme(legend.position="none", axis.text.x=element_blank(),
+        plot.margin=margin(unit(c(-1.0, 100.5, 12.5, 6.5), "points"))) +
+ geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5)
+
+p3 <- plot3c[[3]] + scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
+  theme(legend.position="none",axis.text.x=element_text(angle=45,hjust=1),
+        plot.margin=margin(unit(c(9, 100.5, 5.5, 6), "points"))) +
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5)
+```
+```{r}
+
+png(here('drafts','Fig3-change.png'),res=200,height=1820,width=1400)
+plot_grid(plotlist=list(p1,p2,p3),nrow=3,rel_heights=c(1,0.43,0.9),rel_widths=c(1,0.05),
+          labels=c("(a) Waiting for crab","(b) No Effect","(c) Switching targets",""),label_x=c(-0.1,-0.06,-0.115),label_y=c(0.45,1,1.05))
 dev.off()
 
 ```

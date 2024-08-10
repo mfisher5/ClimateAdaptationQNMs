@@ -10,3 +10,5 @@ data/*/*.rds
 data/sensitivity/gbm_details/**
 data/sensitivity/gbmOut**
 data/sensitivity/gbmIn**
+drafts/**
+scripts/02**

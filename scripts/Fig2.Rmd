@@ -28,9 +28,11 @@ library(cowplot)
 library(QPress)
 # library(igraph)
 library(gridExtra)
+library(magrittr)
 
 #---- custom functions ----
 source(here('R','compare.models.impact.dataframe.R'))
+source(here('R','compare.baseline.impact.dataframe.R'))
 
 source(here('R','get.score.matrix.R') )
 
@@ -119,10 +121,11 @@ fig1_vars <- sqkey %>%
 # add a hab variable to the sqkey
   bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
   filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
-  filter(!(variable %in% c("Physical health","Physical safety","Entry of next generation","Equity in resource access"))) %>% 
-  pull(variable)
+  filter(!(variable %in% c("Physical health","Physical safety","Equity in resource access")))
 ```
 
+
+## All results
 
 ### 2a: coping --> adaptive maintenance
 
@@ -143,7 +146,7 @@ hab.strat.outA <- compare.models.impact.df(sim.list=tmplist,
                                           monitor.list=list(NA,NA,NA,NA,NA,NA,NA),
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
                          plot=TRUE,plot.perturbed=FALSE,main.axis="Y",
-                         common.variables=FALSE,variable.key=subvars.cft %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order",
+                         common.variables=FALSE,variable.key=fig1_vars %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order",
                          table.palette = table.palette.orange)
 ```
 
@@ -177,7 +180,7 @@ hab.ldiv.out <- compare.models.impact.df(sim.list=tmplist2,
                                           monitor.list=list(NA,NA),
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
                          plot=TRUE,plot.perturbed=FALSE,
-                         common.variables=FALSE,variable.key=subvars.cft %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order", main.axis="Y",
+                         common.variables=FALSE,variable.key=fig1_vars %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order", main.axis="Y",
                          table.palette = table.palette.orange)
 
 ```
@@ -198,9 +201,94 @@ hab.ldiv.plot <- hab.ldiv.out[[3]] +
 
 ```{r}
 
-png(here('figs','Fig2.png'),res=300,width=2200,height=2400)
+png(here('drafts','Fig2.png'),res=300,width=2200,height=2400)
 plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
 dev.off()
 
 ```
+
+
+
+## Change from SQ
+
+```{r}
+tmplist <- list(sq.HABhi.sim,insure.HABhi.sim,
+                dr1.HABhi.sim,dr2.HABhi.sim,
+                fdiv1.HABhi.sim,fdiv2.HABhi.sim,
+                sdiv.HABhi.sim)
+names(tmplist) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Existing Fisheries Diversification","New Fisheries Diversification","Supplementary Diversification")
+hab.strat.outA <- compare.models.baseline.df(sim.list=tmplist,
+                                          perturb.list=list(c(`HAB`=1),
+                                                            c(`HAB`=1,`insurance`=1),
+                                                            c(`HAB`=1, `disaster relief (direct)`=1),
+                                                            c(`HAB`=1, `disaster relief (direct)`=1, `disaster relief (invest)`=1),
+                                                            c(`HAB`=1),
+                                                            c(`HAB`=1,`New fishery`=1),
+                                                            c(`HAB`=1)),
+                                          monitor.list=list(NA,NA,NA,NA,NA,NA,NA),
+                         strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                         plot=TRUE,main.axis="Y",
+                         common.variables=FALSE,variable.key=fig1_vars %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order",
+                         table.palette = table.palette.orange)
+```
+
+add extra formatting
+```{r}
+hab.strat.plotA <- hab.strat.outA[[3]]+
+  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  # write over legend to change order of colors
+  scale_fill_discrete(name="Response",type=table.palette.legend, drop=FALSE, na.translate=FALSE, 
+                      limits=c("Positive-Strong","Positive-Weak","Negative-Strong","Negative-Weak","Equivocal")) + 
+  guides(fill = guide_legend(order = 1, nrow=2), shape = guide_legend(order = 0)) +
+  theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0,size=8),
+                     panel.grid.major.x=element_line(linewidth=0.5,linetype=3,color='gray30'),
+                     axis.text.y=element_text(size=9),
+                     legend.title=element_text(size=9),
+                     legend.text=element_text(size=8),
+                     legend.position="bottom",
+                     plot.margin=margin(unit(c(5.5, 100.5, 5.5, 5.5), "points")))
+```
+
+### Fig 2b: transformative
+ 
+```{r}
+tmplist2 <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
+names(tmplist2) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
+hab.ldiv.out <- compare.baseline.impact.df(sim.list=tmplist2,
+                                          perturb.list=list(c(`HAB`=1),
+                                                            c(`HAB`=1,`Transition support`=1)),
+                                          monitor.list=list(NA,NA),
+                         strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                         plot=TRUE,
+                         common.variables=FALSE,variable.key=fig1_vars,
+                         variable.order="specific_order", main.axis="Y",
+                         table.palette = table.palette.orange)
+
+```
+
+add extra formatting
+```{r}
+hab.ldiv.plot <- hab.ldiv.out[[3]] +
+  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
+  theme(legend.position = "none",axis.text.x=element_text(angle=45,hjust=1),
+        panel.grid.major.x=element_line(linewidth=0.5,linetype=3,color='grey30'),
+        plot.margin=margin(unit(c(5.5, 100.5, 5.5, 38), "points"))) 
+```
+
+
+
+### final plot
+
+```{r}
+
+png(here('drafts','Fig2-change.png'),res=300,width=2200,height=2300)
+plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
+dev.off()
+
+```
+
+
 
