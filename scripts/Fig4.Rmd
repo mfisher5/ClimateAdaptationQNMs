@@ -126,13 +126,8 @@ fig4_vars <- sqkey %>%
 
 First, plot in pairs 
 ```{r height=10,width=7}
-# ---- prep: longest y axis label?
-nx <- max(nchar("Direct Assistance Disaster Relief"),nchar("Multi-Objective Disaster Relief"),nchar("Supplementary Diversification")) - nchar("(with Feedback)")
-nx
-
-
 # ---- status quo ----
-compare.list <- list(sq.HABhi.sim,sq.costs.HABhi.sim); names(compare.list) <- c("Status Quo","                  (with Feedback)")
+compare.list <- list(sq.HABhi.sim,sq.costs.HABhi.sim); names(compare.list) <- c("Status Quo","(with Feedback)")
 
 plot.pairs1 <- compare.models.impact.df(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1),c(`HAB`=1)),
@@ -143,7 +138,7 @@ plot.pairs1 <- compare.models.impact.df(sim.list=compare.list,
                          table.palette = table.palette.orange)
 
 # ---- disaster relief 1 ----
-compare.list <- list(dr1.HABhi.sim,dr1.costs.HABhi.sim); names(compare.list) <- c("Direct Assistance Disaster Relief","                  (with Feedback)")
+compare.list <- list(dr1.HABhi.sim,dr1.costs.HABhi.sim); names(compare.list) <- c("Direct Assistance Disaster Relief","(with Feedback)")
 
 plot.pairs2 <- compare.models.impact.df(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1),
@@ -155,7 +150,7 @@ plot.pairs2 <- compare.models.impact.df(sim.list=compare.list,
                          table.palette = table.palette.orange)
 
 # ---- disaster relief 2 ----
-compare.list <- list(dr2.HABhi.sim,dr2.costs.HABhi.sim); names(compare.list) <- c("Multi-Objective Disaster Relief","                  (with Feedback)")
+compare.list <- list(dr2.HABhi.sim,dr2.costs.HABhi.sim); names(compare.list) <- c("Multi-Objective Disaster Relief","(with Feedback)")
 
 plot.pairs3 <- compare.models.impact.df(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
@@ -167,7 +162,7 @@ plot.pairs3 <- compare.models.impact.df(sim.list=compare.list,
                          table.palette = table.palette.orange)
 
 # ---- supplementary diversification ----
-compare.list <- list(sdiv.HABhi.sim,sdiv.costs.HABhi.sim); names(compare.list) <- c("Supplementary Diversification","                  (with Feedback)")
+compare.list <- list(sdiv.HABhi.sim,sdiv.costs.HABhi.sim); names(compare.list) <- c("Supplementary Diversification","(with Feedback)")
 
 plot.pairs4 <- compare.models.impact.df(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1),c(`HAB`=1)),
@@ -206,31 +201,42 @@ plot.baseline[[3]] + labs(subtitle="with Feedback") +
 ```
 
 
-Remove axis labels and legends
+Remove axis labels and legends, adjust spacing to match
 ```{r}
+## how much space to add to left side for alignment?
+s2 <- nchar("Direct Assistance Disaster Relief")
+s3 <- nchar("Multi-Objective Disaster Relief")
+s4 <- nchar("Supplementary Diversification")
+nx <- max(s2,s3,s4)
+s1 <- nx-nchar("Status Quo")
+s2 <- nx-s2
+s3 <- nx-s3
+s4 <- nx-s4
+
+## adjust themes
 plot.pairs1a <- plot.pairs1[[3]] + 
-  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
-  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   theme(legend.position="none",
-        plot.margin=margin(unit(c(5.5, 100.5, 0, 5.5), "points")))
+        plot.margin=margin(unit(c(5.5, 100.5, 2, 5.5+s1), "points")))
 
 plot.pairs2a <- plot.pairs2[[3]] +
-  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
-  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   theme(legend.position="none",axis.text.x=element_blank(),
-        plot.margin=margin(unit(c(0, 100.5, 0, 5.5), "points")))
+        plot.margin=margin(unit(c(-10, 100.5, 2, 5.5+s2), "points")))
 
 plot.pairs3a <- plot.pairs3[[3]] +
-  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
-  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   theme(legend.position="none",axis.text.x=element_blank(),
-        plot.margin=margin(unit(c(0, 100.5, 0, 5.5), "points")))
+        plot.margin=margin(unit(c(-10, 100.5, 2, 5.5+s3+5), "points")))
 
 plot.pairs4a <- plot.pairs4[[3]] +
-  geom_vline(aes(xintercept=10.5), linewidth=0.5) +
-  geom_vline(aes(xintercept=13.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   theme(legend.position="none",axis.text.x=element_blank(),
-        plot.margin=margin(unit(c(0, 100.5, 0, 5.5), "points")))
+        plot.margin=margin(unit(c(-10, 100.5, 5, 5.5+s4+5), "points")))
 ```
 
 All in one plot area
