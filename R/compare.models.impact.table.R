@@ -1,16 +1,14 @@
-##' Generate the dataframe used to display the impact of a perturbation in a table
+##' Generate the dataframe and table plot used to display the impact of a perturbation
 ##'
-##' This control constructs a dataframe that can be used to construct
-##' a table, which shows the fraction of
+##' This function constructs a dataframe that can be used to construct
+##' a table, which shows the semi-qualitative outcome of
 ##' simulations in which a positive or negative
-##' outcome occurs with a certain degree of certainty
-##' Models and perturbations can vary. 
+##' outcome occurs with a certain degree of certainty (strong/weak).
+##' Models variables and perturbations can vary. 
 ##'
-##' The user may then use the dataframe 
-##' to construct visualizations outside of this function.
 ##'
-##' \code{impact.barplot0} is a non-interactive variant for
-##' programmatic use.
+##' \code{compare.models.impact.tbl} is an interactive fx based on
+##' impact.barplot0 from SWotherspoon.
 ##'
 ##' @title Impact Table
 ##' @param sim.list the result from \code{system.simulate} as a **named** list
@@ -23,12 +21,17 @@
 ##' @param variable.key a dataframe with the variables to be included in the output dataframe. should have at least one column with the heading "variable"
 ##' @param variable.order the column name in the variable key to sort the variables by in the output dataframe (character)
 ##' @param plot Output a ggplot of the impact table as the third object in the list? If FALSE, writes out only dataframes. 
-##' @export
-compare.models.impact.df2 <- function(sim.list,perturb.list=0,monitor.list=NA,
+##' @param plot.perturbed In the plot, include the perturbed variables? Default is TRUE
+##' @param common.perturbed In the plot, include only the variables perturbed in all models? Default is FALSE
+##' @param main.axis In the plot, should the simulation names be on the X axis / top of table (default) or on the Y axis / left of table?
+##' @export 
+##' 
+compare.models.impact.tbl <- function(sim.list,perturb.list=0,monitor.list=NA,
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
                          common.variables=FALSE,variable.key=NA,variable.order=NA,
-                         plot=FALSE,
-                         table.palette=c("#04BC09", "#ABF1AD","#BBBBBB", "#B0BED8","#587AB6","transparent")) {
+                         plot=FALSE, main.axis="X",
+                         plot.perturbed=TRUE, common.perturbed=FALSE,
+                         table.palette=c("#04BC09", "#ABF1AD","#BBBBBB", "#B0BED8","#587AB6","black")) {
   
   
   ## Utility functions
@@ -123,7 +126,7 @@ compare.models.impact.df2 <- function(sim.list,perturb.list=0,monitor.list=NA,
   
   # Generate tables ---------------------------------------------------------
   
-  # if there is a variable key, and we want to include all variables in the key, grab all variables and order them. perturbed nodes go at the end of the table
+  # if there is a variable key, the variable type can be used to organize all variables listed in the key. perturbed nodes go at the end of the table
   if(any(!is.na(variable.key)) & common.variables==FALSE){
     variable.key <- variable.key %>% filter(variable %in% all_sim_variables) %>% # make sure there are no orphan variables in the key
       filter(!(variable %in% all_perturbed_nodes)) # take perturbed nodes out of the key
@@ -133,7 +136,7 @@ compare.models.impact.df2 <- function(sim.list,perturb.list=0,monitor.list=NA,
     ordered_variables <- c(all_perturbed_nodes, rev(variable.key$variable))
   }
   
-  # if there is a key, and we want to include only variables in all models, filter and order varaibles. perturbed nodes go at the end of the table
+  # if there is a key, common variables can be organized by variable type. perturbed nodes go at the end of the table
   if(any(!is.na(variable.key)) & common.variables==TRUE){
     variable.key <- variable.key %>% filter(variable %in% common_sim_variables) %>% # make sure there are only common variables in the key
       filter(!(variable %in% all_perturbed_nodes)) # take perturbed nodes out of the key
@@ -150,21 +153,44 @@ compare.models.impact.df2 <- function(sim.list,perturb.list=0,monitor.list=NA,
       ordered_variables <- c(all_perturbed_nodes, 
                              rev(sort(common_sim_variables[which(!(common_sim_variables %in% all_perturbed_nodes))])))
     } else{
-      ordered_variables <- c(all_perturbed_nodes,
-                             rev(sort(all_sim_variables[which(!(all_sim_variables %in% all_perturbed_nodes))])))
+    ordered_variables <- c(all_perturbed_nodes,
+                           rev(sort(all_sim_variables[which(!(all_sim_variables %in% all_perturbed_nodes))])))
     }}
   
   # filter results for variables that should be included in the table (the data frame written out will still include all results)
-  #  only include shared variables (if specified, or if no variable key is provided)
+  #    - only include shared variables (if specified, or if no variable key is provided)
   if(common.variables | any(!is.na(variable.key))){
-    #  - include the perturbed variables
-    table.results.df <- filter(all.results.df, (variable %in% ordered_variables & !(variable %in% all_perturbed_nodes)))
-  }else{
-  table.results.df <- filter(all.results.df, !(variable %in% all_perturbed_nodes))
+    #  - include the perturbed variables?
+    if(plot.perturbed){
+      response_levels <- c("Positive-Strong","Positive-Weak","Equivocal","Negative-Weak","Negative-Strong","Perturbed")
+      #- include all perturbed variables, or only those perturbed in all models?
+      if(common.perturbed){
+        table.results.df <- filter(all.results.df, variable %in% ordered_variables & !(variable %in% xclude_perturbed_nodes))
+      }else{
+        table.results.df <- filter(all.results.df, variable %in% ordered_variables)
+      }
+      }else{
+      table.results.df <- filter(all.results.df, (variable %in% ordered_variables & !(variable %in% all_perturbed_nodes)))
+      response_levels <- c("Positive-Strong","Positive-Weak","Equivocal","Negative-Weak","Negative-Strong")
+      table.palette <- table.palette[1:5]
+    }
+  } else{
+    #  - include the perturbed variables?
+    if(plot.perturbed){
+      response_levels <- c("Positive-Strong","Positive-Weak","Equivocal","Negative-Weak","Negative-Strong","Perturbed")
+      #- include all perturbed variables, or only those perturbed in all models?
+      if(common.perturbed){
+        table.results.df <- filter(all.results.df, !(variable %in% xclude_perturbed_nodes))
+      } else{
+        table.results.df <- all.results.df
+      }
+    } else{
+      table.results.df <- filter(all.results.df, !(variable %in% all_perturbed_nodes))
+      response_levels <- c("Positive-Strong","Positive-Weak","Equivocal","Negative-Weak","Negative-Strong")
+      table.palette <- table.palette[1:5]
+    }
   }
-  response_levels <- c("Positive-Strong","Positive-Weak","Equivocal","Negative-Weak","Negative-Strong","None")
   
-
   
   if(plot==FALSE){
     
@@ -172,61 +198,45 @@ compare.models.impact.df2 <- function(sim.list,perturb.list=0,monitor.list=NA,
     
   } else{
     
-    # grab the baseline responses; **assumes the first model in sim.list is the baseline**
-    baseline.df <- filter(table.results.df, model==names(sim.list)[1]) %>%
-      dplyr::select(variable,response) %>% rename(baseline_response=response)
-
+    plotdat <- table.results.df %>% mutate(response=ifelse(node_to_perturb=="y","Perturbed",response))
+    plotdat %<>% mutate(no_input=ifelse(response=="None","None",NA)) %>%
+      mutate(response=ifelse(response=="None",NA,response))
     
-      ## --- plot up / down arrows for change in baseline. some of this is hard-coded --- ##
+    plotdat$response <- factor(plotdat$response, levels=response_levels)
+    if(length(names(sim.list)) != length(unique(names(sim.list)))){stop("ERROR: All models must have unique names!")}
+    
+    
+    if(main.axis=="X"){
+      plotdat$variable <- factor(plotdat$variable, levels=unique(ordered_variables))
+      plotdat$model <- factor(plotdat$model,levels=names(sim.list))
       
-      # recode responses that are the same as the Status Quo response
-      plotdat <- table.results.df %>% left_join(baseline.df) %>%
-        mutate(plot_response=ifelse(model==names(sim.list)[1],response,
-                                    ifelse(response==baseline_response,NA,response))) %>%
-        mutate(plot_change=ifelse(match(response, response_levels) > match(baseline_response, response_levels), "down",
-                                  ifelse(match(response, response_levels) < match(baseline_response, response_levels),"up",NA))) %>%
-        mutate(plot_change=ifelse(model==names(sim.list)[1],"baseline",plot_change))
-      
-      plotdat %<>% mutate(plot_response=ifelse(node_to_perturb=="y","Perturbed",plot_response))
-      
-      plotdat %<>% dplyr::select(variable, model, plot_response, plot_change)
-      
-      response_levels <- c(response_levels,"None")
-      plotdat$plot_response <- factor(plotdat$plot_response, levels=response_levels)
-      if(length(names(sim.list)) != length(unique(names(sim.list)))){stop("ERROR: All models must have unique names!")}
-      
+      sq.hab.plot <- ggplot(plotdat) + 
+        # show legend makes sure all colors are in key, even if that level isn't in the graph
+        geom_point(aes(y=variable,x=model,fill=response),pch=22,size=8,color="grey60", show.legend=TRUE) +
+        geom_point(aes(y=variable,x=model,pch=as.factor(no_input)),size=7,color="grey60") +
+        labs(x="",y="") + 
+        scale_fill_manual(name="Response",values=table.palette, drop=FALSE, na.translate=FALSE) +
+        scale_shape_manual(name="",values=c(0),na.translate=FALSE) +
+        scale_x_discrete(position = "top",expand = c(0.1, 0.1)) +
+        theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0))
+    } else if(main.axis=="Y"){
       plotdat$variable <- factor(plotdat$variable, levels=rev(unique(ordered_variables)))
       plotdat$model <- factor(plotdat$model,levels=rev(names(sim.list))) 
       
-      #add a top rectangle so gridlines only come down from status quo
-      
-      rect.df <- data.frame(rect.y=length(unique(plotdat$model)),
-                            rect.x=0,
-                            rect.xmax=length(unique(plotdat$variable))+1) %>%
-        mutate(rect.ymax=rect.y+0.6)
-      
-      table.palette <- c(table.palette, "transparent")
-      shape.palette <- c(rep("transparent",5),"gray60")
-      
-      # sq.hab.plot <- 
-      ggplot(plotdat) + 
-        geom_rect(data=rect.df,aes(ymin=rect.y,ymax=rect.ymax,xmin=0,xmax=rect.xmax),fill='white', inherit.aes=FALSE) +
+      sq.hab.plot <- ggplot(plotdat) + 
         # show legend makes sure all colors are in key, even if that level isn't in the graph
-        geom_point(aes(x=variable,y=model,
-                       fill=plot_response,color=plot_response,pch=plot_change),
-                   size=8, show.legend=TRUE) +
-        labs(x="",y="") + 
-        scale_fill_manual(name="Response",values=table.palette, 
-                          drop=FALSE, na.translate=FALSE) +
-        scale_color_manual(name="Response",values=shape.palette, 
-                           drop=FALSE, na.translate=FALSE) +
-        scale_shape_manual(name="",values=c(22,25,24),na.translate=FALSE) +
-        guides(shape='none') +
-        scale_x_discrete(position = "top",expand = c(0.05, 0.05)) +
-        theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0),
-                           panel.grid.major.x=element_line(size=0.5,linetype=3,color='black'))
-      
-   
+          geom_point(aes(x=variable,y=model,fill=response),pch=22,size=8,color="grey60", show.legend=TRUE) +
+          geom_point(aes(x=variable,y=model,pch=as.factor(no_input)),size=7,color="grey60") +
+          labs(x="",y="") + 
+          scale_fill_manual(name="Response",values=table.palette, drop=FALSE, na.translate=FALSE) +
+          scale_shape_manual(name="",values=c(0),na.translate=FALSE) +
+          scale_x_discrete(position = "top",expand = c(0.05, 0.05)) +
+          theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0))
+      }
+    
     return(list(table.results.df, all.results.df, sq.hab.plot))
     
   }
+  
+}
+

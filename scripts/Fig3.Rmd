@@ -32,8 +32,8 @@ library(magrittr)
 library(gridExtra)
 
 #---- custom functions ----
-source(here('R','compare.models.impact.dataframe.R'))
-source(here('R','compare.baseline.impact.dataframe.R'))
+source(here('R','compare.models.impact.table.R'))
+source(here('R','compare.baseline.impact.table.R'))
 
 source(here('R','get.score.matrix.R') )
 
@@ -131,7 +131,7 @@ fig3_vars <- sqkey %>%
 list3a <- list(sq.cf.HABhi.sim,insure.cf.HABhi.sim,dr1.cf.HABhi.sim,dr2.cf.HABhi.sim,sdiv.cf.HABhi.sim)
 names(list3a) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
                    "Multi-Objective Disaster Relief","Supplementary Diversification")
-plot3a <- compare.models.impact.df(list3a,
+plot3a <- compare.models.impact.tbl(list3a,
                                       perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
@@ -152,7 +152,7 @@ plot3a[[3]] + theme(legend.position="top") + guides(
 list3b <- list(sq.none.HABhi.sim,insure.none.HABhi.sim,dr1.none.HABhi.sim,dr2.none.HABhi.sim,sdiv.none.HABhi.sim)
 names(list3b) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
                    "Multi-Objective Disaster Relief","Supplementary Diversification")
-plot3b <- compare.models.impact.df(list3b,
+plot3b <- compare.models.impact.tbl(list3b,
                                       perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
@@ -170,7 +170,7 @@ plot3b[[3]]
 list3c <- list(sq.one.HABhi.sim,insure.one.HABhi.sim,dr1.one.HABhi.sim,dr2.one.HABhi.sim,sdiv.one.HABhi.sim)
 names(list3c) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
                    "Multi-Objective Disaster Relief","Supplementary Diversification")
-plot3c <- compare.models.impact.df(list3c,
+plot3c <- compare.models.impact.tbl(list3c,
                                       perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
@@ -227,7 +227,7 @@ dev.off()
 list3a <- list(sq.cf.HABhi.sim,insure.cf.HABhi.sim,dr1.cf.HABhi.sim,dr2.cf.HABhi.sim,sdiv.cf.HABhi.sim)
 names(list3a) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
                    "Multi-Objective Disaster Relief","Supplementary Diversification")
-plot3a <- compare.baseline.impact.df(list3a,
+plot3a <- compare.baseline.impact.tbl(list3a,
                                       perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
@@ -249,7 +249,7 @@ plot3a[[3]] + theme(legend.position="top") + guides(
 list3b <- list(sq.none.HABhi.sim,insure.none.HABhi.sim,dr1.none.HABhi.sim,dr2.none.HABhi.sim,sdiv.none.HABhi.sim)
 names(list3b) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
                    "Multi-Objective Disaster Relief","Supplementary Diversification")
-plot3b <- compare.baseline.impact.df(list3b,
+plot3b <- compare.baseline.impact.tbl(list3b,
                                       perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
@@ -267,7 +267,7 @@ plot3b[[3]]
 list3c <- list(sq.one.HABhi.sim,insure.one.HABhi.sim,dr1.one.HABhi.sim,dr2.one.HABhi.sim,sdiv.one.HABhi.sim)
 names(list3c) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief",
                    "Multi-Objective Disaster Relief","Supplementary Diversification")
-plot3c <- compare.baseline.impact.df(list3c,
+plot3c <- compare.baseline.impact.tbl(list3c,
                                       perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),

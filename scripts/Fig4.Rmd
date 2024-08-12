@@ -27,8 +27,8 @@ library(igraph)
 library(magrittr)
 
 #---- custom functions ----
-source(here('R','compare.models.impact.dataframe.R'))
-source(here('R','compare.baseline.impact.dataframe.R'))
+source(here('R','compare.models.impact.table.R'))
+source(here('R','compare.baseline.impact.table.R'))
 source(here('R','get.score.matrix.R') )
 ```
 
@@ -129,7 +129,7 @@ First, plot in pairs
 # ---- status quo ----
 compare.list <- list(sq.HABhi.sim,sq.costs.HABhi.sim); names(compare.list) <- c("Status Quo","(with Feedback)")
 
-plot.pairs1 <- compare.models.impact.df(sim.list=compare.list,
+plot.pairs1 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1),c(`HAB`=1)),
                                          monitor.list=list(NA,NA),
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
@@ -140,7 +140,7 @@ plot.pairs1 <- compare.models.impact.df(sim.list=compare.list,
 # ---- disaster relief 1 ----
 compare.list <- list(dr1.HABhi.sim,dr1.costs.HABhi.sim); names(compare.list) <- c("Direct Assistance Disaster Relief","(with Feedback)")
 
-plot.pairs2 <- compare.models.impact.df(sim.list=compare.list,
+plot.pairs2 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1)),
                                          monitor.list=list(NA,NA),
@@ -152,7 +152,7 @@ plot.pairs2 <- compare.models.impact.df(sim.list=compare.list,
 # ---- disaster relief 2 ----
 compare.list <- list(dr2.HABhi.sim,dr2.costs.HABhi.sim); names(compare.list) <- c("Multi-Objective Disaster Relief","(with Feedback)")
 
-plot.pairs3 <- compare.models.impact.df(sim.list=compare.list,
+plot.pairs3 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1)),
                                          monitor.list=list(NA,NA),
@@ -164,7 +164,7 @@ plot.pairs3 <- compare.models.impact.df(sim.list=compare.list,
 # ---- supplementary diversification ----
 compare.list <- list(sdiv.HABhi.sim,sdiv.costs.HABhi.sim); names(compare.list) <- c("Supplementary Diversification","(with Feedback)")
 
-plot.pairs4 <- compare.models.impact.df(sim.list=compare.list,
+plot.pairs4 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1),c(`HAB`=1)),
                                          monitor.list=list(NA,NA),
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
@@ -172,6 +172,7 @@ plot.pairs4 <- compare.models.impact.df(sim.list=compare.list,
                          common.variables=FALSE,variable.key=fig4_vars,variable.order="specific_order",
                          table.palette = table.palette.orange)
 
+rm(compare.list)
 ```
 
 
@@ -184,7 +185,7 @@ compare2.list <- list(sq.costs.HABhi.sim,
                      sdiv.costs.HABhi.sim)
 names(compare2.list) <- c("Status Quo","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Supplementary Diversification")
 
-plot.baseline <- compare.baseline.impact.df(sim.list=compare2.list,
+plot.baseline <- compare.baseline.impact.tbl(sim.list=compare2.list,
                                          perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
@@ -198,6 +199,8 @@ plot.baseline <- compare.baseline.impact.df(sim.list=compare2.list,
 
 plot.baseline[[3]] + labs(subtitle="with Feedback") + 
   guides(fill = guide_legend(order = 1),shape = guide_legend(order = 0))
+
+rm(compare2.list)
 ```
 
 
@@ -217,33 +220,64 @@ s4 <- nx-s4
 plot.pairs1a <- plot.pairs1[[3]] + 
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
+  labs(subtitle="(a)") +
   theme(legend.position="none",
-        plot.margin=margin(unit(c(5.5, 100.5, 2, 5.5+s1), "points")))
+        plot.subtitle=element_text(size=14, vjust=-45,hjust=-.5),
+        plot.margin=margin(unit(c(5.5, 60.5, 2, 5.5+(s1*3-2)), "points")))
 
 plot.pairs2a <- plot.pairs2[[3]] +
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   theme(legend.position="none",axis.text.x=element_blank(),
-        plot.margin=margin(unit(c(-10, 100.5, 2, 5.5+s2), "points")))
+        plot.margin=margin(unit(c(-10, 60.5, 2, 5.5+s2), "points")))
 
 plot.pairs3a <- plot.pairs3[[3]] +
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   theme(legend.position="none",axis.text.x=element_blank(),
-        plot.margin=margin(unit(c(-10, 100.5, 2, 5.5+s3+5), "points")))
+        plot.margin=margin(unit(c(-10, 60.5, 2, 5.5+s3+5), "points")))
 
 plot.pairs4a <- plot.pairs4[[3]] +
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   theme(legend.position="none",axis.text.x=element_blank(),
-        plot.margin=margin(unit(c(-10, 100.5, 5, 5.5+s4+5), "points")))
+        plot.margin=margin(unit(c(-10, 60.5, 5, 5.5+s4+5), "points")))
 ```
 
-All in one plot area
+Check spacing if needed
+```{r eval=FALSE}
+plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.375,0.375,0.375))
+```
+
+Plot side-by-side
 ```{r}
-plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.4,0.4,0.4))
+left <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.25,0.25,0.25))
+
+right <- plot.baseline[[3]] + 
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
+  labs(subtitle="(b) with Feedback") + 
+  guides(fill = guide_legend(order = 1),shape = guide_legend(order = 0)) +
+  theme(plot.subtitle=element_text(size=14, vjust=-40,hjust=-1),
+        plot.margin=margin(unit(c(25.5, 5.5, 50.5,-25), "points")))
+
+png(here('drafts','Fig4.png'), res=300,width=3900,height=1600)
+plot_grid(left,right,ncol=2, rel_widths=c(0.925,1))
+dev.off()
 ```
 
 
+Plot side-by-side with connecting lines
+```{r eval=FALSE}
+p <- plot_grid(left,right,ncol=2, rel_widths=c(0.925,1))
+
+png(here('drafts','Fig4-lines.png'), res=300,width=3900,height=1600)
+ggdraw(p) +
+  draw_line(x=c(0.415,0.56),y=c(0.47,0.45)) +
+  draw_line(x=c(0.415,0.471),y=c(0.32,0.364)) +
+  draw_line(x=c(0.415,0.482),y=c(0.18,0.27)) +
+  draw_line(x=c(0.415,0.482),y=c(0.045,0.18))
+dev.off()
+```
 
 

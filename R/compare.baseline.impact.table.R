@@ -1,19 +1,18 @@
-##' Generate the dataframe used to display the impact of a perturbation in a table
+##' Generate dataframe, up/down arrow plot used to compare the impact of a perturbation to a baseline
 ##'
-##' This control constructs a dataframe that can be used to construct
-##' a table, which shows the fraction of
+##' This function constructs a dataframe that can be used to construct
+##' a table, which shows the semi-qualitative outcome of
 ##' simulations in which a positive or negative
-##' outcome occurs with a certain degree of certainty
-##' Models and perturbations can vary. 
+##' outcome occurs with a certain degree of certainty (strong/weak).
+##' Only outcomes which differ from a baseline model are displayed in the table plot.
+##' Models variables and perturbations can vary. 
+##' 
 ##'
-##' The user may then use the dataframe 
-##' to construct visualizations outside of this function.
+##' \code{compare.baseline.impact.tbl} is an interactive fx based on
+##' impact.barplot0 from SWotherspoon.
 ##'
-##' \code{impact.barplot0} is a non-interactive variant for
-##' programmatic use.
-##'
-##' @title Impact Table
-##' @param sim.list the result from \code{system.simulate} as a **named** list
+##' @title Impact Table to Baseline Model
+##' @param sim.list the result from \code{system.simulate} as a **named** list, **The first model in the list is the baseline**
 ##' @param perturb.list a list of named vectors that indicates, for each simulation, which nodes were perturbed and the relative magnitude of the perturbation.
 ##' @param monitor.list a list of named vectors of signs (-1,0,1) or NA that indicates, for each simulation, the required outcome of the perturbation.
 ##' @param strong_lower (proportion of total) outcomes >= are treated as a strong response
@@ -25,7 +24,7 @@
 ##' @param plot Output a ggplot of the impact table as the third object in the list? If FALSE, writes out only dataframes. 
 ##' @param main.axis In the plot, should the simulation names be on the X axis / top of table (default) or on the Y axis / left of table?
 ##' @export
-compare.baseline.impact.df <- function(sim.list,perturb.list=0,monitor.list=NA,
+compare.baseline.impact.tbl <- function(sim.list,perturb.list=0,monitor.list=NA,
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
                          common.variables=FALSE,variable.key=NA,variable.order=NA,
                          plot=FALSE, main.axis="X",
