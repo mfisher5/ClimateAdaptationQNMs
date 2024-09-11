@@ -216,13 +216,13 @@ s2 <- nx-s2
 s3 <- nx-s3
 s4 <- nx-s4
 
-## adjust themes
+# adjust themes
 plot.pairs1a <- plot.pairs1[[3]] + 
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
-  labs(subtitle="(a)") +
+  labs(subtitle="(a) without v.\n with feedback") +
   theme(legend.position="none",
-        plot.subtitle=element_text(size=14, vjust=-45,hjust=-.5),
+        plot.subtitle=element_text(size=14, vjust=-45,hjust=-.85),
         plot.margin=margin(unit(c(5.5, 60.5, 2, 5.5+(s1*3-2)), "points")))
 
 plot.pairs2a <- plot.pairs2[[3]] +
@@ -251,17 +251,17 @@ plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4
 
 Plot side-by-side
 ```{r}
-left <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.25,0.25,0.25))
+left <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.23,0.23,0.23))
 
 right <- plot.baseline[[3]] + 
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
-  labs(subtitle="(b) with Feedback") + 
+  labs(subtitle="(b) with feedback\n\t\t\t\t\t\t\t\t\t\tonly") + 
   guides(fill = guide_legend(order = 1),shape = guide_legend(order = 0)) +
-  theme(plot.subtitle=element_text(size=14, vjust=-40,hjust=-1),
-        plot.margin=margin(unit(c(25.5, 5.5, 50.5,-25), "points")))
+  theme(plot.subtitle=element_text(size=14, vjust=-40,hjust=-0.8),
+        plot.margin=margin(unit(c(25.5, 5.5, 25.5,-30), "points")))
 
-png(here('drafts','Fig4.png'), res=300,width=3900,height=1600)
+png(here('drafts','Fig4.png'), res=300,width=3900,height=1650)
 plot_grid(left,right,ncol=2, rel_widths=c(0.925,1))
 dev.off()
 ```
@@ -269,14 +269,35 @@ dev.off()
 
 Plot side-by-side with connecting lines
 ```{r eval=FALSE}
-p <- plot_grid(left,right,ncol=2, rel_widths=c(0.925,1))
 
-png(here('drafts','Fig4-lines.png'), res=300,width=3900,height=1600)
+right <- plot.baseline[[3]] + 
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
+  labs(subtitle="(b) with feedback\n\t\t\t\t\t\t\t\t\t\tonly") + 
+  guides(fill = guide_legend(order = 1,ncol=2,title.vjust=0.9),
+         shape = guide_legend(order = 0)) +
+  theme(plot.subtitle=element_text(size=14, vjust=-50,hjust=-0.9),
+        plot.margin=margin(unit(c(25.5, 55.5, 5.5,-30), "points")),
+        legend.position='top') ## offset top spacing
+
+p <- plot_grid(left,right,ncol=2, rel_widths=c(1,0.96))
+
+png(here('drafts','Fig4-lines.png'), res=300,width=3700,height=1600)
 ggdraw(p) +
-  draw_line(x=c(0.415,0.56),y=c(0.47,0.45)) +
-  draw_line(x=c(0.415,0.471),y=c(0.32,0.364)) +
-  draw_line(x=c(0.415,0.482),y=c(0.18,0.27)) +
-  draw_line(x=c(0.415,0.482),y=c(0.045,0.18))
+  draw_line(x=c(0.441,0.46),y=c(0.44,0.44), col="gray40", linewidth=0.25) +
+  draw_line(x=c(0.441,0.46),y=c(0.305,0.305), col="gray40", linewidth=0.25) +
+  draw_line(x=c(0.441,0.46),y=c(0.175,0.175), col="gray40", linewidth=0.25) +
+  draw_line(x=c(0.441,0.46),y=c(0.0435,0.0435), col="gray40", linewidth=0.25) +
+  draw_line(x=c(0.46,0.46),y=c(0.44,0.0435), col="gray40", linewidth=0.25) + # bracket
+  draw_line(x=c(0.46,0.485),y=c(0.274,0.274), col="gray40", linewidth=0.25) +# line to (b)
+  draw_line(x=c(0.485,0.485),y=c(0.01,0.55), col="gray40", linewidth=0.25) +    # left rect
+  draw_line(x=c(0.485,0.995),y=c(0.01,0.01), col="gray40", linewidth=0.25) +  # bottom rect
+  draw_line(x=c(0.485,0.995),y=c(0.55,0.55), col="gray40", linewidth=0.25) +  # top rect
+  draw_line(x=c(0.995,0.995),y=c(0.01,0.55), col="gray40", linewidth=0.25)     # right rect
+  # draw_line(x=c(0.415,0.56),y=c(0.47,0.45)) +
+  # draw_line(x=c(0.415,0.471),y=c(0.32,0.364)) +
+  # draw_line(x=c(0.415,0.482),y=c(0.18,0.27)) +
+  # draw_line(x=c(0.415,0.482),y=c(0.045,0.18))
 dev.off()
 ```
 
