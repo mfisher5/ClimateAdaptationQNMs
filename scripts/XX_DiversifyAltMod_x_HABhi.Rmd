@@ -1,0 +1,353 @@
+---
+title: "Exploring Assumptions & Alt Structures for Diversify QNMs"
+author: "M Fisher"
+date: "2023-07-27"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+# Description 
+
+This is an *extra RMarkdown* that explores how altering model structure to reflect alternative assumptions about the SES (and true diversity / differences across communities) may affect the outcomes from adaptive strategies.
+
+Structural changes are explored for the following strategies:
+
+1. Existing Fisheries Diversification
+
+2. New Fisheries Diversification
+
+3-4. Livelihood Diversification with Fishery Exit
+
+
+
+Note that these strategies were not included in script 2b Influential Link. And the **results are not included in the paper,** mostly because the assumptions didn't build from influential links the QNMs. Therefore, when there were changes in HAB simulation output, they were minimal.
+
+
+
+
+**Existing Fishery Diversification**
+
+- Start-up costs are not minimal / have a more lasting impact on crab processing capacity and labor availability
+
+
+**New Fishery Diversification**
+
+1. Start-up costs (lasting negative impacts to Material wealth & security, Job Satisfaction) are removed through institutional programs and support in the **No start-up costs** iteration.
+
+2. Start-up costs and "growing pains" (uncertain negative impact to Labor Availability / Crab Processing Capacity) are removed in in the **Low Barrier** iteration
+
+3. Social "costs" for family and community are more severe.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE)
+
+#---- libraries ----
+library(here)
+library(tidyverse)
+library(ggplot2)
+#Load XML first--dependency not included in QPress
+#To install QPress: 
+#   library(remotes)
+#   remotes::install_github("SWotherspoon/QPress")
+library(XML)
+library(tcltk2)
+library(gridExtra)
+library(cowplot)
+library(QPress)
+
+#---- custom functions ----
+source(here('R','parse.constraints.SWotherspoon.R'))
+source(here('R','impact.table.R'))
+source(here('R','compare.models.impact.table.R'))
+source(here('R','compare.baseline.impact.table.R'))
+source(here('R','get.score.matrix.R') )
+```
+
+# Set up 
+
+Read in a variable key. 
+```{r}
+sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
+
+# add a hab variable to the key
+sqkey <- sqkey %>%
+  bind_rows(data.frame(variable="HAB",group="ecosystem"))
+
+# save a subset of the variables in a new data frame -- only well-being and capacity variables
+subvars <- sqkey %>% filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
+  arrange(2)
+```
+
+Status Quo Model
+```{r eval=FALSE}
+# dia model
+m.cft.habhi <- model.dia(here::here('data','dia','StatusQuo_x_HABhi.dia'))
+m.cft.habhi <- enforce.limitation(m.cft.habhi)
+
+# HAB simulation output from previous script
+tmplist <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
+cft.HABhi.sim <- sqlist[[1]]
+
+rm(tmplist)
+```
+
+# Livelihood Diversification
+
+### baselines 
+
+Reminder: I want to test out a few different ways to approach the default models, before I look at assumptions within the models.  
+
+- Version 1 = community has just recently exited commercial fisheries in an ecologically-driven or top-down transition, with limited grassroots support for moving away from fishing-based occupations. Much of the well-being of the community is tied to recreational harvest of crab. 
+
+```{r}
+# dia model
+m.ldiv.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-livelihood-div-1_HABhi.dia'))
+m.ldiv.habhi <- enforce.limitation(m.ldiv.habhi)  
+
+# no edge constraints
+
+################# HAB 
+ldiv.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.ldiv.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.ldiv.habhi, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.ldiv.habhi,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+################# HAB + "Transition"
+ldiv.HABhi.sim2 <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.ldiv.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.ldiv.habhi, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.ldiv.habhi,     # the qnm
+                              perturb = c(`HAB`=1,`Transition`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+```
+
+- Version 2: 
+
+```{r}
+# dia model
+m.ldiv2.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-livelihood-div-2_HABhi.dia'))
+m.ldiv2.habhi <- enforce.limitation(m.ldiv2.habhi)  
+
+# no edge constraints
+m.ldiv2.habhi.constrained <- parse.constraints(c("Recreational harvest -> Cultural values & practices < Total employment activity -> Cultural values & practices",
+                                         "Recreational fishery participation -> Intangible connections to nature < Total employment activity -> Intangible connections to nature"),m.ldiv2.habhi)
+ldiv2.habhi.sampler <- community.ordering.sampler(m.ldiv2.habhi.constrained)
+
+################# HAB with constraints
+ldiv2.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.ldiv2.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=ldiv2.habhi.sampler,
+                            validators=list(press.validate(
+                              m.ldiv2.habhi,     # the qnm
+                              perturb = c(`HAB`=1,`Transition support`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+################# HAB without constraints
+ldiv2.HABhi.sim2 <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.ldiv2.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.ldiv2.habhi, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.ldiv2.habhi,     # the qnm
+                              perturb = c(`HAB`=1,`Transition support`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+################# HAB + Transition
+ldiv2.HABhi.sim3 <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.ldiv2.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.ldiv2.habhi, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.ldiv2.habhi,     # the qnm
+                              perturb = c(`HAB`=1,`Transition support`=1, `Transition`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+```
+
+
+For each model I have run a simulation with a HAB perturbation, and run a simulation with a HAB perturbation + perturbation of a "Transition" variable that has an amplifying effect on non-fishing employment (both versions). For version 2, I further tested the model with only a HAB perturbation, with and without constraints that say non-fishing employment is more important than recreational fishing for intangible connections to nature / cultural values & practices.
+
+
+```{r}
+# to print
+tmp.list <- list(cft.HABhi.sim,ldiv.HABhi.sim,ldiv.HABhi.sim2, ldiv2.HABhi.sim2, ldiv2.HABhi.sim, ldiv2.HABhi.sim2); names(tmp.list) <- c("Status Quo","LDiv 1","LDiv 1 Perturb","LDiv 2","LDiv 2 Constraints","LDiv 2 Perturb")
+compare1 <- compare.models.impact.df(sim.list=tmp.list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1,`Transition`=1),
+                                                           c(`HAB`=1,`Transition support`=1),
+                                                           c(`HAB`=1,`Transition support`=1),
+                                                           c(`HAB`=1,`Transition`=1,`Transition support`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = myvars.suppdiv.cft, variable.order="group_order",plot=TRUE)
+png(here('omf-paper-1/data/HAB_sim_out/townsQNM_HAB-Strategies','HABhi_supplement-div_table.png'), width=500, height=800)
+compare1[[3]]
+dev.off()
+```
+```{r  fig.width=7,fig.height=6}
+tmp.list <- list(cft.HABhi.sim,ldiv.HABhi.sim,ldiv.HABhi.sim2, ldiv2.HABhi.sim2, ldiv2.HABhi.sim, ldiv2.HABhi.sim2); names(tmp.list) <- c("Status Quo","LDiv 1","LDiv 1 Perturb","LDiv 2","LDiv 2 Constraints","LDiv 2 Perturb")
+compare.sub <- compare.models.impact.df(sim.list=tmp.list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1,`Transition`=1),
+                                                           c(`HAB`=1,`Transition support`=1),
+                                                           c(`HAB`=1,`Transition support`=1),
+                                                           c(`HAB`=1,`Transition`=1,`Transition support`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="group_order",plot=TRUE)
+compare.sub[[3]] + geom_hline(aes(yintercept=3.5), lty=3) + 
+  geom_hline(aes(yintercept=6.5), lty=3) + 
+  geom_hline(aes(yintercept=12.5), lty=3)
+```
+
+
+**Notes**: 
+
+For V1, it looks like it is *worse* for a community to only recreationally harvest, rather than have their entire livelihood focused on crab. This is because (a) in V1 a lot of well-being is still tied up in crab harvest, and (b) the benefits of having Material Wealth & Security insulated from the HAB don’t offset losses from recreational harvest – because the HAB only changes recreational fishing. What I’ve essentially set up here is a structure that is pretty similar to the status quo model, without spillover into non-crab fishing to mitigate negative HAB impacts.
+
+My next step was to see what would happen if I added a positive perturbation to non-fishing employment, with the rationale that it represented the press of a transition in community employment activity. But this doesn’t make much sense to me when building the narrative around this strategy, and the outcomes don’t really make too much sense either. For example, having a job that is not tied to crab should mean that a HAB has zero effect on material wealth & security, but here I’ve created a positive impact.
+
+Even though the Livelihoods Version 2 model allows for more connections between non-fishing employment activity and certain aspects of well-being (Intangible connections to nature, identity, etc.) because a HAB perturbation only affects recreational fishing, there are the same negative impacts as from Version 1. Adding a positive perturbation to non-fishing employment may activate the changes that I’ve made between Version 1 and Version 2, but again, the resulting positive outcomes don’t make much sense in a real-life context. The constraints on the version 2 model don't seem to make an impact on the qualitative output...
+```{r fig.height=4, fig.width=5}
+compare.sub[[2]] %>% filter(model %in% c("LDiv 2","LDiv 2 Constraints")) %>%
+  filter(variable %in% c("Cultural values & practices", "Community","Social relationships", "Intangible connections to nature","Emotional & mental health")) %>% mutate(variable=factor(variable,levels=c("Cultural values & practices", "Community","Social relationships", "Intangible connections to nature","Emotional & mental health"))) %>%
+  ggplot(aes(x=variable,y=p_sim,col=model, pch=model, group=variable)) + 
+  geom_point(size=2) + geom_path() + 
+  geom_hline(aes(yintercept=0.60),col="black") + 
+  geom_hline(aes(yintercept=0.80),col="black") + 
+  geom_vline(aes(xintercept=2.5),col="gray",lty=2) +
+  geom_vline(aes(xintercept=4.5),col="gray",lty=2) +
+  facet_wrap(~change, scales="free_x") +
+  labs(y="proportion sims",subtitle="changes to variables", x="") +
+  ylim(c(1.0,0.4)) + theme_bw() + theme(axis.text.x=element_text(angle=45, hjust=1))
+```
+
+It looks like Social relationships gets boosted a bit with the constraints, but not enough to make the qualitative response equivocal.
+
+
+
+
+After talking this over with Tessa, here is what we decided: 
+
+Some responses do make sense - if relying on recreational crab harvest *only* for subsistence, identity, etc. without a compensating mechanism like when commercially fishing, then there *will* be strong declines in those variables. However, in many cases here, there is a different potential minimum well-being, or a different potential maximum negative effect of the HAB on overall [Emotional & Mental Health, Community] for a model which has recreational as opposed to commercial fishing. For example, Emotional & Mental Health is negatively impacted in both, but the total amount of Emotional & Mental Health we are able to consider in the models are different.
+
+![img-total-wellbeing](https://github.com/mfisher5/OMF-WestCoastCrab/blob/master/omf-paper-1/doc/LivelihoodDiversification-and-TotalWellBeing.png?raw=true)
+
+
+So, how to handle this in the results / discussion?
+
+I am going to focus on comparing the two versions of livelihood diversification with each other, and emphasize that the Status Quo model is not directly comparable because of major differences in model structure that mean the ration of modeled well-being : total well-being is lower in the livelihood diversification models than in the Status Quo models. But I can still discuss certain differences between the models.
+
+
+**Revised Notes:**
+
+```{r  fig.width=7,fig.height=6}
+tmp.list <- list(cft.HABhi.sim,ldiv.HABhi.sim, ldiv2.HABhi.sim2); names(tmp.list) <- c("Status Quo","LDiv 1","LDiv 2")
+compare.sub <- compare.models.impact.df(sim.list=tmp.list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1,`Transition support`=1)),
+                                         monitor.list=list(NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="group_order",plot=TRUE)
+compare.sub[[3]] + geom_hline(aes(yintercept=3.5), lty=3) + 
+  geom_hline(aes(yintercept=6.5), lty=3) + 
+  geom_hline(aes(yintercept=12.5), lty=3)
+```
+
+
+- Between the two livelihood diversity models, there are two categories of changed outcomes: **(1)** well-being or capacity variables that are connected to livelihood activities in Version 2 show either an equivocal outcome from the HAB, or a lower magnitude negative outcome. For example, now that non-fishing employment contributes to cultural values & practices, and the process / support of the transition builds community, we see an equivocal outcome for those two variables as well as downstream variables like Community learning & cooperation. **(2)** Trust in institutions & management experiences a strong positive effect from transition support, the importance of which is particularly felt during a HAB.
+
+- Note that in both models, the HAB no longer impacts well-being closely tied to material wealth -- this makes sense, since fishing is no longer a commercial / livelihood activity. Both models also have strong negative impacts to certain variables: Cultural values & practices, Intangible Connections to Nature, Subsistence, Family. This is because Cultural values & practices / Intangible Connections to Nature are tied to recreational harvest. Without any compensating effect (e.g., the spillover into other fisheries in our Status Quo model), these two aspects of well-being are hit hard by the HAB and contribute to the negative impacts to Social relationships and Emotional & mental health. We have to be careful about comparing the magnitude of these negative impacts ("strong") to the magnitudes in the Status Quo model ("weak") however - because they are not directly comparable. There is a different potential minimum well-being, or a different potential maximum negative effect of the HAB on overall [Emotional & Mental Health, Community] for a model which has recreational as opposed to commercial fishing. For example, Emotional & Mental Health is negatively impacted in both, but the total amount of Emotional & Mental Health we are able to consider in the models are different.
+
+### HAB impact on recreational fishing is low
+
+
+```{r}
+# dia model
+m.ldiv2.hablo <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-livelihood-div-2_HABlo.dia'))
+m.ldiv2.hablo <- enforce.limitation(m.ldiv2.hablo)  
+
+################# HAB without constraints
+ldiv2.HABlo.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.ldiv2.hablo, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.ldiv2.hablo, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.ldiv2.hablo,     # the qnm
+                              perturb = c(`HAB`=1,`Transition support`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+```
+
+```{r  fig.width=7,fig.height=6}
+tmp.list <- list(cft.HABhi.sim,ldiv2.HABhi.sim2,ldiv2.HABlo.sim); names(tmp.list) <- c("Status Quo","LDiv 2","LDiv 2 HAB Lo")
+comparelo.sub <- compare.models.impact.df(sim.list=tmp.list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1,`Transition support`=1),
+                                                           c(`HAB`=1,`Transition support`=1)),
+                                         monitor.list=list(NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="group_order",plot=TRUE)
+comparelo.sub[[3]] + geom_hline(aes(yintercept=3.5), lty=3) + 
+  geom_hline(aes(yintercept=6.5), lty=3) + 
+  geom_hline(aes(yintercept=12.5), lty=3)
+```
+
+Ok, that pretty effectively gets rid of the negative impacts from the HAB. And then positive outcomes are able to spread throughout the network as the community undergoes the process of evolving livelihood activities together. 
+
+
+
+
+```{r eval=FALSE}
+################################# SAVE INTO LISTS #################################
+# dia model
+m.ldiv.habhi <- model.dia(here::here('data','dia_models','strategies','wc_crab_t2-coastal-towns_seasonal-livelihood-div-1_HABhi.dia'))
+m.ldiv.habhi <- enforce.limitation(m.ldiv.habhi)  
+
+# no edge constraints
+
+################# HAB 
+ldiv.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.ldiv.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.ldiv.habhi, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.ldiv.habhi,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+# dia model
+m.ldiv2.habhi <- model.dia(here::here('data','dia_models','strategies','wc_crab_t2-coastal-towns_seasonal-livelihood-div-2_HABhi.dia'))
+m.ldiv2.habhi <- enforce.limitation(m.ldiv2.habhi)  
+
+
+################# HAB without constraints
+ldiv2.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.ldiv2.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.ldiv2.habhi, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.ldiv2.habhi,     # the qnm
+                              perturb = c(`HAB`=1,`Transition support`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+
+ldiv_list <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim,ldiv2.HABlo.sim); names(ldiv_list) <- c("LDIV Version 1","LDIV Version 2","Version 2 HAB lo")
+
+saveRDS(ldiv_list,here('omf-paper-1','data','HAB_sim_out','townsQNM_LivelihoodDiv_x_HABhi_50kSystemSimulate.rds'))
+```
+
