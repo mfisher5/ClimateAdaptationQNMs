@@ -10,7 +10,7 @@ output:
 
 # Description 
 
-This RMarkdown simulates a high intensity **Harmful Algal Bloom (HAB)** with and without 8 climate adaptation strategies: 
+This RMarkdown simulates a Harmful Algal Bloom (HAB) with and without 8 climate adaptation strategies: 
 
 1. Status Quo (no climate adaptation)
 
@@ -31,9 +31,20 @@ This RMarkdown simulates a high intensity **Harmful Algal Bloom (HAB)** with and
 8. Invested New Livelihoods with Fishery Exit
 
 
-We assume that the HAB has the following impacts in the QNMS:
+We assume that the HAB has the following impacts in QNMs #1-6:
+
+a. Negative influence on *Early season crab fishery participation*
+
+b. Negative influence on *Fuel & labor costs* 
+
+c. Negative influence on *Opening dock price*
 
 
+We assume that the HAB has the following impacts in QNMs #7-8:
+
+a. Negative influence on *Recreational fishery participation*
+
+The `system.simulate` function in QPRESS shouldn't take more than 10-15s to run, even with 50k stable matrices required. 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=FALSE)
@@ -51,503 +62,389 @@ library(tcltk2)
 library(gridExtra)
 library(cowplot)
 library(QPress)
-library(igraph)
 
 #---- custom functions ----
 source(here('R','parse.constraints.SWotherspoon.R'))
 source(here('R','impact.table.R'))
 source(here('R','compare.models.impact.table.R'))
 source(here('R','compare.baseline.impact.table.R'))
-source(here('R','qnm_sensitivity.R'))
-source(here('R','impact.dataframe.R'))
-source(here('R','compare.models.impact.dataframe.R'))
+source(here('R','get.score.matrix.R'))
 
-get.score.matrix <- function(x){
-  x <- x %>% mutate(model2=ifelse(grepl("---",model),"m1","m0")) %>%
-    dplyr::select(variable,model2,response.num) %>% 
-    pivot_wider(names_from=model2,values_from=response.num) %>%
-    mutate(score=abs(m0-m1)) %>%
-    mutate(score=ifelse((m0<0)| (m0==0 & m1<0), score*-1,score))
-}
-
-
+#---- let's time things! ----
+end.timer <- function(s){Sys.time() - s}
 ```
 
-
+# Set up 
+variable key - this tells the `impact.table` function which variables to report results for, and in what order.
 ```{r}
-#---- variable key ---- 
-## Read in a variable key. This tells the `impact.table` function which variables to report results for, and in what order. 
-myvars.cft <- read_csv(here('omf-paper-1','data','cft_variable_key.csv'), col_names=TRUE)
-
-# add a hab variable to the key
-myvars.cft <- myvars.cft %>%
-  bind_rows(data.frame(variable="HAB",group="ecosystem"))
-
-myvars.suppdiv.cft <- read_csv(here('omf-paper-1','data','cft-test-suppdiv_variable_key.csv'), col_names=TRUE) %>%
-  bind_rows(data.frame(variable="HAB",group="ecosystem"))
-
-
-# save a subset of the variables in a new data frame -- only well-being and capacity variables
-subvars.cft <- myvars.cft %>% filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
-  arrange(2)
-
-# for graphs
-table.palette=c("#04BC09", "#ABF1AD","#BBBBBB", "#B0BED8","#587AB6","black")
+sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
 ```
 
+sub-select variables to include in figures
+```{r}
+subvars <- sqkey %>% 
+# add a hab variable to the sqkey
+  bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
+  filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
+  filter(!(variable %in% c("Physical health","Physical safety","Equity in resource access")))
+```
 
+semi-qualitative categories, and color palette
+```{r}
+score.df <- data.frame(response=c("Negative-Strong","Negative-Weak","Equivocal","Positive-Strong","Positive-Weak","None"),response.num=c(-2,-1,0,2,1,NA))
+
+table.palette.orange <- c("#04BC09", "#ABF1AD","grey85", "#dfc27d","#a6611a","black") # for plotting fx
+```
+
+# Run QPress
 
 ## Status Quo
 
-```{r eval=FALSE}
-#---- Towns QNM with HAB ---- 
+```{r}
 # dia model
-m.cft.habhi <- model.dia(here::here('data','dia_models','wc_crab_t2-coastal-towns_seasonal-winter-uncertain_HABhi.dia'))
-m.cft.habhi <- enforce.limitation(m.cft.habhi)
+m.sq <- model.dia(here::here('data','dia','StatusQuo_HABhi.dia'))
+m.sq <- enforce.limitation(m.sq)
 
 # edge constraints
-m.cft.habhi.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.sq.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
                                          "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.cft.habhi)
-cft.habhi.sampler <- community.ordering.sampler(m.cft.habhi.constrained)
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.sq)
+sq.sampler <- community.ordering.sampler(m.sq.constrained)
 
 ```
 
-```{r}
+Simulate a HAB 
+```{r sq.sim}
+s <- Sys.time()
 
-#---- Simulate a HAB ---- 
-################# HAB x status quo
-cft.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.cft.habhi, # the qnm
+sq.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sq, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=cft.habhi.sampler,
+                            sampler=sq.sampler,
                             validators=list(press.validate(
-                              m.cft.habhi,     # the qnm
+                              m.sq,     # the qnm
                               perturb = c(`HAB`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
-
-out <- list(cft.HABhi.sim,cft.cf.HABhi.sim,cft.none.HABhi.sim, cft.one.HABhi.sim)
-names(out) <- c("Uncertain Dampening","Crab Facilitates","No Effect","Certain Dampening")
-saveRDS(out,here('omf-paper-1','data','HAB_sim_out','townsQNM_StatusQuo_x_HABhi_WinterFishingImp_50kSystemSimulate.rds'))
+end.timer(s)
 ```
 
 
 ## Insurance
-```{r insur.sim, eval=FALSE}
 
-## LAST RUN 7/24/2023 to simplify interactions with insurance / crab harvest and emotional & mental health
-
-
-#----- Default Implementation ----
-# dia model
-m.insure.habhi <- model.dia(here::here('data','dia_models','strategies','wc_crab_t2-coastal-towns_seasonal_insurance-jobsat-newDefault_HABhi.dia'))
-m.insure.habhi <- enforce.limitation(m.insure.habhi)
+note - rerun 7/24/2023 to simplify interactions with insurance / crab harvest and emotional & mental health
+```{r}
+m.insure <- model.dia(here::here('data','dia','ParametricInsurance_HABhi.dia'))
+m.insure <- enforce.limitation(m.insure)
 
 # edge constraints
-m.insure.habhi.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.insure.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
                                          "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
-                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.habhi)
-insure.habhi.sampler <- community.ordering.sampler(m.insure.habhi.constrained)
+                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure)
+insure.sampler <- community.ordering.sampler(m.insure.constrained)
+```
 
-#---- Simulate a HAB ---- 
-insure.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.insure.habhi, # the qnm
+Simulate a HAB 
+```{r insur.sim}
+s <- Sys.time()
+
+insure.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.insure, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=insure.habhi.sampler,
+                            sampler=insure.sampler,
                             validators=list(press.validate(
-                              m.insure.habhi,     # the qnm
+                              m.insure,     # the qnm
                               perturb = c(`HAB`=1,
                                           `insurance`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+end.timer(s)
 ```
 
 
 ## Disaster Relief 1
 
-```{r dr1.sim, eval=FALSE}
-
-## LAST RUN 7/24/2023 to simplify interactions with insurance / crab harvest and emotional & mental health
-
-#---- Model with HAB ---- 
+```{r}
 # dia model
-m.dr1.habhi <- model.dia(here::here('data','dia_models','strategies','wc_crab_t2-coastal-towns_seasonal-disaster-1_HABhi.dia'))
-m.dr1.habhi <- enforce.limitation(m.dr1.habhi)
+m.dr1 <- model.dia(here::here('data','dia','DisasterRelief-1-DirectAssist_HABhi.dia'))
+m.dr1 <- enforce.limitation(m.dr1)
 
 # edge constraints
-m.dr1.habhi.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.dr1.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1.habhi)
-dr1.habhi.sampler <- community.ordering.sampler(m.dr1.habhi.constrained)
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1)
+dr1.sampler <- community.ordering.sampler(m.dr1.constrained)
+```
 
-##### Simulate a HAB
-dr1.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.dr1.habhi, # the qnm
+Simulate a HAB
+```{r dr1.sim}
+s <- Sys.time()
+
+dr1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr1, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=dr1.habhi.sampler,
+                            sampler=dr1.sampler,
                             validators=list(press.validate(
-                              m.dr1.habhi,     # the qnm
+                              m.dr1,     # the qnm
                               perturb = c(`HAB`=1,
                                           `disaster relief (direct)`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
-out <- list(dr1.HABhi.sim,dr1.cf.HABhi.sim,dr1.none.HABhi.sim, dr1.one.HABhi.sim)
-names(out) <- c("Uncertain Dampening","Crab Facilitates","No Effect","Certain Dampening")
-saveRDS(out,here('omf-paper-1','data','HAB_sim_out','townsQNM_DisasterRelief1_x_HABhi_WinterFishingImp_50kSystemSimulate.rds'))
+end.timer(s)
 ```
 
 
 ## Disaster Relief 2
 
-```{r dr2.sim, eval=FALSE}
-
-## LAST RUN 7/24/2023 to simplify interactions with insurance / crab harvest and emotional & mental health
-
-#---- Model with HAB ---- 
+```{r}
 # dia model
-m.dr2.habhi <- model.dia(here::here('data','dia_models','strategies','wc_crab_t2-coastal-towns_seasonal-disaster-2_HABhi.dia'))
-m.dr2.habhi <- enforce.limitation(m.dr2.habhi)
+m.dr2 <- model.dia(here::here('data','dia','DisasterRelief-2-MultiObj_HABhi.dia'))
+m.dr2 <- enforce.limitation(m.dr2)
 
 # edge constraints
-m.dr2.habhi.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.dr2.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2.habhi)
-dr2.habhi.sampler <- community.ordering.sampler(m.dr2.habhi.constrained)
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2)
+dr2.sampler <- community.ordering.sampler(m.dr2.constrained)
+```
 
-#### Simulate a HAB 
-dr2.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.dr2.habhi, # the qnm
+Simulate a HAB
+```{r dr2.sim}
+s <- Sys.time()
+
+dr2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr2, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=dr2.habhi.sampler,
+                            sampler=dr2.sampler,
                             validators=list(press.validate(
-                              m.dr2.habhi,     # the qnm
+                              m.dr2,     # the qnm
                               perturb = c(`HAB`=1,
                                           `disaster relief (direct)`=1,
                                           `disaster relief (invest)`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
+end.timer(s)
+```
 
 
-out <- list(dr2.HABhi.sim,dr2.cf.HABhi.sim,dr2.none.HABhi.sim, dr2.one.HABhi.sim)
-names(out) <- c("Uncertain Dampening","Crab Facilitates","No Effect","Certain Dampening")
-saveRDS(out,here('omf-paper-1','data','HAB_sim_out','townsQNM_DisasterRelief2_x_HABhi_WinterFishingImp_50kSystemSimulate.rds'))
+## Existing Fisheries Diversification
+
+```{r}
+# dia model
+m.fdiv1 <- model.dia(here::here('data','dia_models','strategies','ExistingFisheriesDiversify_HABhi.dia'))
+m.fdiv1 <- enforce.limitation(m.fdiv1)  
+
+# edge constraints
+m.fdiv1.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
+                                         "Crab abundance -> Spr/Sum crab fishery participation < Winter (primary) crab fishery participation -* Winter non.crab fishery participation"),m.fdiv1)
+fdiv1.sampler <- community.ordering.sampler(m.fdiv1.constrained)
+```
+
+Simulate a HAB
+```{r fdiv1.sim}
+s <- Sys.time()
+
+fdiv1.hab.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.fdiv1, # the qnm
+                            required.groups=c(0), # this model contains uncertain edges (group 4)
+                            sampler=fdiv1.sampler, # the fx to generate the matrices, created above
+                            validators=list(press.validate(
+                              m.fdiv1,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation plus strategy node
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+end.timer(s)
+```
+
+
+## New Fisheries Diversification
+
+```{r}
+# dia model
+m.fdiv2 <- model.dia(here::here('data','dia','NewFisheries_HABhi.dia'))
+m.fdiv2 <- enforce.limitation(m.fdiv2)  
+
+# edge constraints
+m.fdiv2.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
+                                         "Crab abundance -> Spr/Sum crab fishery participation < Winter (primary) crab fishery participation -* Winter non.crab fishery participation"),m.fdiv2)
+fdiv2.sampler <- community.ordering.sampler(m.fdiv2.constrained)
+
+```
+
+Simulate a HAB
+```{r fdiv2.sim}
+s <- Sys.time()
+
+fdiv2.hab.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.fdiv2, # the qnm
+                            required.groups=c(0), # this model contains uncertain edges (group 4)
+                            sampler=fdiv2.sampler, # the fx to generate the matrices, created above
+                            validators=list(press.validate(
+                              m.fdiv2,     # the qnm
+                              perturb = c(`HAB`=1,`New fishery`=1), # the perturbation plus strategy node
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+
+end.timer(s)
 ```
 
 
 ## Supplementary Livelihoods
 
-This strategy has a slightly different approach to variability in winter fishing opportunities.
+The QNM is structured so that winter crab fishing has a dampening effect on non-fishing employment, in addition to an uncertain dampening effect on winter non-crab fishing, and (2) . Non-fishing employment and winter non-crab fishing have a two-way dampening effect. The idea is to preference winter crab fishing, but to make supplementary non-fishing livelihoods, and alternative fisheries, 'equivalent.'
 
-The default implementation is structured so that winter crab fishing has (1) an uncertain dampening effect on winter non-crab fishing, and (2) a dampening effect on non-fishing employment. Non-fishing employment and winter non-crab fishing have a two-way dampening effect.
-
-### Without Stress
-```{r eval=FALSE}
-# dia model
-m.sdiv.habhi <- model.dia(here::here('data','dia_models','strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div_HABhi.dia'))
-m.sdiv.habhi <- enforce.limitation(m.sdiv.habhi)  
-
-# no edge constraints
-
-################# HAB
-sdiv.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.habhi, # the qnm
-                            required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.habhi, required.groups = c(0)),
-                            validators=list(press.validate(
-                              m.sdiv.habhi,     # the qnm
-                              perturb = c(`HAB`=1), # the perturbation
-                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
-
-```
-
-The 2nd alternative allows spillover from winter crab fishing to go into non-fishing activity and non-crab fishing, with no trade-off between those two alternatives (a community can "have it all" in terms of non-crab income sources).
-```{r eval=FALSE}
-
-# dia model
-m.sdiv.noTO.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-no-tradeoff_HABhi.dia'))
-m.sdiv.noTO.habhi <- enforce.limitation(m.sdiv.noTO.habhi)  
-
-# no edge constraints
-
-################# HAB x insurance
-sdiv.noTO.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.noTO.habhi, # the qnm
-                            required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.noTO.habhi, required.groups = c(0)),
-                            validators=list(press.validate(
-                              m.sdiv.noTO.habhi,     # the qnm
-                              perturb = c(`HAB`=1), # the perturbation
-                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
-
-```
-
-The 2nd-4th alternatives are similar to above -- what if winter crab fishing has a certain dampening, facilitating, or no effect on winter non-crab fishing? All of these have the two-way dampening between winter non-crab and non-fishing in place. 
-```{r eval=FALSE}
-#---- crab dampens ---
-# dia model
-m.sdiv.one.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-crab-dampens_HABhi.dia'))
-m.sdiv.one.habhi <- enforce.limitation(m.sdiv.one.habhi)  
-
-# no edge constraints
-
-################# HAB
-sdiv.one.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.one.habhi, # the qnm
-                            required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.one.habhi, required.groups = c(0)),
-                            validators=list(press.validate(
-                              m.sdiv.one.habhi,     # the qnm
-                              perturb = c(`HAB`=1), # the perturbation
-                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+We also assumed that supplementary livelihoods was associated with some degree of stress (per KM Moore et al. 2019), which has a direct negative influence on *Emotional & mental health* (although, an indirect positive influence, via *Material wealth & security*).
 
 
-#---- crab facilitates ---
-# dia model
-m.sdiv.cf.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-crab-facilitates_HABhi.dia'))
-m.sdiv.cf.habhi <- enforce.limitation(m.sdiv.cf.habhi)  
-
-# no edge constraints
-
-################# HAB
-sdiv.cf.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.cf.habhi, # the qnm
-                            required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.cf.habhi, required.groups = c(0)),
-                            validators=list(press.validate(
-                              m.sdiv.cf.habhi,     # the qnm
-                              perturb = c(`HAB`=1), # the perturbation
-                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
-
-
-#---- crab has no effect ---
-# dia model
-m.sdiv.none.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-crab-noEffect_HABhi.dia'))
-m.sdiv.none.habhi <- enforce.limitation(m.sdiv.none.habhi)  
-
-# no edge constraints
-
-################# HAB
-sdiv.none.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.none.habhi, # the qnm
-                            required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.none.habhi, required.groups = c(0)),
-                            validators=list(press.validate(
-                              m.sdiv.none.habhi,     # the qnm
-                              perturb = c(`HAB`=1), # the perturbation
-                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
-
-
-out <- list(sdiv.HABhi.sim,sdiv.noTO.HABhi.sim,sdiv.cf.HABhi.sim,sdiv.none.HABhi.sim, sdiv.one.HABhi.sim)
-names(out) <- c("Uncertain Dampening","Uncertain Dampening no TO","Crab Facilitates","No Effect","Certain Dampening")
-saveRDS(out,here('omf-paper-1','data','HAB_sim_out','townsQNM_SuppDiversification_x_HABhi_WinterFishingImp_50kSystemSimulate.rds'))
-```
 ```{r}
-sqlist <- readRDS(here('omf-paper-1','data','HAB_sim_out','townsQNM_SuppDiversification_x_HABhi_WinterFishingImp_50kSystemSimulate.rds'))
+# dia model
+m.sdivS <- model.dia(here::here('data','dia','SupplementaryDiversify_HABhi.dia'))
+m.sdivS <- enforce.limitation(m.sdivS)  
 
-sdiv.HABhi.sim <- sqlist[[1]]
-sdiv.noTO.HABhi.sim <- sqlist[[2]]
-sdiv.cf.HABhi.sim <- sqlist[[3]]
-sdiv.none.HABhi.sim <- sqlist[[4]]
-sdiv.one.HABhi.sim <- sqlist[[5]]
+# no edge constraints
 ```
 
-```{r fig.height=6, fig.width=6}
-sdiv_list <- list(sdiv.HABhi.sim,sdiv.noTO.HABhi.sim,  sdiv.one.HABhi.sim, sdiv.cf.HABhi.sim, sdiv.none.HABhi.sim); names(sdiv_list) <- c("Default Supp Diverse","Supp Diverse no Trade-off","Crab Dampens","Crab Facilitates","Crab has No Effect")
-compare.sdiv.sub <- compare.models.impact.df(sim.list=sdiv_list,
-                                         perturb.list=list(c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1)),
-                                         monitor.list=list(NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
-compare.sdiv.sub[[3]]
-```
-
-
-The 5th & 6th alternatives are a sidebar -- does it matter if we allow a two-way dampening relationship between winter crab and non-crab fishing? Instead of a one-way relationships where winter crab fishing dampens winter non-crab fishing. I want to evaluate this with and without the trade-off between non-crab fishing and non-fishing employment in place. 
+Simulate a HAB
 ```{r}
-#---- crab dampens, no trade-off ---
-# dia model
-m.sdiv.oneNoTO.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-crab-dampens-noTO_HABhi.dia'))
-m.sdiv.oneNoTO.habhi <- enforce.limitation(m.sdiv.oneNoTO.habhi)  
+s <- Sys.time()
 
-# no edge constraints
-
-###### HAB
-sdiv.oneNoTO.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.oneNoTO.habhi, # the qnm
+sdivS.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sdivS, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.oneNoTO.habhi, required.groups = c(0)),
+                            sampler=community.sampler(m.sdivS, required.groups = c(0)),
                             validators=list(press.validate(
-                              m.sdiv.oneNoTO.habhi,     # the qnm
+                              m.sdivS,     # the qnm
                               perturb = c(`HAB`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
-#---- 2 way crab-non.crab dampening, no trade-off ---
+end.timer(s)
+```
+
+
+## Imposed New Livelihoods
+
+```{r}
 # dia model
-m.sdiv.one2way.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-with-fishdiv2_HABhi.dia'))
-m.sdiv.one2way.habhi <- enforce.limitation(m.sdiv.one2way.habhi)  
+m.ldiv1 <- model.dia(here::here('data','dia','LivelihoodDiversify-1-Imposed_HABhi.dia'))
+m.ldiv1 <- enforce.limitation(m.ldiv1)  
 
 # no edge constraints
+```
 
-######## HAB
-sdiv.one2way.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.one2way.habhi, # the qnm
+Simulate a HAB
+```{r}
+s <- Sys.time()
+
+ldiv1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.ldiv1, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.one2way.habhi, required.groups = c(0)),
+                            sampler=community.sampler(m.ldiv1, required.groups = c(0)),
                             validators=list(press.validate(
-                              m.sdiv.one2way.habhi,     # the qnm
+                              m.ldiv1,     # the qnm
                               perturb = c(`HAB`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
-#---- 2 way crab-non.crab dampening, no trade-off ---
+end.timer(s)
+```
+
+
+
+## Invested New Livelihoods 
+
+- Version 2: 
+
+```{r}
 # dia model
-m.sdiv.one2wayNoTO.habhi <- model.dia(here::here('omf-paper-1','data','dia_model_strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-with-fishdiv2-noTO_HABhi.dia'))
-m.sdiv.one2wayNoTO.habhi <- enforce.limitation(m.sdiv.one2wayNoTO.habhi)  
+m.ldiv2 <- model.dia(here::here('data','dia','LivelihoodDiversify-2-Invested_HABhi.dia'))
+m.ldiv2 <- enforce.limitation(m.ldiv2)  
 
 # no edge constraints
+```
 
-######## HAB
-sdiv.one2wayNoTO.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.one2wayNoTO.habhi, # the qnm
+Simulate a HAB
+```{r}
+s <- Sys.time()
+
+ldiv2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.ldiv2, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.one2wayNoTO.habhi, required.groups = c(0)),
+                            sampler=community.sampler(m.ldiv2, required.groups = c(0)),
                             validators=list(press.validate(
-                              m.sdiv.one2wayNoTO.habhi,     # the qnm
-                              perturb = c(`HAB`=1), # the perturbation
+                              m.ldiv2,     # the qnm
+                              perturb = c(`HAB`=1,`Transition support`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
-```
-
-```{r  fig.height=6, fig.width=5}
-sidebar <- list(sdiv.one.HABhi.sim, sdiv.oneNoTO.HABhi.sim, sdiv.one2way.HABhi.sim, sdiv.one2wayNoTO.HABhi.sim); names(sidebar) <- c("Crab Dampens","Crab Dampens no TO","2-way Dampen","2-way Dampen, no TO")
-compare.sidebar.sub <- compare.models.impact.df(sim.list=sidebar,
-                                         perturb.list=list(c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1)),
-                                         monitor.list=list(NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
-compare.sidebar.sub[[3]]
+end.timer(s)
 ```
 
 
+## Save output
 
-```{r eval=FALSE}
-# to print
-sidebar <- list(sdiv.one.HABhi.sim, sdiv.oneNoTO.HABhi.sim, sdiv.one2way.HABhi.sim, sdiv.one2wayNoTO.HABhi.sim); names(sidebar) <- c("Crab Dampens","Crab Dampens no TO","2-way Dampen","2-way Dampen, no TO")
-compare.sidebar <- compare.models.impact.df(sim.list=sidebar,
-                                         perturb.list=list(c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1)),
-                                         monitor.list=list(NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = myvars.suppdiv.cft, variable.order="specific_order",plot=TRUE)
-png(here('omf-paper-1/data/HAB_sim_out/townsQNM_HAB-Strategies','HABhi_supplement-div_two-way-fishing-tradeoff_table.png'), width=500, height=800)
-compare.sidebar[[3]]
-dev.off()
+Into a list, so it can be called up in later scripts (like 2b).
+```{r}
+out.list <- list(sq.sim,insure.sim,dr1.sim,dr2.sim,fdiv1.sim, fdiv2.sim,sdivS.sim,ldiv1.sim,ldiv2.sim)
+saveRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
 ```
-
-### With Stress
-```{r eval=FALSE}
-# --- default ---
-# dia model
-m.sdivS.habhi <- model.dia(here::here('data','dia_models','strategies','wc_crab_t2-coastal-towns_seasonal-supplement-div-stress_HABhi.dia'))
-m.sdivS.habhi <- enforce.limitation(m.sdivS.habhi)  
-
-# no edge constraints
-
-################# HAB x insurance
-sdivS.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
-                            edges=m.sdivS.habhi, # the qnm
-                            required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdivS.habhi, required.groups = c(0)),
-                            validators=list(press.validate(
-                              m.sdivS.habhi,     # the qnm
-                              perturb = c(`HAB`=1), # the perturbation
-                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
-
-
-out <- list(sdivS.HABhi.sim, sdivS.one.HABhi.sim,sdivS.cf.HABhi.sim,sdivS.none.HABhi.sim)
-names(out) <- c("Stress, Uncertain Dampening","Stress, Certain Dampening","Stress, Crab Facilitates","Stress, No Effect")
-saveRDS(out,here('omf-paper-1','data','HAB_sim_out','townsQNM_SuppDiversificationStress_x_HABhi_WinterFishingImp_50kSystemSimulate.rds'))
-```
-
-```{r fig.height=6, fig.width=6}
-sdiv_list <- list(sdivS.HABhi.sim,sdivS.one.HABhi.sim, sdivS.cf.HABhi.sim, sdivS.none.HABhi.sim); names(sdiv_list) <- c("Default Supp Diverse","Crab Dampens","Crab Facilitates","Crab has No Effect")
-compare.sdiv.sub <- compare.models.impact.df(sim.list=sdiv_list,
-                                         perturb.list=list(c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1)),
-                                         monitor.list=list(NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
-compare.sdiv.sub[[3]]
-```
-
-
 
 
 ## Explore output
 
-Read in a variable key. 
-```{r}
-sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
+### coping / adaptive 1-6 
 
-# add a hab variable to the key
-sqkey <- sqkey %>%
-  bind_rows(data.frame(variable="HAB",group="ecosystem"))
-
-# save a subset of the variables in a new data frame -- only well-being and capacity variables
-subvars <- sqkey %>% filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
-  arrange(2)
+Using the `compare.models.impact.table` function, to produce a table of semi-qualitative outputs for each aspect of well-being / strategy.
+```{r  fig.height=6, fig.width=8}
+tmp_list <- list(sq.sim, insure.sim,
+                 dr1.sim,
+                 dr2.sim,
+                 sdivS.sim); names(tmp_list) <- c("Status Quo","Insurance","Disaster Relief 1", "Disaster Relief 2", "Supp Diverse Default")
+compare.sub <- compare.models.impact.tbl(sim.list=tmp_list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
 ```
 
+The first object in the list provides the data frame of results that are presented in the table. The second saves all of the variables' output, not just the ones included in the table. This might be helpful for digging into unexpected results
+```{r}
+head(table.results.df)
+```
 
-
-
-```{r  fig.height=6, fig.width=8}
-tmp_list <- list(cft.HABhi.sim, cft.one.HABhi.sim, insure.HABhi.sim,insure.one.HABhi.sim,
-                 dr1.HABhi.sim,dr1.one.HABhi.sim,
-                 dr2.HABhi.sim,dr2.one.HABhi.sim,
-                 sdivS.HABhi.sim,sdivS.one.HABhi.sim); names(tmp_list) <- c("Status Quo", " ---Crab Dampens SQ",
-                                                                          "Insurance Default"," ---Crab Dampens I",
-                                                                          "Disaster Relief 1 Default"," ---Crab Dampens DR1",
-                                                                          "Disaster Relief 2 Default"," ---Crab Dampens DR2",
-                                                                          "Supp Diverse Default"," ---Crab Dampens SDIV")
-compare.alt1.sub <- compare.models.impact.df(sim.list=tmp_list,
-                                         perturb.list=list(c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1,`insurance`=1),
-                                                           c(`HAB`=1,`insurance`=1),
-                                                           c(`HAB`=1,`disaster relief (direct)`=1),
-                                                           c(`HAB`=1,`disaster relief (direct)`=1),
-                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
-                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1)),
-                                         monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
-compare.alt1.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
+The third object in the list is the plot itself. We can make this look nice later, in the figure 2 script.
+```{r}
+compare.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=8.5), linewidth=1.5)
 ```
 
+### transformative 7-8
 
+```{r}
+tmp_list <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
+names(tmp_list) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
+hab.ldiv.out <- compare.models.impact.df(sim.list=tmp_list,
+                                          perturb.list=list(c(`HAB`=1),
+                                                            c(`HAB`=1,`Transition support`=1)),
+                                          monitor.list=list(NA,NA),
+                         strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                         plot=TRUE,plot.perturbed=FALSE,
+                         common.variables=FALSE,variable.key=subvars,variable.order="specific_order", main.axis="Y",
+                         table.palette = table.palette.orange)
+
+hab.ldiv.out[[3]] +
+  scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
+  theme(legend.position = "none",axis.text.x=element_text(angle=45,hjust=1))
+```
 
 

@@ -26,14 +26,12 @@ library(tcltk2)
 library(gridExtra)
 library(cowplot)
 library(QPress)
-# library(igraph)
 library(gridExtra)
 library(magrittr)
 
 #---- custom functions ----
 source(here('R','compare.models.impact.dataframe.R'))
 source(here('R','compare.baseline.impact.dataframe.R'))
-
 source(here('R','get.score.matrix.R') )
 
 ```
@@ -135,7 +133,7 @@ tmplist <- list(sq.HABhi.sim,insure.HABhi.sim,
                 fdiv1.HABhi.sim,fdiv2.HABhi.sim,
                 sdiv.HABhi.sim)
 names(tmplist) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Existing Fisheries Diversification","New Fisheries Diversification","Supplementary Diversification")
-hab.strat.outA <- compare.models.impact.df(sim.list=tmplist,
+hab.strat.outA <- compare.models.impact.tbl(sim.list=tmplist,
                                           perturb.list=list(c(`HAB`=1),
                                                             c(`HAB`=1,`insurance`=1),
                                                             c(`HAB`=1, `disaster relief (direct)`=1),
@@ -174,7 +172,7 @@ hab.strat.plotA <- hab.strat.outA[[3]]+
 ```{r}
 tmplist2 <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
 names(tmplist2) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
-hab.ldiv.out <- compare.models.impact.df(sim.list=tmplist2,
+hab.ldiv.out <- compare.models.impact.tbl(sim.list=tmplist2,
                                           perturb.list=list(c(`HAB`=1),
                                                             c(`HAB`=1,`Transition support`=1)),
                                           monitor.list=list(NA,NA),
@@ -217,7 +215,7 @@ tmplist <- list(sq.HABhi.sim,insure.HABhi.sim,
                 fdiv1.HABhi.sim,fdiv2.HABhi.sim,
                 sdiv.HABhi.sim)
 names(tmplist) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Existing Fisheries Diversification","New Fisheries Diversification","Supplementary Diversification")
-hab.strat.outA <- compare.models.baseline.df(sim.list=tmplist,
+hab.strat.outA <- compare.baseline.impact.tbl(sim.list=tmplist,
                                           perturb.list=list(c(`HAB`=1),
                                                             c(`HAB`=1,`insurance`=1),
                                                             c(`HAB`=1, `disaster relief (direct)`=1),
