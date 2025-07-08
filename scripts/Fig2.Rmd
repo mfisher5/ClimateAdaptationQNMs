@@ -30,7 +30,7 @@ library(gridExtra)
 library(magrittr)
 
 #---- custom functions ----
-source(here('R','compare.models.impact.dataframe.R'))
+source(here('R','compare.models.impact.table.R'))
 source(here('R','compare.baseline.impact.dataframe.R'))
 source(here('R','get.score.matrix.R') )
 
@@ -154,12 +154,11 @@ hab.strat.plotA <- hab.strat.outA[[3]]+
   geom_vline(aes(xintercept=10.5), linewidth=0.5) +
   geom_vline(aes(xintercept=13.5), linewidth=0.5) +
   # write over legend to change order of colors
-  scale_fill_discrete(name="Response",type=table.palette.legend, drop=FALSE, na.translate=FALSE, 
-                      limits=c("Positive-Strong","Positive-Weak","Negative-Strong","Negative-Weak","Equivocal")) + 
+  scale_fill_discrete(name="Response",type=table.palette.legend, drop=FALSE, na.translate=FALSE,  limits=c("Positive-Strong","Positive-Weak","Negative-Strong","Negative-Weak","Equivocal")) + 
   guides(fill = guide_legend(order = 1, nrow=2), shape = guide_legend(order = 0)) +
   theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0,size=8),
                      axis.text.y=element_text(size=9),
-                     legend.title=element_text(size=9),
+                     legend.title=element_text(size=9, face='bold'),
                      legend.text=element_text(size=8),
                      legend.position="bottom",
                      plot.margin=margin(unit(c(5.5, 100.5, 5.5, 5.5), "points")))
@@ -199,7 +198,7 @@ hab.ldiv.plot <- hab.ldiv.out[[3]] +
 
 ```{r}
 
-png(here('drafts','Fig2.png'),res=300,width=2200,height=2400)
+png(here('doc','drafts','Fig2.png'),res=300,width=2200,height=2400)
 plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
 dev.off()
 

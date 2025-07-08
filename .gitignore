@@ -13,7 +13,9 @@ data/sensitivity/gbmIn**
 data/sensitivity/**.csv
 
 # paper drafts
-drafts/**
+doc/drafts/**.docx
+doc/drafts/**.doc
+doc/drafts/**.pdf
 scripts/02**
 doc/pfmc_scenario_planning/**supplemental**
 doc/pfmc_scenario_planning/**attachment**

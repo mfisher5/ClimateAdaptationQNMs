@@ -259,7 +259,8 @@ right <- plot.baseline[[3]] +
   labs(subtitle="(b) with feedback\n\t\t\t\t\t\t\t\t\t\tonly") + 
   guides(fill = guide_legend(order = 1),shape = guide_legend(order = 0)) +
   theme(plot.subtitle=element_text(size=14, vjust=-40,hjust=-0.8),
-        plot.margin=margin(unit(c(25.5, 5.5, 25.5,-30), "points")))
+        plot.margin=margin(unit(c(25.5, 5.5, 25.5,-30), "points")),
+        legend.title=element_text(size=12,face='bold'))
 
 png(here('drafts','Fig4.png'), res=300,width=3900,height=1650)
 plot_grid(left,right,ncol=2, rel_widths=c(0.925,1))
@@ -277,12 +278,13 @@ right <- plot.baseline[[3]] +
   guides(fill = guide_legend(order = 1,ncol=2,title.vjust=0.9),
          shape = guide_legend(order = 0)) +
   theme(plot.subtitle=element_text(size=14, vjust=-50,hjust=-0.9),
-        plot.margin=margin(unit(c(25.5, 55.5, 5.5,-30), "points")),
+        plot.margin=margin(unit(c(25.5, 55.5, 5.5,-30), "points")),,
+        legend.title=element_text(size=10,face='bold'),
         legend.position='top') ## offset top spacing
 
 p <- plot_grid(left,right,ncol=2, rel_widths=c(1,0.96))
 
-png(here('drafts','Fig4-lines.png'), res=300,width=3700,height=1600)
+png(here('doc','drafts','Fig4-lines.png'), res=300,width=3700,height=1600)
 ggdraw(p) +
   draw_line(x=c(0.441,0.46),y=c(0.44,0.44), col="gray40", linewidth=0.25) +
   draw_line(x=c(0.441,0.46),y=c(0.305,0.305), col="gray40", linewidth=0.25) +

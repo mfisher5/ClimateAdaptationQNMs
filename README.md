@@ -9,7 +9,7 @@ Adaptation to climate change can have trade-offs and unintended outcomes that ma
 
 #### Replicating Fisher et al. (2025)
 
-1. Produce Figure 1 using the `data/dia/figures/StatusQuo_HABhi_Fig1.dia` object. You can also find dia objects for Fig S.. in the `data/dia/figures` folder. These are formatted versions of the full dia objects that are read into R in (2)
+1. Produce Figure 1 using the `data/dia/figures/StatusQuo_HABhi_Fig1.dia` object. You can also find dia objects for Fig S1-3. in the `data/dia/figures` folder. These are formatted versions of the full dia objects that are read into R in (2)
 
 2. Run `scripts/01_StatusQuo_Strat_x_HABhi` to produce the output for section 3.1. *What HAB impacts are intensified / limited across adaptation strategies?* 
 		Input: QNMs as Dia objects from `data/dia`. 
