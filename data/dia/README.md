@@ -1,4 +1,4 @@
-### Dia QNMs ###
+### Dia QNMs
 
 The .dia files are the QNMs (created using the software Dia, to be read into R). 
 

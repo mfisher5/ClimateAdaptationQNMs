@@ -10,5 +10,10 @@ data/*/*.rds
 data/sensitivity/gbm_details/**
 data/sensitivity/gbmOut**
 data/sensitivity/gbmIn**
+data/sensitivity/**.csv
+
+# paper drafts
 drafts/**
 scripts/02**
+doc/pfmc_scenario_planning/**supplemental**
+doc/pfmc_scenario_planning/**attachment**

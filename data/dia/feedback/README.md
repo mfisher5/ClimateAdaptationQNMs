@@ -1,7 +1,10 @@
-### Additional Feedback Loops: Dia QNMs ###
+### Additional Feedback Loops: Dia QNMs
 
 QNMs created using the software Dia, to be read into R. 
 
+
+
+<br>
 
 #### Version tracking [internal]
 
