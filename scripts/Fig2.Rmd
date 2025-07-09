@@ -31,7 +31,7 @@ library(magrittr)
 
 #---- custom functions ----
 source(here('R','compare.models.impact.table.R'))
-source(here('R','compare.baseline.impact.dataframe.R'))
+source(here('R','compare.baseline.impact.table.R'))
 source(here('R','get.score.matrix.R') )
 
 ```
@@ -196,7 +196,7 @@ hab.ldiv.plot <- hab.ldiv.out[[3]] +
 
 ### final plot
 
-```{r}
+```{r eval=FALSE}
 
 png(here('doc','drafts','Fig2.png'),res=300,width=2200,height=2400)
 plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
@@ -241,7 +241,7 @@ hab.strat.plotA <- hab.strat.outA[[3]]+
   theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0,size=8),
                      panel.grid.major.x=element_line(linewidth=0.5,linetype=3,color='gray30'),
                      axis.text.y=element_text(size=9),
-                     legend.title=element_text(size=9),
+                     legend.title=element_text(size=8, face='bold'),
                      legend.text=element_text(size=8),
                      legend.position="bottom",
                      plot.margin=margin(unit(c(5.5, 100.5, 5.5, 5.5), "points")))
@@ -252,7 +252,7 @@ hab.strat.plotA <- hab.strat.outA[[3]]+
 ```{r}
 tmplist2 <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
 names(tmplist2) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
-hab.ldiv.out <- compare.baseline.impact.df(sim.list=tmplist2,
+hab.ldiv.out <- compare.baseline.impact.tbl(sim.list=tmplist2,
                                           perturb.list=list(c(`HAB`=1),
                                                             c(`HAB`=1,`Transition support`=1)),
                                           monitor.list=list(NA,NA),
@@ -270,7 +270,8 @@ hab.ldiv.plot <- hab.ldiv.out[[3]] +
   geom_vline(aes(xintercept=10.5), linewidth=0.5) +
   geom_vline(aes(xintercept=13.5), linewidth=0.5) +
   scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
-  theme(legend.position = "none",axis.text.x=element_text(angle=45,hjust=1),
+  theme(legend.position = "none",
+        axis.text.x=element_text(angle=45,hjust=1),
         panel.grid.major.x=element_line(linewidth=0.5,linetype=3,color='grey30'),
         plot.margin=margin(unit(c(5.5, 100.5, 5.5, 38), "points"))) 
 ```
@@ -281,7 +282,7 @@ hab.ldiv.plot <- hab.ldiv.out[[3]] +
 
 ```{r}
 
-png(here('drafts','Fig2-change.png'),res=300,width=2200,height=2300)
+png(here('doc','drafts','Fig2-change.png'),res=300,width=2200,height=2300)
 plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
 dev.off()
 

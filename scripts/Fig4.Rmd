@@ -253,28 +253,36 @@ Plot side-by-side
 ```{r}
 left <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.23,0.23,0.23))
 
+tmp.palette<- c("#04BC09","#ABF1AD","#a6611a","#dfc27d","grey85","black" )
 right <- plot.baseline[[3]] + 
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   labs(subtitle="(b) with feedback\n\t\t\t\t\t\t\t\t\t\tonly") + 
+  # write over legend to change order of colors
+  scale_fill_discrete(name="Response",type=tmp.palette, drop=FALSE, na.translate=FALSE,
+                      limits=c("Positive-Strong","Positive-Weak","Negative-Strong","Negative-Weak","Equivocal")) +
   guides(fill = guide_legend(order = 1),shape = guide_legend(order = 0)) +
   theme(plot.subtitle=element_text(size=14, vjust=-40,hjust=-0.8),
         plot.margin=margin(unit(c(25.5, 5.5, 25.5,-30), "points")),
         legend.title=element_text(size=12,face='bold'))
 
-png(here('drafts','Fig4.png'), res=300,width=3900,height=1650)
-plot_grid(left,right,ncol=2, rel_widths=c(0.925,1))
-dev.off()
+# png(here('drafts','Fig4.png'), res=300,width=3900,height=1650)
+# plot_grid(left,right,ncol=2, rel_widths=c(0.925,1))
+# dev.off()
 ```
 
 
 Plot side-by-side with connecting lines
 ```{r eval=FALSE}
 
+tmp.palette<- c("#04BC09","#ABF1AD","grey85","#a6611a","#dfc27d","black" )
 right <- plot.baseline[[3]] + 
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   labs(subtitle="(b) with feedback\n\t\t\t\t\t\t\t\t\t\tonly") + 
+  # write over legend to change order of colors
+  scale_fill_discrete(name="Response",type=tmp.palette, drop=FALSE, na.translate=FALSE,
+                      limits=c("Positive-Strong","Positive-Weak","Equivocal","Negative-Strong","Negative-Weak")) +
   guides(fill = guide_legend(order = 1,ncol=2,title.vjust=0.9),
          shape = guide_legend(order = 0)) +
   theme(plot.subtitle=element_text(size=14, vjust=-50,hjust=-0.9),
