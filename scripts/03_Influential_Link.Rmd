@@ -1,0 +1,1117 @@
+---
+title: "Altering an Influential Link: Winter Fishing Opportunity"
+author: "M Fisher"
+date: "run 2023-07-27"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+# Description 
+
+This RMarkdown explores how differences in winter fishing opportunity across communities may affect the outcomes from response strategies to a **high intensity Harmful Algal Bloom.**
+
+Differences in winter fishing opportunity are covered as:
+
+1. Winter crab fishing has an uncertain dampening effect on winter non-crab fishing (STATUS QUO)
+
+2. Winter crab has a certain positive effect on winter crab fishing (*and* remove the restriction that crab Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security) ("WAITING FOR CRAB")
+
+3. Winter crab has a certain negative effect on winter crab fishing ("SWITCHING TARGETS")
+
+4. Winter crab has no effect on winter non-crab fishing ("NO EFFECT")
+
+We can’t know how the behavior of every fisherman in a community will fall out among these three approaches to shifting fishing effort. But we do know that where there is variability, there will be differential outcomes. So we have to understand the relative benefits of an adaptation strategy in the face of this variation, so that we can select a strategy that primarily dampens HAB impacts across community members. 
+
+
+Structural changes are implemented for the Status Quo QNM and the following strategies:
+
+1. Fisheries insurance
+
+2. Disaster Relief (Spend Plan 1)
+
+3. Disaster Relief (Spend Plan 2)
+
+4. Supplementary Livelihoods Diversification
+
+We don't look at the fisheries diversification strategies because these strategies already involve specific changes to winter fishing trade-offs. 
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE)
+
+#---- libraries ----
+library(here)
+library(tidyverse)
+library(ggplot2)
+#Load XML first--dependency not included in QPress
+#To install QPress: 
+#   library(remotes)
+#   remotes::install_github("SWotherspoon/QPress")
+library(XML)
+library(tcltk2)
+library(gridExtra)
+library(cowplot)
+library(QPress)
+library(igraph)
+
+#---- custom functions ----
+source(here('R','parse.constraints.SWotherspoon.R'))
+# source(here('R','impact.table.R'))
+source(here('R','compare.models.impact.table.R'))
+source(here('R','compare.baseline.impact.table.R'))
+source(here('R','qnm.sensitivity.R'))
+# source(here('R','impact.dataframe.R'))
+source(here('R','compare.models.impact.table.R'))
+
+get.score.matrix <- function(x){
+  x <- x %>% mutate(model2=ifelse(grepl("---",model),"m1","m0")) %>%
+    dplyr::select(variable,model2,response.num) %>% 
+    pivot_wider(names_from=model2,values_from=response.num) %>%
+    mutate(score=abs(m0-m1)) %>%
+    mutate(score=ifelse((m0<0)| (m0==0 & m1<0), score*-1,score))
+}
+
+
+
+```
+
+## Set up 
+variable key - this tells the `impact.table` function which variables to report results for, and in what order.
+```{r}
+sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
+```
+
+sub-select variables to include in figures
+```{r}
+subvars <- sqkey %>% 
+# add a hab variable to the sqkey
+  bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
+  filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
+  filter(!(variable %in% c("Physical health","Physical safety","Equity in resource access")))
+```
+
+semi-qualitative categories, and color palette
+```{r}
+score.df <- data.frame(response=c("Negative-Strong","Negative-Weak","Equivocal","Positive-Strong","Positive-Weak","None"),response.num=c(-2,-1,0,2,1,NA))
+
+table.palette.orange <- c("#04BC09", "#ABF1AD","grey85", "#dfc27d","#a6611a","black") # for plotting fx
+```
+
+## Status Quo
+
+Default
+```{r eval=FALSE}
+# dia model
+m.sq <- model.dia(here::here('data','dia','StatusQuo_HABhi.dia'))
+m.sq <- enforce.limitation(m.sq)
+
+# edge constraints
+m.sq.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.sq)
+sq.sampler <- community.ordering.sampler(m.sq.constrained)
+```
+
+
+Waiting for crab
+```{r}
+# dia model
+m.sq.wait <- model.dia(here::here('data','dia','influential_link','StatusQuo_2Wait_HABhi.dia'))
+m.sq.wait <- enforce.limitation(m.sq.wait)
+
+# edge constraints
+m.sq.wait.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.sq.wait)
+sq.wait.sampler <- community.ordering.sampler(m.sq.wait.constrained)
+```
+
+Choose one
+```{r}
+# dia model
+m.sq.one <- model.dia(here::here('data','dia','influential_link','StatusQuo_1Choose_HABhi.dia'))
+m.sq.one <- enforce.limitation(m.sq.one)
+
+# edge constraints
+m.sq.one.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.sq.one)
+sq.one.sampler <- community.ordering.sampler(m.sq.one.constrained)
+```
+
+No effect
+```{r}
+# dia model
+m.sq.no <- model.dia(here::here('data','dia','influential_link','StatusQuo_3NoEffect_HABhi.dia'))
+m.sq.no <- enforce.limitation(m.sq.no)
+
+# edge constraints
+m.sq.no.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.sq.no)
+sq.no.sampler <- community.ordering.sampler(m.sq.no.constrained)
+```
+
+
+### Simulate a HAB
+
+```{r eval=FALSE}
+################# HAB x status quo
+sq.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sq, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=sq.sampler,
+                            validators=list(press.validate(
+                              m.sq,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+################# HAB x status quo - wait for crab
+sq.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sq.wait, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=sq.wait.sampler,
+                            validators=list(press.validate(
+                              m.sq.wait,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+################# HAB x status quo - no effect
+sq.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sq.no, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=sq.no.sampler,
+                            validators=list(press.validate(
+                              m.sq.no,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+################# HAB x status quo - choose one
+sq.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sq.one, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=cft.sq.one.sampler,
+                            validators=list(press.validate(
+                              m.sq.one,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+```
+
+output into list
+```{r eval=FALSE}
+out <- list(cft.HABhi.sim,cft.cf.HABhi.sim,cft.none.HABhi.sim, cft.one.HABhi.sim)
+names(out) <- c("Status Quo","Wait for crab","No effect","Choose one")
+saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_StatusQuo_x_HABhi_50k.rds'))
+```
+
+read back in
+```{r}
+sqlist <- readRDS(here('data','HAB_sim_out','InflWinterFishing_StatusQuo_x_HABhi_50k.rds'))
+
+sq.sim <- sqlist[[1]]
+sq.wait.sim <- sqlist[[2]]
+sq.no.sim <- sqlist[[3]]
+sq.one.sim <- sqlist[[4]]
+```
+
+## Insurance
+
+### Models
+
+Default
+```{r}
+# dia model
+m.insure <- model.dia(here::here('data','dia','ParametricInsurance_HABhi.dia'))
+m.insure <- enforce.limitation(m.insure)
+
+# edge constraints
+m.insure.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure)
+insure.sampler <- community.ordering.sampler(m.insure.constrained)
+```
+
+CHOOSE ONE
+```{r}
+# dia model
+m.insure.one <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_1Choose_HABhi.dia'))
+m.insure.one <- enforce.limitation(m.insure.one)  
+
+# edge constraints
+m.insure.one.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.one)
+insure.one.sampler <- community.ordering.sampler(m.insure.one.constrained)
+```
+
+WAIT FOR CRAB
+```{r}
+# dia model
+m.insure.wait <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_2Wait_HABhi.dia'))
+m.insure.wait <- enforce.limitation(m.insure.wait)  
+
+# edge constraints
+m.insure.wait.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.wait)
+insure.wait.sampler <- community.ordering.sampler(m.insure.wait.constrained)
+```
+
+NO EFFECT
+```{r}
+# dia model
+m.insure.no <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_3NoEffect_HABhi.dia'))
+m.insure.no <- enforce.limitation(m.insure.no)  
+
+# edge constraints
+m.insure.no.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.no)
+insure.no.sampler <- community.ordering.sampler(m.insure.no.constrained)
+```
+
+### Simulate HAB
+
+```{r insur.sim, eval=FALSE}
+
+## LAST RUN 7/24/2023 to simplify interactions with insurance / crab harvest and emotional & mental health
+
+#---- Default ---- 
+insure.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.insure, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=insure.sampler,
+                            validators=list(press.validate(
+                              m.insure,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `insurance`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#----- CHOOSE ONE ----
+################# simulate HAB
+insure.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.insure.one, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=insure.one.sampler,
+                            validators=list(press.validate(
+                              m.insure.one,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `insurance`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+
+#----- Crab Facilitates ----
+################# simulate HAB
+insure.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.insure.wait, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=insure.wait.sampler,
+                            validators=list(press.validate(
+                              m.insure.wait,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `insurance`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#----- No Effect ----
+################# simulate HAB
+insure.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.insure.no, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=insure.no.sampler,
+                            validators=list(press.validate(
+                              m.insure.no,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `insurance`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+```
+
+save
+```{r}
+out <- list(insure.sim,insure.one.sim,insure.wait.sim, insure.no.sim)
+names(out) <- c("Default","Choose one","Wait for crab","No effect")
+saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_ParaInsurance_x_HABhi_50k.rds'))
+```
+
+
+### View
+
+read back in
+```{r}
+insure_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_ParaInsurance_x_HABhi_50k.rds'))
+```
+
+
+```{r fig.height=6, fig.width=6}
+names(insure_list) <- c("Default","Choose one","Wait for crab","No effect")
+compare.insure.sub <- compare.models.impact.df(sim.list=insure_list,
+                                         perturb.list=list(c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`insurance`=1)),
+                                         monitor.list=list(NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+compare.insure.sub[[3]]
+```
+
+#### Notes:
+
+*Crab Dampens: less crab = more non-crab*:
+
+- Fishing Activity: winter non-crab fishing activity strongly increases - leading to a weak increase in total non-crab harvest and fishing activity. As with the Status Quo model, the strong negative impact of the HAB on winter crab fishing leads to an overall negative response in total crab harvest / fishing activity (despite an increase in spr/sum crab fishing participation).
+
+- Material wealth and security shows a weak positive response from the combination of (1) an increase in non-crab harvest, and (2) an insurance pay-out that offsets or exceeds the loss from winter crab harvest. This is what I would expect! The weak positive response by Material Wealth & Security, along with the increase in total non-crab harvest, leads to equivocal responses in well-being and capacity variables except those tied most closely with crab fishing (cultural values & practices)
+
+
+*Crab Facilitates: less crab = less non-crab*
+
+- Fishing Activity: All fishing activity and harvest declines except spr/sum crab fishing (although this is not enough to outweigh losses in total crab harvest / activity from HAB impacts on the winter crab season). The insurance pay-out is only designed to offset losses from winter crab harvest, not the non-crab harvest. The insurance payout is essentially ineffective
+
+- There are so many strong negative responses in well-being and capacity variables because the model (1) upweights winter crab harvest, and (2) takes crab and non-crab harvest / activity as equivalent inputs for all but a handful of well-being / capacity variables (identity, cultural values & practices). It may be worth changing this equivalence, or at least keeping it in mind for a discussion. Especially since this version of the model could drastically overstate the contribution of winter non-crab fisheries to the crab fishing community. Do we want to assume that non-crab fisheries are very much secondary to crab, such that most fishermen wouldn’t be fishing at all in any given year if they couldn’t fish crab?
+
+*Crab Has No Effect*
+
+- Fishing Activity: 
+
+
+
+
+## Disaster Relief 1
+
+### Models
+
+Default
+```{r}
+#---- Model with HAB ---- 
+# dia model
+m.dr1 <- model.dia(here::here('data','dia','DisasterRelief-1-DirectAssist_HABhi.dia'))
+m.dr1 <- enforce.limitation(m.dr1)
+
+# edge constraints
+m.dr1.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1)
+dr1.sampler <- community.ordering.sampler(m.dr1.constrained)
+```
+
+CHOOSE ONE
+```{r}
+# dia model
+m.dr1.one.habhi <- model.dia(here::here('data','dia','influential_link','DisasterRelief-1-DirectAssist_1Choose_HABhi.dia'))
+m.dr1.one.habhi <- enforce.limitation(m.dr1.one.habhi)
+
+# edge constraints
+m.dr1.one.habhi.constrained <- parse.constraints(c("Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1.one.habhi)
+dr1.one.habhi.sampler <- community.ordering.sampler(m.dr1.one.habhi.constrained)
+```
+
+WAIT FOR CRAB
+```{r}
+# dia model
+m.dr1.wait <- model.dia(here::here('data','dia','influential_link','DisasterRelief-1-DirectAssist_2Wait_HABhi.dia'))
+m.dr1.wait <- enforce.limitation(m.dr1.wait)
+
+# edge constraints
+m.dr1.wait.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1.wait)
+dr1.wait.sampler <- community.ordering.sampler(m.dr1.wait.constrained)
+```
+
+NO EFFECT
+```{r}
+# dia model
+m.dr1.no <- model.dia(here::here('data','dia','influential_link','DisasterRelief-1-DirectAssist_3NoEffect_HABhi.dia'))
+m.dr1.no <- enforce.limitation(m.dr1.no)
+
+# edge constraints
+m.dr1.no.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1.no)
+dr1.no.sampler <- community.ordering.sampler(m.dr1.no.constrained)
+```
+
+
+### Simulate HAB
+
+```{r dr1.sim, eval=FALSE}
+#---- Default Model with HAB ---- 
+##### Simulate a HAB
+dr1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr1, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr1.sampler,
+                            validators=list(press.validate(
+                              m.dr1,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#---- CHOOSE ONE ----
+##### Simulate a HAB
+dr1.one.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr1.one.habhi, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr1.one.habhi.sampler,
+                            validators=list(press.validate(
+                              m.dr1.one.habhi,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#---- WAIT FOR CRAB ----
+##### Simulate a HAB
+dr1.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr1.wait, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr1.wait.sampler,
+                            validators=list(press.validate(
+                              m.dr1.wait,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#---- NO EFFECT ---- 
+##### Simulate a HAB 
+dr1.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr1.no, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr1.no.sampler,
+                            validators=list(press.validate(
+                              m.dr1.no,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+```
+
+save
+```{r}
+out <- list(dr1.sim,dr1.wait.sim,dr1.no.sim, dr1.one.HABhi.sim)
+names(out) <- c("Default","Choose one","Wait for crab","No effect")
+saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_DisasterRelief1_x_HABhi_50k.rds'))
+rm(out)
+```
+
+
+### View
+read back in
+```{r}
+dr1_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_DisasterRelief1_x_HABhi_50k.rds'))
+```
+
+
+```{r  fig.height=6, fig.width=6}
+names(dr1_list) <- c("Default","Choose one","Wait for crab","No effect")
+compare.dr1.sub <- compare.models.impact.df(sim.list=dr1_list,
+                                         perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1)),
+                                         monitor.list=list(NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+compare.dr1.sub[[3]]
+```
+
+
+
+
+## Disaster Relief 2
+
+### Models
+
+Default Model with HAB 
+```{r}
+# dia model
+m.dr2 <- model.dia(here::here('data','dia','DisasterRelief-2-MultiObj_HABhi.dia'))
+m.dr2 <- enforce.limitation(m.dr2)
+
+# edge constraints
+m.dr2.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2)
+dr2.sampler <- community.ordering.sampler(m.dr2.constrained)
+```
+
+CHOOSE ONE 
+```{r}
+# dia model
+m.dr2.one <- model.dia(here::here('data','dia','influential_link','DisasterRelief-2-MultiObj_1Choose_HABhi.dia'))
+m.dr2.one <- enforce.limitation(m.dr2.one)
+
+# edge constraints
+m.dr2.one.constrained <- parse.constraints(c("Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2.one)
+dr2.one.sampler <- community.ordering.sampler(m.dr2.one.constrained)
+```
+
+WAIT FOR CRAB
+```{r}
+# dia model
+m.dr2.wait <- model.dia(here::here('data','dia','influential_link','DisasterRelief-2-MultiObj_2Wait_HABhi.dia'))
+m.dr2.wait <- enforce.limitation(m.dr2.wait)
+
+# edge constraints
+m.dr2.wait.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2.wait)
+dr2.wait.sampler <- community.ordering.sampler(m.dr2.wait.constrained)
+```
+
+NO EFFECT 
+```{r}
+# dia model
+m.dr2.no <- model.dia(here::here('data','dia','influential_link','DisasterRelief-2-MultiObj_3NoEffect_HABhi.dia'))
+m.dr2.no <- enforce.limitation(m.dr2.no)
+
+# edge constraints
+m.dr2.no.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+                                         "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2.no)
+dr2.no.sampler <- community.ordering.sampler(m.dr2.no.constrained)
+```
+
+
+### Simulate HAB
+
+```{r dr2.sim, eval=FALSE}
+#---- default Model with HAB ---- 
+#### Simulate a HAB 
+dr2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr2, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr2.sampler,
+                            validators=list(press.validate(
+                              m.dr2,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1,
+                                          `disaster relief (invest)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#---- CHOOSE ONE ----
+##### Simulate a HAB
+dr2.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr2.one, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr2.one.sampler,
+                            validators=list(press.validate(
+                              m.dr2.one,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1,
+                                          `disaster relief (invest)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#---- WAIT FOR CRAB ----
+##### Simulate a HAB
+dr2.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr2.wait, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr2.wait.sampler,
+                            validators=list(press.validate(
+                              m.dr2.wait,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1,
+                                          `disaster relief (invest)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+#---- NO EFFECT ---- 
+##### Simulate a HAB 
+dr2.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.dr2.no, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=dr2.no.sampler,
+                            validators=list(press.validate(
+                              m.dr2.no,     # the qnm
+                              perturb = c(`HAB`=1,
+                                          `disaster relief (direct)`=1,
+                                          `disaster relief (invest)`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+```
+
+save
+```{r}
+out <- list(dr2.sim,dr2.wait.sim,dr2.no.sim, dr2.one.sim)
+names(out) <- c("Default","Choose one","Wait for crab","No effect")
+saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_DisasterRelief2_x_HABhi_50k.rds'))
+rm(out)
+```
+
+### View
+
+read back in
+```{r}
+dr2_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_DisasterRelief2_x_HABhi_50k.rds'))
+```
+
+```{r  fig.height=6, fig.width=6}
+names(dr2_list) <- c("Default","Choose one","Wait for crab","No effect")
+compare.dr2.sub <- compare.models.impact.df(sim.list=dr2_list,
+                                         perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1)),
+                                         monitor.list=list(NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+compare.dr2.sub[[3]]
+```
+
+
+## Supplementary Livelihoods
+
+This strategy has a slightly different approach to variability in winter fishing opportunities.
+
+The default implementation is structured so that winter crab fishing has (1) an uncertain dampening effect on winter non-crab fishing, and (2) a dampening effect on non-fishing employment. Non-fishing employment and winter non-crab fishing have a two-way dampening effect.
+
+### Models
+
+Default
+```{r}
+# --- default ---
+# dia model
+m.sdivS <- model.dia(here::here('data','dia','SupplementaryDiversify_HABhi.dia'))
+m.sdivS <- enforce.limitation(m.sdivS)  
+
+# no edge constraints
+```
+
+
+Choose one
+```{r}
+# dia model
+m.sdivS.one <- model.dia(here::here('data','dia','influential_link','SupplementaryDiversify_1Choose_HABhi.dia'))
+m.sdivS.one <- enforce.limitation(m.sdivS.one)  
+
+# no edge constraints
+```
+
+Wait for crab
+```{r}
+# dia model
+m.sdivS.wait <- model.dia(here::here('data','dia','influential_link','SupplementaryDiversify_2Wait_HABhi.dia'))
+m.sdivS.wait <- enforce.limitation(m.sdivS.wait)  
+
+# no edge constraints
+```
+
+crab has no effect
+```{r}
+# dia model
+m.sdivS.no <- model.dia(here::here('data','dia','influential_link','SupplementaryDiversify_3NoEffect_HABhi.dia'))
+m.sdivS.no <- enforce.limitation(m.sdivS.no)  
+
+# no edge constraints
+```
+
+
+### Simulate a HAB
+```{r sdiv.sim, eval=FALSE}
+################# HAB x default
+sdivS.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sdivS, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.sdivS, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.sdivS,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+
+#---- choose one ---
+################# HAB
+sdivS.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sdivS.one, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.sdivS.one, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.sdivS.one,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+
+#---- wait for crab ---
+################# HAB
+sdivS.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sdivS.wait, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.sdivS.wait, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.sdivS.wait,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+
+
+#---- crab has no effect ---
+################# HAB
+sdivS.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+                            edges=m.sdivS.no, # the qnm
+                            required.groups = c(0), # allow uncertain edges
+                            sampler=community.sampler(m.sdivS.no, required.groups = c(0)),
+                            validators=list(press.validate(
+                              m.sdivS.no,     # the qnm
+                              perturb = c(`HAB`=1), # the perturbation
+                              monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
+```
+
+
+save
+```{r}
+out <- list(sdivS.sim, sdivS.one.sim,sdivS.wait.sim,sdivS.no.sim)
+names(out) <- c("Default","Choose one","Wait for crab","No effect")
+saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_SupplementaryDiversify_x_HABhi_50k.rds'))
+rm(out)
+```
+
+### View
+
+read back in
+```{r}
+sdiv_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_SupplementaryDiversify_x_HABhi_50k.rds'))
+```
+
+```{r fig.height=6, fig.width=6}
+names(sdiv_list) <- c("Default","Choose one","Wait for crab","No effect")
+compare.sdiv.sub <- compare.models.impact.df(sim.list=sdiv_list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+compare.sdiv.sub[[3]]
+```
+
+
+There are no changes in variable response with the addition of the link: `Non-fishing livelihood activity --* Emotional & mental health`. 
+
+
+## Across All
+
+Are there commonalities across strategies when we change the *uncertain* dampening relationship between winter crab and non-crab fishing to...
+
+*Note that this uses the version of supplementary diversification that includes the effect of stress*
+
+### Switching targets
+
+a *certain* dampening relationship. more crab = less non-crab
+```{r  fig.height=6, fig.width=8}
+tmp_list <- list(cft.HABhi.sim, cft.one.HABhi.sim, insure.sim,insure.one.HABhi.sim,
+                 dr1.HABhi.sim,dr1.one.HABhi.sim,
+                 dr2.HABhi.sim,dr2.one.HABhi.sim,
+                 sdivS.sim,sdivS.one.HABhi.sim); names(tmp_list) <- c("Status Quo", " ---Crab Dampens SQ",
+                                                                          "Insurance Default"," ---Crab Dampens I",
+                                                                          "Disaster Relief 1 Default"," ---Crab Dampens DR1",
+                                                                          "Disaster Relief 2 Default"," ---Crab Dampens DR2",
+                                                                          "Supp Diverse Default"," ---Crab Dampens SDIV")
+compare.alt1.sub <- compare.models.impact.df(sim.list=tmp_list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+compare.alt1.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=8.5), linewidth=1.5)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+score.df <- data.frame(response=c("Negative-Strong","Negative-Weak","Equivocal","Positive-Strong","Positive-Weak","None"),response.num=c(-2,-1,0,2,1,NA))
+trial <- compare.alt1.sub[[1]] %>% left_join(score.df,by="response") %>% dplyr::select(variable,response,node_to_perturb,model,response.num) %>%
+   mutate(group=ifelse(grepl("Status Quo",model) | grepl("SQ",model), "SQ",
+                       ifelse(grepl("Insur",model) | grepl("Dampens I",model),"Insure",
+                              ifelse(grepl("Relief 1",model) | grepl("DR1",model),"DR1",
+                                     ifelse(grepl("Relief 2",model) | grepl("DR2",model),"DR2",
+                                            ifelse(grepl("Supp",model) | grepl("SDIV",model),"SDIV",NA))))))
+
+trial.nested <- trial %>% group_by(group) %>% nest()
+trial.nested$data.scored <- map(trial.nested$data,get.score.matrix)
+
+trial.unnested <- trial.nested %>% unnest(cols=c(group,data.scored)) %>% dplyr::select(-data) %>%
+  left_join(score.df,by=c("m0"="response.num")) %>%
+  rename(Default=response) %>% rename(response=score)
+
+trial.unnested <- left_join(trial.unnested, trial %>% dplyr::select(group,variable,node_to_perturb) %>% distinct())
+
+plotdat <- trial.unnested %>% mutate(response=ifelse(node_to_perturb=="y","Perturbed",response)) %>%
+  mutate(no_input=ifelse(is.na(response),"None",NA)) %>% filter(response != "Perturbed") %>%
+  mutate(group=ifelse(group=="SQ", "Status Quo",
+                      ifelse(group=="DR1","Disaster Relief 1",
+                             ifelse(group=="DR2","Disaster Relief 2",
+                                    ifelse(group=="Insure","Insurance",
+                                           ifelse(group=="SDIV","Supp Div")))))) %>%
+  filter()
+
+var_order <- subvars.cft %>% arrange(specific_order) %>% pull(variable)
+    
+    plotdat$response <- factor(plotdat$response, levels=c("2","1","0","-1","-2"))
+    plotdat$variable <- factor(plotdat$variable, levels=rev(var_order))
+    plotdat$group <- factor(plotdat$group,levels=c("Status Quo","Insurance","Disaster Relief 1","Disaster Relief 2","Supp Div"))
+```   
+Since it's a little difficult to look at variable change between model pairs, lets code that change and plot it. (0 = no change, -1 = drop one level, +1 = up one level)
+```{r}
+with(plotdat, table(group,response))
+```
+
+
+#### Notes:
+
+- Fishing Activity, Insurance & Disaster Relief: winter non-crab fishing activity strongly increases - leading to a weak increase in total non-crab harvest and fishing activity. As with the Status Quo model, the strong negative impact of the HAB on winter crab fishing leads to an overall negative response in total crab harvest / fishing activity (despite an increase in spr/sum crab fishing participation).
+
+
+- Fishing Activity, Supp Diverse:
+
+- Commonalities: If a reduction in winter crab fishing leads to an increase in winter non-crab fishing, we see less negative outcomes in the altered Status Quo model. *Even without additional adaptive strategies, winter portfolio diversification in fisheries not affected by the HAB mitigates most negative impacts from the HAB.* When the Insurance and Disaster Relief strategies are also undertaken, with direct payouts to fishermen (from an insurance company or the government), Material wealth & security and Job Satisfaction can actually be amplified after a HAB (rather than just equivocal), assuming the payouts fully cover any lost revenue from winter crab closures. Because Disaster Relief Plan 2 includes investment in shoreside infrastructure and support services, those services may also see a positive impact after a HAB. 
+
+- Differences: Even if a reduction in winter crab fishing leads to an increase in winter non-crab fishing, Supplemental Livelihood Diversification can still lead to the amplification or generation of negative impacts from the HAB. For example, when we alter the Status Quo model, Subsistence is unaffected by the HAB. But when we prioritize supplemental livelihood diversification, this takes away from winter non-crab fishing activity (and associated take for personal use), which means that the HAB has a weak negative impact on Subsistence. This, combined with the strong negative impact to Cultural Values & Practices, means that Community learning & cooperation / Social relationships experience a weak negative impact. This can either be considered (a) a failure to mitigate the negative impacts we see in the default Status Quo, or (b) the introduction of additional negative impacts compared to the altered Status Quo. 
+But compared to the number of well-being variables that are impacted are less than in the default Status Quo.
+
+- Supplemental Diversification showed the least sensitivity to the changed relationship, but the Disaster Relief strategies saw the greatest increase in dampening ability. 
+
+
+
+
+
+### Waiting for crab
+
+an amplifying relationship (more crab = more non-crab)
+```{r  fig.height=6, fig.width=7}
+tmp_list <- list(cft.HABhi.sim, cft.cf.HABhi.sim,
+                 insure.sim,insure.cf.HABhi.sim,
+                 dr1.HABhi.sim,dr1.cf.HABhi.sim,
+                 dr2.HABhi.sim,dr2.cf.HABhi.sim,
+                 sdivS.sim,sdivS.cf.HABhi.sim); names(tmp_list) <- c("Status Quo", " ---Crab Facilitates SQ",
+                                                                         "Insurance Default"," ---Crab Facilitates Insure",
+                                                                          "Disaster Relief 1 Default"," ---Crab Facilitates DR1",
+                                                                          "Disaster Relief 2 Default"," ---Crab Facilitates DR2",
+                                                                          "Supp Diverse Default"," ---Crab Facilitates SDIV")
+compare.alt2.sub <- compare.models.impact.df(sim.list=tmp_list,
+                                         perturb.list=list(c(`HAB`=1), c(`HAB`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+compare.alt2.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=8.5), linewidth=1.5)
+```
+
+```{r message=FALSE, warning=FALSE}
+trial <- compare.alt2.sub[[1]] %>% left_join(score.df,by="response") %>% dplyr::select(variable,response,node_to_perturb,model,response.num) %>%
+   mutate(group=ifelse(grepl("Status Quo",model) | grepl("SQ",model), "SQ",
+                       ifelse(grepl("Insur",model),"Insure",
+                              ifelse(grepl("Relief 1",model) | grepl("DR1",model),"DR1",
+                                     ifelse(grepl("Relief 2",model) | grepl("DR2",model),"DR2",
+                                            ifelse(grepl("Supp",model) | grepl("SDIV",model),"SDIV",NA))))))
+
+trial.nested <- trial %>% group_by(group) %>% nest()
+trial.nested$data.scored <- map(trial.nested$data,get.score.matrix)
+
+trial.unnested <- trial.nested %>% unnest(cols=c(group,data.scored)) %>% dplyr::select(-data) %>%
+  left_join(score.df,by=c("m0"="response.num")) %>%
+  rename(Default=response) %>% rename(response=score)
+
+trial.unnested <- left_join(trial.unnested, trial %>% dplyr::select(group,variable,node_to_perturb) %>% distinct())
+
+plotdat <- trial.unnested %>% mutate(response=ifelse(node_to_perturb=="y","Perturbed",response)) %>%
+  mutate(no_input=ifelse(is.na(response),"None",NA)) %>% filter(response != "Perturbed") %>%
+  mutate(group=ifelse(group=="SQ", "Status Quo",
+                      ifelse(group=="DR1","Disaster Relief 1",
+                             ifelse(group=="DR2","Disaster Relief 2",
+                                    ifelse(group=="Insure","Insurance",
+                                           ifelse(group=="SDIV","Supp Div")))))) %>%
+  filter()
+
+var_order <- subvars.cft %>% arrange(specific_order) %>% pull(variable)
+    
+    plotdat$response <- factor(plotdat$response, levels=c("2","1","0","-1","-2"))
+    plotdat$variable <- factor(plotdat$variable, levels=rev(var_order))
+    plotdat$group <- factor(plotdat$group,levels=c("Status Quo","Insurance","Disaster Relief 1","Disaster Relief 2","Supp Div"))
+```   
+
+Since it's a little difficult to look at variable change between model pairs, lets code that change and plot it. (0 = no change, -1 = drop one level, +1 = up one level)
+```{r fig.height=5, fig.width=5}
+ggplot(plotdat) + 
+      geom_point(aes(y=variable,x=group,fill=response),pch=22,size=8,color="grey60") +
+      geom_point(aes(y=variable,x=group,pch=as.factor(no_input)),size=7,color="grey60") +
+      geom_text(aes(y=variable,x=group,label=response)) +
+      labs(x="",y="") + 
+      scale_fill_manual(name="Change",values=table.palette, drop=FALSE, na.translate=FALSE) +
+      scale_shape_manual(name="",values=c(0),na.translate=FALSE) +
+      scale_x_discrete(position = "top",expand = c(0.1, 0.1)) +
+      theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=0))
+```
+
+
+```{r}
+with(plotdat, table(group,response))
+
+plotdat %>% dplyr::select(group,response,variable) %>%
+  mutate(variable=paste0("var-",variable)) %>%
+  pivot_wider(names_from=variable,values_from=response) %>%
+  pivot_longer(cols=starts_with('var'), names_to="variable",values_to="response") %>% 
+  count(group,response) %>%  mutate(freq = n / sum(n)) %>% dplyr::select(-n) %>%
+  pivot_wider(names_from=response, values_from=freq)
+```
+
+
+
+#### Notes
+
+- Fishing Activity, Insurance and Disaster Relief: All fishing activity and harvest declines except spr/sum crab fishing (although this is not enough to outweigh losses in total crab harvest / activity from HAB impacts on the winter crab season). 
+
+
+- Commonalities: Disaster Relief and Supplemental Livelihood Diversification partially mitigate HAB impacts on Material wealth & security compared to the altered baseline, but effects of the HAB are similar to *no* disaster relief/ diversification in the default Status Quo. Same goes for Identity under DR Spend Plan 1, and Family/Emotional & Mental Health under DR Spend Plan 2.
+
+- Differences: When a reduction in winter crab fishing means a reduction in participation in non-crab fisheries, the insurance pay-out does *not* mitigate HAB impacts on Material wealth & security, which can mean a decline in Job Satisfaction. Fisheries insurance is essentially ineffective. Why does insurance show a different outcome than DR Spend Plan 1? || Family and Emotional & Mental Health fare "best" with DR Spend Plan 2; depending on your perspective, DR Spend Plan 2 is the only strategy for which (a) the HAB impacts aren't amplified for those two variables compared to the default Status Quo, or (b) the HAB impacts are somewhat mitigated compared to the crab facilitates Status Quo. 
+
+- Supplemental diversification was the least sensitive to the relationship change, 
+If we look only at the number of aspects of well-being that changed response when the relationship between winter crab & non-crab fishing is changed, the insurance and supplementary diversification strategies fare "best" (i.e., experienced the least extreme change in outcomes, or the least more negative outcomes).
+
+
+
+
+
+### No Effect
+
+no relationship 
+```{r  fig.height=6, fig.width=7}
+tmp_list <- list(cft.HABhi.sim, cft.none.HABhi.sim,
+                 insure.sim,insure.none.HABhi.sim,
+                 dr1.HABhi.sim,dr1.none.HABhi.sim,
+                 dr2.HABhi.sim,dr2.none.HABhi.sim,
+                 sdivS.sim,sdivS.none.HABhi.sim); names(tmp_list) <- c("Status Quo", " ---No Effect SQ",
+                                                                           "Insurance Default"," ---No Effect Insure",
+                                                                          "Disaster Relief 1 Default"," ---No Effect DR1",
+                                                                          "Disaster Relief 2 Default"," ---No Effect DR2",
+                                                                          "Supp Diverse Default"," ---No Effect SDIV")
+compare.alt3.sub <- compare.models.impact.df(sim.list=tmp_list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+compare.alt3.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=8.5), linewidth=1.5)
+```
+
+```{r message=FALSE, warning=FALSE}
+trial <- compare.alt3.sub[[1]] %>% left_join(score.df,by="response") %>% dplyr::select(variable,response,node_to_perturb,model,response.num) %>%
+   mutate(group=ifelse(grepl("Status Quo",model) | grepl("SQ",model), "SQ",
+                       ifelse(grepl("Insur",model),"Insure",
+                              ifelse(grepl("Relief 1",model) | grepl("DR1",model),"DR1",
+                                     ifelse(grepl("Relief 2",model) | grepl("DR2",model),"DR2",
+                                            ifelse(grepl("Supp",model) | grepl("SDIV",model),"SDIV",NA))))))
+
+trial.nested <- trial %>% group_by(group) %>% nest()
+trial.nested$data.scored <- map(trial.nested$data,get.score.matrix)
+
+trial.unnested <- trial.nested %>% unnest(cols=c(group,data.scored)) %>% dplyr::select(-data) %>%
+  left_join(score.df,by=c("m0"="response.num")) %>%
+  rename(Default=response) %>% rename(response=score)
+
+trial.unnested <- left_join(trial.unnested, trial %>% dplyr::select(group,variable,node_to_perturb) %>% distinct())
+
+plotdat <- trial.unnested %>% mutate(response=ifelse(node_to_perturb=="y","Perturbed",response)) %>%
+  mutate(no_input=ifelse(is.na(response),"None",NA)) %>% filter(response != "Perturbed") %>%
+  mutate(group=ifelse(group=="SQ", "Status Quo",
+                      ifelse(group=="DR1","Disaster Relief 1",
+                             ifelse(group=="DR2","Disaster Relief 2",
+                                    ifelse(group=="Insure","Insurance",
+                                           ifelse(group=="SDIV","Supp Div")))))) %>%
+  filter()
+
+var_order <- subvars.cft %>% arrange(specific_order) %>% pull(variable)
+    
+    plotdat$response <- factor(plotdat$response, levels=c("2","1","0","-1","-2"))
+    plotdat$variable <- factor(plotdat$variable, levels=rev(var_order))
+    plotdat$group <- factor(plotdat$group,levels=c("Status Quo","Insurance","Disaster Relief 1","Disaster Relief 2","Supp Div"))
+```   
+Since it's a little difficult to look at variable change between model pairs, lets code that change and plot it. (0 = no change, -1 = drop one level, +1 = up one level)
+```{r}
+with(plotdat, table(group,response))
+
+plotdat %>% dplyr::select(group,response,variable) %>%
+  mutate(variable=paste0("var-",variable)) %>%
+  pivot_wider(names_from=variable,values_from=response) %>%
+  pivot_longer(cols=starts_with('var'), names_to="variable",values_to="response") %>% 
+  count(group,response) %>%  mutate(freq = n / sum(n)) %>% dplyr::select(-n) %>%
+  pivot_wider(names_from=response, values_from=freq)
+```
+
+**Notes**
+
+- Fishing Activity, Insurance and Disaster Relief: A decline in winter crab fishing shifts effort to the spring/summer crab fishing season, which means that non-crab fishing also declines in this part of the year. Since there is no change in winter non-crab fishing activity the total non-crab harvest goes down from the potential non-crab harvest without a HAB. The model assumes that high crab fishing effort in the spring/summer can’t totally make up for lost opportunity in the winter, although time on the water is somewhat offset, so the total crab harvest declines.
+
+- Commonalities: Disaster  Relief and Supplemental Diversification are able to fully mitigate the effects of the HAB on Material Wealth & Security in the default and with no effect relationships, but fisheries insurance does not. This is because we've assumed that when effort spills over into the spring / summer crab fishery, the loss of fishing opportunity in other fisheries is as lucrative, or more lucrative, than the spring / summer crab fishery. If this isn't the case, the insurance would also be able to fully mitigate the effects of the HAB on Material Wealth & Security. || Negative impacts to identity, family, and emotional & mental health are (a) mitigated compared to the "no effect" Status Quo / (b) equivalent to the no-strategy "default" Status Quo, for the two Disaster Relief strategies. With additional investments in shoreside infrastructure & trust in institutions, DR Spent Plan 2 shows the same impact on negative outcomes for shoreside infrastructure & support services, Community learning & Cooperation 
+
+- Differences: A "no effect" relationship doesn't impact the ability of the Supplemental Diversification strategy to fully mitigate HAB impacts to Job satisfaction (which is closely linked to Material Wealth & Security, but is not fully mitigated by the other strategies under the "no effect" relationship). Supplemental Diversification also shows *better mitigation* of HAB impacts to Emotional & Mental Health, Family; but an *amplification* of impacts to Identity. 
+
+- Supplementary Diversification is the least sensitive to this change in relationship -- shows the least change in outcomes when moving from the default relationships to the No Effect relationship. Insurance  is the most sensitive.
+
+
+## Major take-aways
+
+
+While implementing any of these strategies, but particularly fisheries insurance and direct relief-only disaster funding, it may still be important to maintain / improve fishing diversification during the winter months. Reason: when not fishing crab means not fishing anything else, insurance was essentially ineffective and mitigated zero impacts. But when the winter non-crab fishing opportunities are strong, the HAB could weakly positively increase those two aspects of well-being! || While DR Spend Plan 1 did lessen the negative impacts to Material Wealth & Security, (a) there was still a weak negative impact, so that "crab facilitates" fishermen will experience reductions in material wealth similar to "more crab=maybe less crab" fishermen who receive no support; and (b) the slight mitigation to material wealth & security from insurance pay-outs may not have the same downstream mitigating effects on Job Satisfaction and Emotional & Mental Health that we saw the strategy have in the "more crab=maybe less crab" model
+
+There are many interacting, non-material aspects of well-being that are contingent on fishing activity, not just harvest, and the ability to access alternative fisheries affects whether and how the different strategies mitigate HAB impacts. For example, when crab fishing facilitates other fishing activity, DR Spent Plan 2 does *not* mitigate HAB impacts on Material wealth & security, which can mean a decline in Job Satisfaction. But when the winter non-crab fishing opportunities are strong, 
+
+Monitoring implications – when looking at the effect of harmful algal blooms and response strategies, it is important to differentiate between individual fishing opportunity and behavior. The well-being impacts of a HAB, and the positive impact of a strategy like insurance, could be differentially distributed across individuals *even if all fishermen have multi-fishery portfolios,* depending on the extent of accessibility and profitability of alternative winter fisheries; and individual decision-making.
+
+Action Items – 
+- how to maintain sustainable access to alternative winter fisheries in a way that allows flexibility and short-term effort change in response to seasonal climate impacts? flexible in-season management has been highlighted as a limitation to climate adaptation by Drakapoulos & Poe. **Flexibility can be important even when other adaptive strategies like insurance are implemented - the listed strategies are not the final fix / their use doesn't mean that changes to fishery management and access don't need to occur.**
+- how to build up markets so that there is flexible demand and processing capacity for winter catch, and so that it is profitable to increase effort in non-crab alternatives?
+
+
+
+
+
+
+
+
