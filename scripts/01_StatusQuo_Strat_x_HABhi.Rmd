@@ -387,7 +387,7 @@ end.timer(s)
 
 ## Save output
 
-Into a list, so it can be called up in later scripts (like 2b).
+Into a list, so it can be called up in later scripts (like 2).
 ```{r}
 out.list <- list(sq.sim,insure.sim,dr1.sim,dr2.sim,fdiv1.sim, fdiv2.sim,sdivS.sim,ldiv1.sim,ldiv2.sim)
 saveRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))

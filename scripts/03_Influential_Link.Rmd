@@ -235,7 +235,7 @@ insure.sampler <- community.ordering.sampler(m.insure.constrained)
 
 CHOOSE ONE
 ```{r}
-# dia model
+# # dia model
 m.insure.one <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_1Choose_HABhi.dia'))
 m.insure.one <- enforce.limitation(m.insure.one)  
 
@@ -336,7 +336,7 @@ save
 ```{r}
 out <- list(insure.sim,insure.one.sim,insure.wait.sim, insure.no.sim)
 names(out) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_ParaInsurance_x_HABhi_50k.rds'))
+saveRDS(out,here('data','HAB_sim_out','Insurance_x_HABhi_50k_rerun.rds'))
 ```
 
 
@@ -344,20 +344,21 @@ saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_ParaInsurance_x_HABhi_5
 
 read back in
 ```{r}
-insure_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_ParaInsurance_x_HABhi_50k.rds'))
+# insure_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_ParaInsurance_x_HABhi_50k.rds'))
+insure_list <- out
 ```
 
 
 ```{r fig.height=6, fig.width=6}
 names(insure_list) <- c("Default","Choose one","Wait for crab","No effect")
-compare.insure.sub <- compare.models.impact.df(sim.list=insure_list,
+compare.insure.sub <- compare.models.impact.tbl(sim.list=insure_list,
                                          perturb.list=list(c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`insurance`=1)),
                                          monitor.list=list(NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
 compare.insure.sub[[3]]
 ```
 
@@ -498,10 +499,9 @@ dr1.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 
 save
 ```{r}
-out <- list(dr1.sim,dr1.wait.sim,dr1.no.sim, dr1.one.HABhi.sim)
+out <- list(dr1.sim, dr1.one.HABhi.sim,dr1.wait.sim,dr1.no.sim)
 names(out) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_DisasterRelief1_x_HABhi_50k.rds'))
-rm(out)
+saveRDS(out,here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k_rerun.rds'))
 ```
 
 
@@ -509,19 +509,20 @@ rm(out)
 read back in
 ```{r}
 dr1_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_DisasterRelief1_x_HABhi_50k.rds'))
+dr1_list <- out
 ```
 
 
 ```{r  fig.height=6, fig.width=6}
 names(dr1_list) <- c("Default","Choose one","Wait for crab","No effect")
-compare.dr1.sub <- compare.models.impact.df(sim.list=dr1_list,
+compare.dr1.sub <- compare.models.impact.tbl(sim.list=dr1_list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1)),
                                          monitor.list=list(NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
 compare.dr1.sub[[3]]
 ```
 
@@ -646,7 +647,7 @@ dr2.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 
 save
 ```{r}
-out <- list(dr2.sim,dr2.wait.sim,dr2.no.sim, dr2.one.sim)
+out <- list(dr2.sim,dr2.one.sim, dr2.wait.sim,dr2.no.sim)
 names(out) <- c("Default","Choose one","Wait for crab","No effect")
 saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_DisasterRelief2_x_HABhi_50k.rds'))
 rm(out)
@@ -813,10 +814,10 @@ Are there commonalities across strategies when we change the *uncertain* dampeni
 
 a *certain* dampening relationship. more crab = less non-crab
 ```{r  fig.height=6, fig.width=8}
-tmp_list <- list(cft.HABhi.sim, cft.one.HABhi.sim, insure.sim,insure.one.HABhi.sim,
-                 dr1.HABhi.sim,dr1.one.HABhi.sim,
-                 dr2.HABhi.sim,dr2.one.HABhi.sim,
-                 sdivS.sim,sdivS.one.HABhi.sim); names(tmp_list) <- c("Status Quo", " ---Crab Dampens SQ",
+tmp_list <- list(sq.sim, sq.one.sim, insure.sim,insure.one.sim,
+                 dr1.HABhi.sim,dr1.one.sim,
+                 dr2.HABhi.sim,dr2.one.sim,
+                 sdivS.sim,sdivS.one.sim); names(tmp_list) <- c("Status Quo", " ---Crab Dampens SQ",
                                                                           "Insurance Default"," ---Crab Dampens I",
                                                                           "Disaster Relief 1 Default"," ---Crab Dampens DR1",
                                                                           "Disaster Relief 2 Default"," ---Crab Dampens DR2",
@@ -903,11 +904,11 @@ But compared to the number of well-being variables that are impacted are less th
 
 an amplifying relationship (more crab = more non-crab)
 ```{r  fig.height=6, fig.width=7}
-tmp_list <- list(cft.HABhi.sim, cft.cf.HABhi.sim,
-                 insure.sim,insure.cf.HABhi.sim,
-                 dr1.HABhi.sim,dr1.cf.HABhi.sim,
-                 dr2.HABhi.sim,dr2.cf.HABhi.sim,
-                 sdivS.sim,sdivS.cf.HABhi.sim); names(tmp_list) <- c("Status Quo", " ---Crab Facilitates SQ",
+tmp_list <- list(sq.sim, sq.wait.sim,
+                 insure.sim,insure.wait.sim,
+                 dr1.HABhi.sim,dr1.wait.sim,
+                 dr2.HABhi.sim,dr2.wait.sim,
+                 sdivS.sim,sdivS.wait.sim); names(tmp_list) <- c("Status Quo", " ---Crab Facilitates SQ",
                                                                          "Insurance Default"," ---Crab Facilitates Insure",
                                                                           "Disaster Relief 1 Default"," ---Crab Facilitates DR1",
                                                                           "Disaster Relief 2 Default"," ---Crab Facilitates DR2",
@@ -1011,11 +1012,11 @@ If we look only at the number of aspects of well-being that changed response whe
 
 no relationship 
 ```{r  fig.height=6, fig.width=7}
-tmp_list <- list(cft.HABhi.sim, cft.none.HABhi.sim,
-                 insure.sim,insure.none.HABhi.sim,
-                 dr1.HABhi.sim,dr1.none.HABhi.sim,
-                 dr2.HABhi.sim,dr2.none.HABhi.sim,
-                 sdivS.sim,sdivS.none.HABhi.sim); names(tmp_list) <- c("Status Quo", " ---No Effect SQ",
+tmp_list <- list(sq.sim, sq.no.sim,
+                 insure.sim,insure.no.sim,
+                 dr1.HABhi.sim,dr1.no.sim,
+                 dr2.HABhi.sim,dr2.no.sim,
+                 sdivS.sim,sdivS.no.sim); names(tmp_list) <- c("Status Quo", " ---No Effect SQ",
                                                                            "Insurance Default"," ---No Effect Insure",
                                                                           "Disaster Relief 1 Default"," ---No Effect DR1",
                                                                           "Disaster Relief 2 Default"," ---No Effect DR2",
