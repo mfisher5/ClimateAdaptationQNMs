@@ -137,7 +137,7 @@ plot3a <- compare.models.impact.tbl(list3a,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = filter(sqkey, variable %in% fig3_vars), variable.order="specific_order_phd",
+                                    variable.key = fig3_vars, variable.order="specific_order",
                                    plot=TRUE,main.axis="Y",table.palette = table.palette.orange, plot.perturbed=FALSE)
 plot3a[[3]] + theme(legend.position="top") + guides(
   fill = guide_legend(order = 1,ncol=2,title.vjust=0.9, vjust=-5),
@@ -158,7 +158,7 @@ plot3b <- compare.models.impact.tbl(list3b,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = filter(sqkey, variable %in% fig3_vars), variable.order="specific_order",
+                                    variable.key = fig3_vars, variable.order="specific_order",
                                    plot=TRUE,main.axis="Y",table.palette = table.palette.orange, plot.perturbed=FALSE)
 plot3b[[3]]
 ```
@@ -176,7 +176,7 @@ plot3c <- compare.models.impact.tbl(list3c,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = filter(sqkey, variable %in% fig3_vars), variable.order="specific_order_phd",
+                                    variable.key = fig3_vars, variable.order="specific_order",
                                    plot=TRUE,main.axis="Y",table.palette = table.palette.orange, plot.perturbed=FALSE)
 
 plot3c[[3]]
@@ -211,8 +211,8 @@ p3 <- plot3c[[3]] + scale_x_discrete(position = "bottom",expand = c(0.05, 0.05))
 ```
 ```{r}
 
-png(here('doc','drafts','supplement','Fig3-absolute.png'),res=200,height=1820,width=1400)
-plot_grid(plotlist=list(p1,p2,p3),nrow=3,rel_heights=c(1,0.43,0.9),rel_widths=c(1,0.05),
+png(here('doc','drafts','supplement','FigS8-inflink.png'),res=200,height=1830,width=1400)
+plot_grid(plotlist=list(p1,p2,p3),nrow=3,rel_heights=c(1.08,0.425,0.9),rel_widths=c(1,0.05),
           labels=c("(a) Waiting for crab","(b) No Effect","(c) Switching targets",""),label_x=c(-0.1,-0.06,-0.115),label_y=c(0.42,1,1.05))
 dev.off()
 
