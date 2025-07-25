@@ -40,7 +40,12 @@ source(here('R','get.score.matrix.R') )
 
 ## Data
 
-Simulations required:
+Simulations can be read in from **script 01. SQ / Strat x HAB**:
+```{r echo=TRUE}
+tmplist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+```
+
+**Or** Simulations can be read in from **script 03. Influential Link**:
 ```{r echo=TRUE}
 # ---- status quo ----
 sq.list <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
@@ -88,7 +93,6 @@ ldiv.HABhi.sim <- ldiv.list[[1]]
 ldiv2.HABhi.sim <- ldiv.list[[2]]
 ```
 
-
 ```{r}
 # optional clean up
 rm(sdiv.list,dr2.list,dr1.list,fdiv1.list, fdiv2.list,insure.list,sq.list, ldiv.list)
@@ -99,13 +103,13 @@ rm(sdiv.list,dr2.list,dr1.list,fdiv1.list, fdiv2.list,insure.list,sq.list, ldiv.
 
 
 Read in a variable key. This tells the `impact.table` function which variables to report results for, and in what order. There is a separate key for the supplementary diversification adaptation. 
-```{r}
+```{r echo=TRUE}
 sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
 ```
 
 
 semi-qualitative categories, and color palette
-```{r}
+```{r echo=TRUE}
 score.df <- data.frame(response=c("Negative-Strong","Negative-Weak","Equivocal","Positive-Strong","Positive-Weak","None"),response.num=c(-2,-1,0,2,1,NA))
 
 table.palette.orange <- c("#04BC09", "#ABF1AD","grey85", "#dfc27d","#a6611a","black") # for plotting fx
@@ -114,7 +118,7 @@ table.palette.legend <- c("#04BC09", "#ABF1AD","#a6611a","#dfc27d","grey85","bla
 
 
 Sub-select variables to include in figures
-```{r}
+```{r echo=TRUE}
 fig1_vars <- sqkey %>% 
 # add a hab variable to the sqkey
   bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
@@ -148,7 +152,7 @@ hab.strat.outA <- compare.models.impact.tbl(sim.list=tmplist,
                          table.palette = table.palette.orange)
 ```
 
-add extra formatting
+nicely formatted
 ```{r}
 hab.strat.plotA <- hab.strat.outA[[3]]+
   geom_vline(aes(xintercept=10.5), linewidth=0.5) +
@@ -162,6 +166,7 @@ hab.strat.plotA <- hab.strat.outA[[3]]+
                      legend.text=element_text(size=8),
                      legend.position="bottom",
                      plot.margin=margin(unit(c(5.5, 100.5, 5.5, 5.5), "points")))
+hab.strat.plotA
 ```
 
 
@@ -182,7 +187,7 @@ hab.ldiv.out <- compare.models.impact.tbl(sim.list=tmplist2,
 
 ```
 
-add extra formatting
+nicely formatting
 ```{r}
 hab.ldiv.plot <- hab.ldiv.out[[3]] +
   geom_vline(aes(xintercept=10.5), linewidth=0.5) +
@@ -190,13 +195,14 @@ hab.ldiv.plot <- hab.ldiv.out[[3]] +
   scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
   theme(legend.position = "none",axis.text.x=element_text(angle=45,hjust=1),
         plot.margin=margin(unit(c(5.5, 100.5, 5.5, 38), "points"))) 
+hab.ldiv.plot
 ```
 
 
 
 ### final plot
 
-```{r eval=FALSE}
+```{r  echo=TRUE, eval=FALSE}
 
 png(here('doc','drafts','Fig2.png'),res=300,width=2200,height=2400)
 plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
