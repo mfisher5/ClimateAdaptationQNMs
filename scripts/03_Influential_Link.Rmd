@@ -61,9 +61,7 @@ library(igraph)
 #---- custom functions ----
 source(here('R','parse.constraints.SWotherspoon.R'))
 # source(here('R','impact.table.R'))
-source(here('R','compare.models.impact.table.R'))
 source(here('R','compare.baseline.impact.table.R'))
-source(here('R','qnm.sensitivity.R'))
 # source(here('R','impact.dataframe.R'))
 source(here('R','compare.models.impact.table.R'))
 
@@ -344,8 +342,8 @@ saveRDS(out,here('data','HAB_sim_out','Insurance_x_HABhi_50k_rerun.rds'))
 
 read back in
 ```{r}
-# insure_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_ParaInsurance_x_HABhi_50k.rds'))
-insure_list <- out
+insure_list <- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
+insure_list <- list(insure_list[[1]], insure_list[[4]], insure_list[[2]], insure_list[[3]])
 ```
 
 
@@ -358,7 +356,7 @@ compare.insure.sub <- compare.models.impact.tbl(sim.list=insure_list,
                                                            c(`HAB`=1,`insurance`=1)),
                                          monitor.list=list(NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
 compare.insure.sub[[3]]
 ```
 
@@ -499,22 +497,21 @@ dr1.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 
 save
 ```{r}
-out <- list(dr1.sim, dr1.one.HABhi.sim,dr1.wait.sim,dr1.no.sim)
-names(out) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(out,here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k_rerun.rds'))
+dr1_list <- list(dr1.sim, dr1.one.HABhi.sim,dr1.wait.sim,dr1.no.sim)
+names(dr1_list) <- c("Default","Choose one","Wait for crab","No effect")
+saveRDS(dr1_list,here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_50k_run',Sys.Date(), '.rds')))
+# saveRDS(dr1_list,here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds')) # will overwrite
 ```
 
 
 ### View
 read back in
 ```{r}
-dr1_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_DisasterRelief1_x_HABhi_50k.rds'))
-dr1_list <- out
+dr1_list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds'))
 ```
 
 
 ```{r  fig.height=6, fig.width=6}
-names(dr1_list) <- c("Default","Choose one","Wait for crab","No effect")
 compare.dr1.sub <- compare.models.impact.tbl(sim.list=dr1_list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),
@@ -522,7 +519,7 @@ compare.dr1.sub <- compare.models.impact.tbl(sim.list=dr1_list,
                                                            c(`HAB`=1,`disaster relief (direct)`=1)),
                                          monitor.list=list(NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
 compare.dr1.sub[[3]]
 ```
 
@@ -647,29 +644,28 @@ dr2.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 
 save
 ```{r}
-out <- list(dr2.sim,dr2.one.sim, dr2.wait.sim,dr2.no.sim)
-names(out) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_DisasterRelief2_x_HABhi_50k.rds'))
-rm(out)
+dr2_list <- list(dr2.sim,dr2.one.sim, dr2.wait.sim,dr2.no.sim)
+names(dr2_list) <- c("Default","Choose one","Wait for crab","No effect")
+saveRDS(dr2_list,here('data','HAB_sim_out',paste0('DisasterRelief2_x_HABhi_50k_',format(Sys.Date(),'%d%b%Y'),'.rds')))
 ```
 
 ### View
 
 read back in
 ```{r}
-dr2_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_DisasterRelief2_x_HABhi_50k.rds'))
+dr2_list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds'))
 ```
 
 ```{r  fig.height=6, fig.width=6}
 names(dr2_list) <- c("Default","Choose one","Wait for crab","No effect")
-compare.dr2.sub <- compare.models.impact.df(sim.list=dr2_list,
+compare.dr2.sub <- compare.models.impact.tbl(sim.list=dr2_list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1)),
                                          monitor.list=list(NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
 compare.dr2.sub[[3]]
 ```
 
@@ -773,22 +769,21 @@ sdivS.no.sim <- system.simulate(n.sims=50000, # number of randomly generated mat
 
 save
 ```{r}
-out <- list(sdivS.sim, sdivS.one.sim,sdivS.wait.sim,sdivS.no.sim)
-names(out) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_SupplementaryDiversify_x_HABhi_50k.rds'))
-rm(out)
+sdiv_list <- list(sdivS.sim, sdivS.one.sim,sdivS.wait.sim,sdivS.no.sim)
+names(sdiv_list) <- c("Default","Choose one","Wait for crab","No effect")
+saveRDS(sdiv_list,here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_50k_',format(Sys.Date(),'%d%b%Y'),'.rds')))
 ```
 
 ### View
 
 read back in
 ```{r}
-sdiv_list <- readRDS(here('data','HAB_sim_out','InflWinterFishing_SupplementaryDiversify_x_HABhi_50k.rds'))
+sdiv_list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
 ```
 
 ```{r fig.height=6, fig.width=6}
 names(sdiv_list) <- c("Default","Choose one","Wait for crab","No effect")
-compare.sdiv.sub <- compare.models.impact.df(sim.list=sdiv_list,
+compare.sdiv.sub <- compare.models.impact.tbl(sim.list=sdiv_list,
                                          perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1),
                                                            c(`HAB`=1),
@@ -796,12 +791,56 @@ compare.sdiv.sub <- compare.models.impact.df(sim.list=sdiv_list,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
 compare.sdiv.sub[[3]]
 ```
 
 
-There are no changes in variable response with the addition of the link: `Non-fishing livelihood activity --* Emotional & mental health`. 
+```{r}
+sdiv_list2 <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
+names(sdiv_list2)
+sdiv_list3 <- list(sdiv_list2[[7]],
+                   sdiv_list2[[5]],
+                   sdiv_list2[[3]],
+                   sdiv_list2[[4]])
+names(sdiv_list3) <- c("Default","Choose one","Wait for crab","No effect")
+```
+
+
+```{r fig.height=6, fig.width=6}
+compare.sdiv2.sub <- compare.models.impact.tbl(sim.list=sdiv_list3,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
+compare.sdiv2.sub[[3]]
+```
+
+```{r}
+sdiv_list4 <- list(sdiv_list2[[1]],
+                   sdiv_list2[[2]],
+                   sdiv_list2[[3]],
+                   sdiv_list2[[4]])
+names(sdiv_list4) <- c("Default","Choose one","Wait for crab","No effect")
+```
+
+
+```{r fig.height=6, fig.width=6}
+compare.sdiv3.sub <- compare.models.impact.tbl(sim.list=sdiv_list4,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
+compare.sdiv3.sub[[3]]
+```
 
 
 ## Across All
@@ -817,12 +856,12 @@ a *certain* dampening relationship. more crab = less non-crab
 tmp_list <- list(sq.sim, sq.one.sim, insure.sim,insure.one.sim,
                  dr1.HABhi.sim,dr1.one.sim,
                  dr2.HABhi.sim,dr2.one.sim,
-                 sdivS.sim,sdivS.one.sim); names(tmp_list) <- c("Status Quo", " ---Crab Dampens SQ",
-                                                                          "Insurance Default"," ---Crab Dampens I",
-                                                                          "Disaster Relief 1 Default"," ---Crab Dampens DR1",
-                                                                          "Disaster Relief 2 Default"," ---Crab Dampens DR2",
-                                                                          "Supp Diverse Default"," ---Crab Dampens SDIV")
-compare.alt1.sub <- compare.models.impact.df(sim.list=tmp_list,
+                 sdivS.sim,sdivS.one.sim); names(tmp_list) <- c("Status Quo", " ---Choose one SQ",
+                                                                          "Insurance Default"," ---Choose one I",
+                                                                          "Disaster Relief 1 Default"," ---Choose one DR1",
+                                                                          "Disaster Relief 2 Default"," ---Choose one DR2",
+                                                                          "Supp Diverse Default"," ---Choose one SDIV")
+compare.alt1.sub <- compare.models.impact.tbl(sim.list=tmp_list,
                                          perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
@@ -835,7 +874,7 @@ compare.alt1.sub <- compare.models.impact.df(sim.list=tmp_list,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
 compare.alt1.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
@@ -876,6 +915,8 @@ var_order <- subvars.cft %>% arrange(specific_order) %>% pull(variable)
     plotdat$variable <- factor(plotdat$variable, levels=rev(var_order))
     plotdat$group <- factor(plotdat$group,levels=c("Status Quo","Insurance","Disaster Relief 1","Disaster Relief 2","Supp Div"))
 ```   
+
+
 Since it's a little difficult to look at variable change between model pairs, lets code that change and plot it. (0 = no change, -1 = drop one level, +1 = up one level)
 ```{r}
 with(plotdat, table(group,response))
@@ -908,11 +949,11 @@ tmp_list <- list(sq.sim, sq.wait.sim,
                  insure.sim,insure.wait.sim,
                  dr1.HABhi.sim,dr1.wait.sim,
                  dr2.HABhi.sim,dr2.wait.sim,
-                 sdivS.sim,sdivS.wait.sim); names(tmp_list) <- c("Status Quo", " ---Crab Facilitates SQ",
-                                                                         "Insurance Default"," ---Crab Facilitates Insure",
-                                                                          "Disaster Relief 1 Default"," ---Crab Facilitates DR1",
-                                                                          "Disaster Relief 2 Default"," ---Crab Facilitates DR2",
-                                                                          "Supp Diverse Default"," ---Crab Facilitates SDIV")
+                 sdivS.sim,sdivS.wait.sim); names(tmp_list) <- c("Status Quo", " ---Wait for Crab SQ",
+                                                                         "Insurance Default"," ---Wait for Crab Insure",
+                                                                          "Disaster Relief 1 Default"," ---Wait for Crab DR1",
+                                                                          "Disaster Relief 2 Default"," ---Wait for Crab DR2",
+                                                                          "Supp Diverse Default"," ---Wait for Crab SDIV")
 compare.alt2.sub <- compare.models.impact.df(sim.list=tmp_list,
                                          perturb.list=list(c(`HAB`=1), c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),

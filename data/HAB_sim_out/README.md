@@ -28,6 +28,6 @@ Running scripts 01-03 in the `scripts` folder should result in the following fil
 - townsQNM_DisasterRelief2_x_HABhi_WinterFishingImp_50kSystemSimulate
 - townsQNM_FishDiversification1_x_HABhi_50kSystemSimulate
 - FisheryDiversification_x_HABhi_50kSystemSimulate
-- townsQNM_SuppDiversification_x_HABhi_WinterFishingImpStress_50kSystemSimulate
+- townsQNM_SuppDiversification_x_HABhi_WinterFishingImpStress_50kSystemSimulate xxx
 - townsQNM_LivelihoodDiv_x_HABhi_50kSystemSimulate
 - townsQNM_StatusQuo_x_HABhi_WinterFishingImp_50kSystemSimulate.rds
