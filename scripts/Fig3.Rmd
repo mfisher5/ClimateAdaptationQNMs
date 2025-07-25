@@ -117,7 +117,6 @@ Sub-select variables to include in figures
 ```{r}
 fig3_vars <- sqkey %>% 
 # add a hab variable to the sqkey
-  bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
   filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
   filter(!(variable %in% c("Physical health","Physical safety","Entry of next generation","Equity in resource access")))
 ```

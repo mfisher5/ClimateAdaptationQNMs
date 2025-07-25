@@ -275,7 +275,7 @@ Simulate a HAB
 ```{r fdiv2.sim}
 s <- Sys.time()
 
-fdiv2.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+fdiv2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.fdiv2, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=fdiv2.sampler, # the fx to generate the matrices, created above
@@ -355,7 +355,7 @@ end.timer(s)
 
 ```{r}
 # dia model
-m.ldiv2 <- model.dia(here::here('data','dia','cleaned','LivelihoodDiversify-2-Invested_HABhi.dia'))
+m.ldiv2 <- model.dia(here::here('data','dia','LivelihoodDiversify-2-Invested_HABhi.dia'))
 m.ldiv2 <- enforce.limitation(m.ldiv2)  
 
 # no edge constraints
@@ -415,16 +415,13 @@ head(compare.sub[[1]])
 
 The third object in the list is the plot itself. We can make this look nice later, in the figure 2 script.
 ```{r}
-compare.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
-  geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
-  geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
-  geom_vline(aes(xintercept=8.5), linewidth=1.5)
+compare.sub[[3]] + geom_vline(aes(xintercept=10.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=13.5), linewidth=1.5)
 ```
 
 ### transformative 7-8
 
 ```{r}
-ldiv2.sim2 <- ldiv.list[[2]]
 tmp_list <- list(ldiv1.sim,ldiv2.sim)
 names(tmp_list) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
 hab.ldiv.out <- compare.models.impact.tbl(sim.list=tmp_list,

@@ -42,55 +42,67 @@ source(here('R','get.score.matrix.R') )
 
 Simulations can be read in from **script 01. SQ / Strat x HAB**:
 ```{r echo=TRUE}
-tmplist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+# tmplist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+tmplist <- out.list
+sq.sim <- tmplist[[1]]
+insure.sim <- tmplist[[2]]
+dr1.sim <- tmplist[[3]]
+dr2.sim <- tmplist[[4]]
+fdiv1.sim <- tmplist[[5]]
+fdiv2.sim <- tmplist[[6]]
+sdivS.sim <- tmplist[[7]]
+ldiv1.sim <- tmplist[[8]]
+ldiv2.sim <- tmplist[[9]]
+
+rm(tmplist)
 ```
 
 **Or** Simulations can be read in from **script 03. Influential Link**:
-```{r echo=TRUE}
+```{r echo=TRUE, eval=FALSE}
 # ---- status quo ----
 sq.list <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
 
-sq.HABhi.sim <- sq.list[[1]]
+sq.sim <- sq.list[[1]]
 
 # ---- insurance ----
 insure.list <- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
 
-insure.HABhi.sim <- insure.list[[1]]
+insure.sim <- insure.list[[1]]
 
 # ---- disaster relief 1 (direct assistance) ----
 dr1.list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds'))
 
-dr1.HABhi.sim <- dr1.list[[1]]
+dr1.sim <- dr1.list[[1]]
 
 
 # ---- disaster relief 2 (multi-objective) ----
 dr2.list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds'))
 
-dr2.HABhi.sim <- dr2.list[[1]]
+dr2.sim <- dr2.list[[1]]
 
 # ---- fisheries diversification 1 (existing) ----
 fdiv1.list <- readRDS(here('data','HAB_sim_out','ExistingFishDiv1_x_HABhi_50k.rds'))
 
-fdiv1.HABhi.sim <- fdiv1.list[[1]]
+fdiv1.sim <- fdiv1.list[[1]]
 
 
 # ---- fisheries diversification 2 (new) ----
 fdiv2.list <- readRDS(here('data','HAB_sim_out','NewFishDiv2_x_HABhi_50k.rds'))
 
-fdiv2.HABhi.sim <- fdiv2.list[[1]]
+fdiv2.sim <- fdiv2.list[[1]]
 
 
 # ---- supplemental diversification ----
 sdiv.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
 
-sdiv.HABhi.sim <- sdiv.list[[1]]
+sdiv.sim <- sdiv.list[[1]]
 
 # ---- imposed livelihood diversification ----
 ldiv.list <- readRDS(here('data','HAB_sim_out','LivelihoodDiv_x_HABhi_50k.rds'))
-ldiv.HABhi.sim <- ldiv.list[[1]]
+ldiv.sim <- ldiv.list[[1]]
 
 # ---- invested livelihood diversification ----
-ldiv2.HABhi.sim <- ldiv.list[[2]]
+ldiv2.sim <- ldiv.list[[2]]
 ```
 
 ```{r}
@@ -120,10 +132,8 @@ table.palette.legend <- c("#04BC09", "#ABF1AD","#a6611a","#dfc27d","grey85","bla
 Sub-select variables to include in figures
 ```{r echo=TRUE}
 fig1_vars <- sqkey %>% 
-# add a hab variable to the sqkey
-  bind_rows(data.frame(variable="HAB",group="ecosystem")) %>%
   filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
-  filter(!(variable %in% c("Physical health","Physical safety","Equity in resource access")))
+  filter(!(variable %in% c("Physical health","Physical safety","Equity in resource access"))) 
 ```
 
 
@@ -132,10 +142,10 @@ fig1_vars <- sqkey %>%
 ### 2a: coping --> adaptive maintenance
 
 ```{r}
-tmplist <- list(sq.HABhi.sim,insure.HABhi.sim,
-                dr1.HABhi.sim,dr2.HABhi.sim,
-                fdiv1.HABhi.sim,fdiv2.HABhi.sim,
-                sdiv.HABhi.sim)
+tmplist <- list(sq.sim,insure.sim,
+                dr1.sim,dr2.sim,
+                fdiv1.sim,fdiv2.sim,
+                sdivS.sim)
 names(tmplist) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Existing Fisheries Diversification","New Fisheries Diversification","Supplementary Diversification")
 hab.strat.outA <- compare.models.impact.tbl(sim.list=tmplist,
                                           perturb.list=list(c(`HAB`=1),
@@ -148,7 +158,7 @@ hab.strat.outA <- compare.models.impact.tbl(sim.list=tmplist,
                                           monitor.list=list(NA,NA,NA,NA,NA,NA,NA),
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
                          plot=TRUE,plot.perturbed=FALSE,main.axis="Y",
-                         common.variables=FALSE,variable.key=fig1_vars %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order",
+                         common.variables=FALSE,variable.key=fig1_vars,variable.order="specific_order",
                          table.palette = table.palette.orange)
 ```
 
@@ -174,7 +184,7 @@ hab.strat.plotA
 ### Fig 2b: transformative
  
 ```{r}
-tmplist2 <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
+tmplist2 <- list(ldiv1.sim,ldiv2.sim)
 names(tmplist2) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
 hab.ldiv.out <- compare.models.impact.tbl(sim.list=tmplist2,
                                           perturb.list=list(c(`HAB`=1),
@@ -182,12 +192,12 @@ hab.ldiv.out <- compare.models.impact.tbl(sim.list=tmplist2,
                                           monitor.list=list(NA,NA),
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
                          plot=TRUE,plot.perturbed=FALSE,
-                         common.variables=FALSE,variable.key=fig1_vars %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order", main.axis="Y",
+                         common.variables=FALSE,variable.key=fig1_vars,variable.order="specific_order", main.axis="Y",
                          table.palette = table.palette.orange)
 
 ```
 
-nicely formatting
+nicely formatted
 ```{r}
 hab.ldiv.plot <- hab.ldiv.out[[3]] +
   geom_vline(aes(xintercept=10.5), linewidth=0.5) +
@@ -204,7 +214,7 @@ hab.ldiv.plot
 
 ```{r  echo=TRUE, eval=FALSE}
 
-png(here('doc','drafts','Fig2.png'),res=300,width=2200,height=2400)
+png(here('doc','drafts','FigS5.png'),res=300,width=2200,height=2400)
 plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
 dev.off()
 
@@ -215,10 +225,10 @@ dev.off()
 ## Change from SQ
 
 ```{r}
-tmplist <- list(sq.HABhi.sim,insure.HABhi.sim,
-                dr1.HABhi.sim,dr2.HABhi.sim,
-                fdiv1.HABhi.sim,fdiv2.HABhi.sim,
-                sdiv.HABhi.sim)
+tmplist <- list(sq.sim,insure.sim,
+                dr1.sim,dr2.sim,
+                fdiv1.sim,fdiv2.sim,
+                sdivS.sim)
 names(tmplist) <- c("Status Quo","Insurance","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Existing Fisheries Diversification","New Fisheries Diversification","Supplementary Diversification")
 hab.strat.outA <- compare.baseline.impact.tbl(sim.list=tmplist,
                                           perturb.list=list(c(`HAB`=1),
@@ -231,7 +241,7 @@ hab.strat.outA <- compare.baseline.impact.tbl(sim.list=tmplist,
                                           monitor.list=list(NA,NA,NA,NA,NA,NA,NA),
                          strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
                          plot=TRUE,main.axis="Y",
-                         common.variables=FALSE,variable.key=fig1_vars %>% filter(!(variable %in% c("Physical safety","Physical health","Equity in resource access"))),variable.order="specific_order",
+                         common.variables=FALSE,variable.key=fig1_vars,variable.order="specific_order",
                          table.palette = table.palette.orange)
 ```
 
@@ -256,7 +266,7 @@ hab.strat.plotA <- hab.strat.outA[[3]]+
 ### Fig 2b: transformative
  
 ```{r}
-tmplist2 <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
+tmplist2 <- list(ldiv1.sim,ldiv2.sim)
 names(tmplist2) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
 hab.ldiv.out <- compare.baseline.impact.tbl(sim.list=tmplist2,
                                           perturb.list=list(c(`HAB`=1),
