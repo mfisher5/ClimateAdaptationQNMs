@@ -51,7 +51,7 @@ library(igraph)
 #---- custom functions ----
 source(here('R','parse.constraints.SWotherspoon.R'))
 source(here('R','get.score.matrix.R') )
-source(here('R','compare.models.impact.dataframe.R'))
+source(here('R','compare.models.impact.table.R'))
 ```
 
 
@@ -69,17 +69,15 @@ status quo
 ```{r echo=TRUE}
 # ---- simulation without fb ----
 tmp.list <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
-sq.HABhi.sim <- tmp.list[[1]]
+sq.sim <- tmp.list[[1]]
 
 # ---- dia model ----
-m.cft.costs.habhi <- model.dia(here::here('data','dia','feedback','StatusQuo_FeedbackInfra_HABhi.dia'))
-m.cft.costs.habhi <- enforce.limitation(m.cft.costs.habhi)
+m.sq.costs <- model.dia(here::here('data','dia','feedback','StatusQuo_FeedbackInfra_HABhi.dia'))
+m.sq.costs <- enforce.limitation(m.sq.costs)
 
 # edge constraints
-m.cft.costs.habhi.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.cft.costs.habhi)
+m.sq.costs.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity"),m.sq.costs)
 ```
 
 
@@ -87,45 +85,45 @@ disaster relief 1 (direct assistance)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
 tmp.list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds'))
-dr1.HABhi.sim <- tmp.list[[1]]
+dr1.sim <- tmp.list[[1]]
 
 # ---- dia model with fb----
-m.dr1.costs.habhi <- model.dia(here::here('data','dia','feedback','DisasterRelief-1_FeedbackInfra_HABhi.dia'))
-m.dr1.costs.habhi <- enforce.limitation(m.dr1.costs.habhi)
+m.dr1.costs <- model.dia(here::here('data','dia','feedback','DisasterRelief-1_FeedbackInfra_HABhi.dia'))
+m.dr1.costs <- enforce.limitation(m.dr1.costs)
 
 # edge constraints
-m.dr1.costs.habhi.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.dr1.costs.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1.costs.habhi)
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr1.costs)
 ```
 
 disaster relief 2 (multi-objective)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
 tmp.list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds'))
-dr2.HABhi.sim <- tmp.list[[1]]
+dr2.sim <- tmp.list[[1]]
 
 # ---- dia model with fb ----
-m.dr2.costs.habhi <- model.dia(here::here('data','dia','feedback','DisasterRelief-2_FeedbackInfra_HABhi.dia'))
-m.dr2.costs.habhi <- enforce.limitation(m.dr2.costs.habhi)
+m.dr2.costs <- model.dia(here::here('data','dia','feedback','DisasterRelief-2_FeedbackInfra_HABhi.dia'))
+m.dr2.costs <- enforce.limitation(m.dr2.costs)
 
 # edge constraints
-m.dr2.costs.habhi.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.dr2.costs.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Total crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2.costs.habhi)
+                                         "Total non.crab harvest -> Material wealth & security < disaster relief (direct) -> Material wealth & security"),m.dr2.costs)
 ```
 
 supplemental diversification
 ```{r echo=TRUE}
 # ---- simulation without fb ----
 tmp.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
-sdiv.HABhi.sim <- tmp.list[[1]]
+sdiv.sim <- tmp.list[[1]]
 
 # ---- dia model with fb---- 
-m.sdiv.costs.habhi <- model.dia(here::here('data','dia','feedback','SupplementaryDiversify_FeedbackInfra_HABhi.dia'))
-m.sdiv.costs.habhi <- enforce.limitation(m.sdiv.costs.habhi)  
+m.sdiv.costs <- model.dia(here::here('data','dia','feedback','SupplementaryDiversify_FeedbackInfra_HABhi.dia'))
+m.sdiv.costs <- enforce.limitation(m.sdiv.costs)  
 # no edge constraints
 ```
 
@@ -133,25 +131,25 @@ insurance
 ```{r echo=TRUE}
 # ---- simulation without fb ----
 tmp.list<- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
-insure.HABhi.sim <- tmp.list[[1]]
+insure.sim <- tmp.list[[1]]
 
 # ---- dia model ----
-m.insure.costs.habhi <- model.dia(here::here('data','dia','feedback','ParametricInsurance_FeedbackInfra_HABhi.dia'))
-m.insure.costs.habhi <- enforce.limitation(m.insure.costs.habhi)
+m.insure.costs <- model.dia(here::here('data','dia','feedback','ParametricInsurance_FeedbackInfra_HABhi.dia'))
+m.insure.costs <- enforce.limitation(m.insure.costs)
 
 # edge constraints
-m.insure.costs.habhi.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.insure.costs.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
                                          "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
-                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.costs.habhi)
+                                         "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.costs)
 ```
 
 fisheries diversification 1 (existing)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
 tmp.list <- readRDS(here('data','HAB_sim_out','ExistingFishDiv1_x_HABhi_50k.rds'))
-div1.HABhi.sim <- tmp.list[[1]]
+div1.sim <- tmp.list[[1]]
 
 # ---- dia model ----
 m.div1.costs <- model.dia(here::here('data','dia','feedback','ExistingFisheriesDiversify_FeedbackInfra_HABhi.dia'))
@@ -167,7 +165,7 @@ fisheries diversification 2 (new)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
 tmp.list <- readRDS(here('data','HAB_sim_out','NewFishDiv2_x_HABhi_50k.rds'))
-div2.HABhi.sim <- tmp.list[[1]]
+div2.sim <- tmp.list[[1]]
 rm(tmp.list)
 
 # ---- dia model ----
@@ -186,13 +184,13 @@ m.div2.costs.constrained <- parse.constraints(c("Total non.fishing income -> Mat
 
 Status Quo with feedback
 ```{r}
-cft.costs.habhi.sampler <- community.ordering.sampler(m.cft.costs.habhi.constrained)
-cft.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.cft.costs.habhi, # the qnm
+cft.costs.sampler <- community.ordering.sampler(m.sq.costs.constrained)
+cft.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.sq.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=cft.costs.habhi.sampler,
+                            sampler=cft.costs.sampler,
                             validators=list(press.validate(
-                              m.cft.costs.habhi,     # the qnm
+                              m.sq.costs,     # the qnm
                               perturb = c(`HAB`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 ```
@@ -200,26 +198,26 @@ cft.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly genera
 Disaster Relief 1 & 2
 ```{r}
 #---- Disaster Relief 1 with feedback ---- 
-dr1.costs.habhi.sampler <- community.ordering.sampler(m.dr1.costs.habhi.constrained)
-dr1.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.dr1.costs.habhi, # the qnm
+dr1.costs.sampler <- community.ordering.sampler(m.dr1.costs.constrained)
+dr1.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.dr1.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=dr1.costs.habhi.sampler,
+                            sampler=dr1.costs.sampler,
                             validators=list(press.validate(
-                              m.dr1.costs.habhi,     # the qnm
+                              m.dr1.costs,     # the qnm
                               perturb = c(`HAB`=1,
                                           `disaster relief (direct)`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
 
 #---- Disaster Relief 2 with feedback ---- 
-dr2.costs.habhi.sampler <- community.ordering.sampler(m.dr2.costs.habhi.constrained)
-dr2.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.dr2.costs.habhi, # the qnm
+dr2.costs.sampler <- community.ordering.sampler(m.dr2.costs.constrained)
+dr2.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.dr2.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=dr2.costs.habhi.sampler,
+                            sampler=dr2.costs.sampler,
                             validators=list(press.validate(
-                              m.dr2.costs.habhi,     # the qnm
+                              m.dr2.costs,     # the qnm
                               perturb = c(`HAB`=1,
                                           `disaster relief (direct)`=1,
                                           `disaster relief (invest)`=1), # the perturbation
@@ -228,12 +226,12 @@ dr2.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly genera
 
 Supplementary Diversification with feedback
 ```{r}
-sdiv.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.sdiv.costs.habhi, # the qnm
+sdiv.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.sdiv.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=community.sampler(m.sdiv.costs.habhi, required.groups = c(0)),
+                            sampler=community.sampler(m.sdiv.costs, required.groups = c(0)),
                             validators=list(press.validate(
-                              m.sdiv.costs.habhi,     # the qnm
+                              m.sdiv.costs,     # the qnm
                               perturb = c(`HAB`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
@@ -241,13 +239,13 @@ sdiv.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly gener
 
 Parametric Insurance with feedback
 ```{r}
-insure.costs.habhi.sampler <- community.ordering.sampler(m.insure.costs.habhi.constrained)
-insure.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
-                            edges=m.insure.costs.habhi, # the qnm
+insure.costs.sampler <- community.ordering.sampler(m.insure.costs.constrained)
+insure.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+                            edges=m.insure.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=insure.costs.habhi.sampler,
+                            sampler=insure.costs.sampler,
                             validators=list(press.validate(
-                              m.insure.costs.habhi,     # the qnm
+                              m.insure.costs,     # the qnm
                               perturb = c(`HAB`=1,
                                           `insurance`=1), # the perturbation
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
@@ -257,7 +255,7 @@ Fisheries Diversification 1 & 2
 ```{r}
 #---- Fish Diversify 1 - Existing Fisheries with feedback ----
 div1.costs.sampler <- community.ordering.sampler(m.div1.costs.constrained)
-div1.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+div1.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
                             edges=m.div1.costs, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=div1.costs.sampler, # the fx to generate the matrices, created above
@@ -268,7 +266,7 @@ div1.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly gener
 
 #---- Fish Diversify 2 - New Fisheries with feedback ----
 div2.costs.sampler <- community.ordering.sampler(m.div2.costs.constrained)
-div2.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+div2.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
                             edges=m.div2.costs, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=div2.costs.sampler, # the fx to generate the matrices, created above
@@ -283,10 +281,10 @@ div2.costs.HABhi.sim <- system.simulate(n.sims=10000, # number of randomly gener
 Save the simulation output into a list object.
 ```{r echo=TRUE}
 feedback_infra_list <- list(
-  cft.costs.HABhi.sim, insure.costs.HABhi.sim, 
-  dr1.costs.HABhi.sim, dr2.costs.HABhi.sim,
-  div1.costs.HABhi.sim, div2.costs.HABhi.sim,
-  sdiv.costs.HABhi.sim
+  cft.costs.sim, insure.costs.sim, 
+  dr1.costs.sim, dr2.costs.sim,
+  div1.costs.sim, div2.costs.sim,
+  sdiv.costs.sim
 )
 
 names(feedback_infra_list) <- c("Status_Quo","Insurance","Disaster_Relief_1","Disaster_Relief_2",
@@ -319,9 +317,9 @@ fig4_vars <- sqkey %>%
 
 for supplement: all variables, all strategies (focus strat listed first)
 ```{r}
-compare2.list <- list(sq.HABhi.sim, cft.costs.HABhi.sim,
-                      dr1.HABhi.sim,dr1.costs.HABhi.sim,dr2.HABhi.sim,dr2.costs.HABhi.sim,
-                      insure.HABhi.sim,insure.costs.HABhi.sim,div1.HABhi.sim, div1.costs.HABhi.sim, div2.HABhi.sim,div2.costs.HABhi.sim,sdiv.HABhi.sim,sdiv.costs.HABhi.sim); 
+compare2.list <- list(sq.sim, cft.costs.sim,
+                      dr1.sim,dr1.costs.sim,dr2.sim,dr2.costs.sim,
+                      insure.sim,insure.costs.sim,div1.sim, div1.costs.sim, div2.sim,div2.costs.sim,sdiv.sim,sdiv.costs.sim); 
 names(compare2.list) <- c("Status Quo","(with Feedback)",
                           "Direct Assistance Disaster Relief","(with Feedback) ","Multi-Objective Disaster Relief","(with Feedback)  ",
                           "Insurance","(with Feedback)   ","Existing Fisheries Diversification","(with Feedback)    ","New Fisheries Diversification","(with Feedback)     ","Supplementary Diversification","(with Feedback)      ")

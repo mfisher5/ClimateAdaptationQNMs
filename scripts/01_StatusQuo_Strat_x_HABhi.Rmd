@@ -67,7 +67,6 @@ library(QPress)
 
 #---- custom functions ----
 source(here('R','parse.constraints.SWotherspoon.R'))
-source(here('R','impact.table.R'))
 source(here('R','compare.models.impact.table.R'))
 source(here('R','compare.baseline.impact.table.R'))
 source(here('R','get.score.matrix.R'))
@@ -139,9 +138,7 @@ m.insure <- model.dia(here::here('data','dia','ParametricInsurance_HABhi.dia'))
 m.insure <- enforce.limitation(m.insure)
 
 # edge constraints
-m.insure.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.insure.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure)
 insure.sampler <- community.ordering.sampler(m.insure.constrained)
@@ -236,13 +233,11 @@ end.timer(s)
 
 ```{r}
 # dia model
-m.fdiv1 <- model.dia(here::here('data','dia_models','strategies','ExistingFisheriesDiversify_HABhi.dia'))
+m.fdiv1 <- model.dia(here::here('data','dia','ExistingFisheriesDiversify_HABhi.dia'))
 m.fdiv1 <- enforce.limitation(m.fdiv1)  
 
 # edge constraints
-m.fdiv1.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
-                                         "Crab abundance -> Spr/Sum crab fishery participation < Winter (primary) crab fishery participation -* Winter non.crab fishery participation"),m.fdiv1)
+m.fdiv1.constrained <- parse.constraints(c("Crab abundance -> Spr/Sum crab fishery participation < Winter (primary) crab fishery participation -* Winter non.crab fishery participation"),m.fdiv1)
 fdiv1.sampler <- community.ordering.sampler(m.fdiv1.constrained)
 ```
 
@@ -250,7 +245,7 @@ Simulate a HAB
 ```{r fdiv1.sim}
 s <- Sys.time()
 
-fdiv1.hab.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+fdiv1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.fdiv1, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=fdiv1.sampler, # the fx to generate the matrices, created above
@@ -271,9 +266,7 @@ m.fdiv2 <- model.dia(here::here('data','dia','NewFisheries_HABhi.dia'))
 m.fdiv2 <- enforce.limitation(m.fdiv2)  
 
 # edge constraints
-m.fdiv2.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
-                                         "Crab abundance -> Spr/Sum crab fishery participation < Winter (primary) crab fishery participation -* Winter non.crab fishery participation"),m.fdiv2)
+m.fdiv2.constrained <- parse.constraints(c("Crab abundance -> Spr/Sum crab fishery participation < Winter (primary) crab fishery participation -* Winter non.crab fishery participation"),m.fdiv2)
 fdiv2.sampler <- community.ordering.sampler(m.fdiv2.constrained)
 
 ```
@@ -282,7 +275,7 @@ Simulate a HAB
 ```{r fdiv2.sim}
 s <- Sys.time()
 
-fdiv2.hab.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+fdiv2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.fdiv2, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=fdiv2.sampler, # the fx to generate the matrices, created above
@@ -390,7 +383,7 @@ end.timer(s)
 Into a list, so it can be called up in later scripts (like 2).
 ```{r}
 out.list <- list(sq.sim,insure.sim,dr1.sim,dr2.sim,fdiv1.sim, fdiv2.sim,sdivS.sim,ldiv1.sim,ldiv2.sim)
-saveRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+saveRDS(out.list,here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
 ```
 
 
@@ -411,29 +404,27 @@ compare.sub <- compare.models.impact.tbl(sim.list=tmp_list,
                                                            c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5, main.axis = 'Y',
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE,plot.perturbed=FALSE, table.palette=table.palette.orange)
 ```
 
 The first object in the list provides the data frame of results that are presented in the table. The second saves all of the variables' output, not just the ones included in the table. This might be helpful for digging into unexpected results
 ```{r}
-head(table.results.df)
+head(compare.sub[[1]])
 ```
 
 The third object in the list is the plot itself. We can make this look nice later, in the figure 2 script.
 ```{r}
-compare.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
-  geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
-  geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
-  geom_vline(aes(xintercept=8.5), linewidth=1.5)
+compare.sub[[3]] + geom_vline(aes(xintercept=10.5), linewidth=1.5) + 
+  geom_vline(aes(xintercept=13.5), linewidth=1.5)
 ```
 
 ### transformative 7-8
 
 ```{r}
-tmp_list <- list(ldiv.HABhi.sim,ldiv2.HABhi.sim)
+tmp_list <- list(ldiv1.sim,ldiv2.sim)
 names(tmp_list) <- c("Imposed New Livelihoods", "Invested New Livelihoods")
-hab.ldiv.out <- compare.models.impact.df(sim.list=tmp_list,
+hab.ldiv.out <- compare.models.impact.tbl(sim.list=tmp_list,
                                           perturb.list=list(c(`HAB`=1),
                                                             c(`HAB`=1,`Transition support`=1)),
                                           monitor.list=list(NA,NA),

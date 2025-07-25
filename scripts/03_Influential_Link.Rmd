@@ -843,11 +843,9 @@ compare.sdiv3.sub[[3]]
 ```
 
 
-## Across All
+## Visualize Across Strat
 
 Are there commonalities across strategies when we change the *uncertain* dampening relationship between winter crab and non-crab fishing to...
-
-*Note that this uses the version of supplementary diversification that includes the effect of stress*
 
 ### Switching targets
 
@@ -874,7 +872,7 @@ compare.alt1.sub <- compare.models.impact.tbl(sim.list=tmp_list,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
 compare.alt1.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
@@ -909,7 +907,7 @@ plotdat <- trial.unnested %>% mutate(response=ifelse(node_to_perturb=="y","Pertu
                                            ifelse(group=="SDIV","Supp Div")))))) %>%
   filter()
 
-var_order <- subvars.cft %>% arrange(specific_order) %>% pull(variable)
+var_order <- subvars %>% arrange(specific_order) %>% pull(variable)
     
     plotdat$response <- factor(plotdat$response, levels=c("2","1","0","-1","-2"))
     plotdat$variable <- factor(plotdat$variable, levels=rev(var_order))
@@ -954,7 +952,7 @@ tmp_list <- list(sq.sim, sq.wait.sim,
                                                                           "Disaster Relief 1 Default"," ---Wait for Crab DR1",
                                                                           "Disaster Relief 2 Default"," ---Wait for Crab DR2",
                                                                           "Supp Diverse Default"," ---Wait for Crab SDIV")
-compare.alt2.sub <- compare.models.impact.df(sim.list=tmp_list,
+compare.alt2.sub <- compare.models.impact.tbl(sim.list=tmp_list,
                                          perturb.list=list(c(`HAB`=1), c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`insurance`=1),
@@ -966,7 +964,7 @@ compare.alt2.sub <- compare.models.impact.df(sim.list=tmp_list,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
 compare.alt2.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
@@ -999,7 +997,7 @@ plotdat <- trial.unnested %>% mutate(response=ifelse(node_to_perturb=="y","Pertu
                                            ifelse(group=="SDIV","Supp Div")))))) %>%
   filter()
 
-var_order <- subvars.cft %>% arrange(specific_order) %>% pull(variable)
+var_order <- subvars %>% arrange(specific_order) %>% pull(variable)
     
     plotdat$response <- factor(plotdat$response, levels=c("2","1","0","-1","-2"))
     plotdat$variable <- factor(plotdat$variable, levels=rev(var_order))
@@ -1062,7 +1060,7 @@ tmp_list <- list(sq.sim, sq.no.sim,
                                                                           "Disaster Relief 1 Default"," ---No Effect DR1",
                                                                           "Disaster Relief 2 Default"," ---No Effect DR2",
                                                                           "Supp Diverse Default"," ---No Effect SDIV")
-compare.alt3.sub <- compare.models.impact.df(sim.list=tmp_list,
+compare.alt3.sub <- compare.models.impact.tbl(sim.list=tmp_list,
                                          perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1),
                                                            c(`HAB`=1,`insurance`=1),
@@ -1075,7 +1073,7 @@ compare.alt3.sub <- compare.models.impact.df(sim.list=tmp_list,
                                                            c(`HAB`=1)),
                                          monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
                                     strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars.cft, variable.order="specific_order",plot=TRUE)
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE)
 compare.alt3.sub[[3]] + geom_vline(aes(xintercept=2.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=4.5), linewidth=1.5) + 
   geom_vline(aes(xintercept=6.5), linewidth=1.5) + 
@@ -1108,7 +1106,7 @@ plotdat <- trial.unnested %>% mutate(response=ifelse(node_to_perturb=="y","Pertu
                                            ifelse(group=="SDIV","Supp Div")))))) %>%
   filter()
 
-var_order <- subvars.cft %>% arrange(specific_order) %>% pull(variable)
+var_order <- subvars %>% arrange(specific_order) %>% pull(variable)
     
     plotdat$response <- factor(plotdat$response, levels=c("2","1","0","-1","-2"))
     plotdat$variable <- factor(plotdat$variable, levels=rev(var_order))
