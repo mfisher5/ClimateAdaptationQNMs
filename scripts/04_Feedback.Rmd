@@ -184,11 +184,11 @@ m.div2.costs.constrained <- parse.constraints(c("Total non.fishing income -> Mat
 
 Status Quo with feedback
 ```{r}
-cft.costs.sampler <- community.ordering.sampler(m.sq.costs.constrained)
-cft.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+sq.costs.sampler <- community.ordering.sampler(m.sq.costs.constrained)
+sq.costs.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.sq.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=cft.costs.sampler,
+                            sampler=sq.costs.sampler,
                             validators=list(press.validate(
                               m.sq.costs,     # the qnm
                               perturb = c(`HAB`=1), # the perturbation
@@ -281,7 +281,7 @@ div2.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated m
 Save the simulation output into a list object.
 ```{r echo=TRUE}
 feedback_infra_list <- list(
-  cft.costs.sim, insure.costs.sim, 
+  sq.costs.sim, insure.costs.sim, 
   dr1.costs.sim, dr2.costs.sim,
   div1.costs.sim, div2.costs.sim,
   sdiv.costs.sim
@@ -317,7 +317,7 @@ fig4_vars <- sqkey %>%
 
 for supplement: all variables, all strategies (focus strat listed first)
 ```{r}
-compare2.list <- list(sq.sim, cft.costs.sim,
+compare2.list <- list(sq.sim, sq.costs.sim,
                       dr1.sim,dr1.costs.sim,dr2.sim,dr2.costs.sim,
                       insure.sim,insure.costs.sim,div1.sim, div1.costs.sim, div2.sim,div2.costs.sim,sdiv.sim,sdiv.costs.sim); 
 names(compare2.list) <- c("Status Quo","(with Feedback)",
@@ -342,7 +342,7 @@ compare2.all <- compare.models.impact.df(sim.list=compare2.list,
 
 
 ```{r}
-png(here('drafts','supplement','FigS8-feedbacks-extended.png'), res=200,height=1200,width=1400)
+png(here('drafts','supplement','FigS9-feedbacks-extended.png'), res=200,height=1200,width=1400)
 compare2.all[[3]] + geom_hline(aes(yintercept=2.5),linewidth=1) +
   geom_hline(aes(yintercept=4.5),linewidth=1) +
   geom_hline(aes(yintercept=6.5),linewidth=1) +
@@ -355,8 +355,30 @@ dev.off()
 
 
 
+just check out the feedback QNMs:
+```{r}
+compare2.list <- list(sq.costs.sim,
+                      dr1.costs.sim,dr2.costs.sim,
+                      insure.costs.sim,div1.costs.sim, div2.costs.sim,sdiv.costs.sim); 
+names(compare2.list) <- c("Status Quo (with Feedback)",
+                          "Direct Assistance Disaster Relief (with Feedback)","Multi-Objective Disaster Relief (with Feedback)",
+                          "Insurance (with Feedback)","Existing Fisheries Diversification (with Feedback)","New Fisheries Diversification (with Feedback)","Supplementary Diversification (with Feedback)")
 
+compare2.all <- compare.models.impact.tbl(sim.list=compare2.list,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`insurance`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1,`New fishery`=1),
+                                         c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = fig4_vars, variable.order="specific_order",plot=TRUE,
+                                    table.palette = table.palette.orange, plot.perturbed=FALSE, main.axis = "Y")
 
+compare2.all[[3]]
+```
 
 
 
