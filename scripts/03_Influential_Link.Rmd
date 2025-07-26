@@ -189,6 +189,7 @@ sq.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
                             edges=m.sq.one, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=cft.sq.one.sampler,
+                            sampler=sq.one.sampler,
                             validators=list(press.validate(
                               m.sq.one,     # the qnm
                               perturb = c(`HAB`=1), # the perturbation
@@ -197,20 +198,39 @@ sq.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 
 output into list
 ```{r eval=FALSE}
-out <- list(cft.HABhi.sim,cft.cf.HABhi.sim,cft.none.HABhi.sim, cft.one.HABhi.sim)
+out <- list(sq.sim,sq.wait.sim,sq.no.sim, sq.one.sim)
 names(out) <- c("Status Quo","Wait for crab","No effect","Choose one")
-saveRDS(out,here('data','HAB_sim_out','InflWinterFishing_StatusQuo_x_HABhi_50k.rds'))
+saveRDS(out,here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
 ```
+
+
+
+### View
 
 read back in
 ```{r}
-sqlist <- readRDS(here('data','HAB_sim_out','InflWinterFishing_StatusQuo_x_HABhi_50k.rds'))
+sqlist <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
 
 sq.sim <- sqlist[[1]]
 sq.wait.sim <- sqlist[[2]]
 sq.no.sim <- sqlist[[3]]
 sq.one.sim <- sqlist[[4]]
 ```
+
+
+```{r  fig.height=6, fig.width=6}
+compare.sq.sub <- compare.models.impact.tbl(sim.list=sqlist,
+                                         perturb.list=list(c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1),
+                                                           c(`HAB`=1)),
+                                         monitor.list=list(NA,NA,NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
+compare.sq.sub[[3]]
+```
+
+
 
 ## Insurance
 
@@ -223,9 +243,7 @@ m.insure <- model.dia(here::here('data','dia','ParametricInsurance_HABhi.dia'))
 m.insure <- enforce.limitation(m.insure)
 
 # edge constraints
-m.insure.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.insure.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure)
 insure.sampler <- community.ordering.sampler(m.insure.constrained)
@@ -234,13 +252,13 @@ insure.sampler <- community.ordering.sampler(m.insure.constrained)
 CHOOSE ONE
 ```{r}
 # # dia model
+# m.insure.one <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_1Choose_HABhi.dia'))
 m.insure.one <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_1Choose_HABhi.dia'))
 m.insure.one <- enforce.limitation(m.insure.one)  
 
 # edge constraints
-m.insure.one.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
-                                         "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+m.insure.one.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+                                              "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.one)
 insure.one.sampler <- community.ordering.sampler(m.insure.one.constrained)
 ```
@@ -248,6 +266,7 @@ insure.one.sampler <- community.ordering.sampler(m.insure.one.constrained)
 WAIT FOR CRAB
 ```{r}
 # dia model
+# m.insure.wait <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_2Wait_HABhi.dia'))
 m.insure.wait <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_2Wait_HABhi.dia'))
 m.insure.wait <- enforce.limitation(m.insure.wait)  
 
@@ -257,19 +276,24 @@ m.insure.wait.constrained <- parse.constraints(c("Total non.fishing income -> Ma
                                          "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.wait)
+
+# m.insure.wait.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+#                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
+#                                          "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.wait)
+
+
 insure.wait.sampler <- community.ordering.sampler(m.insure.wait.constrained)
 ```
 
 NO EFFECT
 ```{r}
 # dia model
+# m.insure.no <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_3NoEffect_HABhi.dia'))
 m.insure.no <- model.dia(here::here('data','dia','influential_link','ParametricInsurance_3NoEffect_HABhi.dia'))
 m.insure.no <- enforce.limitation(m.insure.no)  
 
 # edge constraints
-m.insure.no.constrained <- parse.constraints(c("Total non.fishing income -> Material wealth & security < Total crab harvest -> Material wealth & security",
-                                         "Total non.fishing income -> Material wealth & security < Total non.crab harvest -> Material wealth & security",
-                                         "Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
+m.insure.no.constrained <- parse.constraints(c("Total non.crab harvest -> Material wealth & security < Total crab harvest -> Material wealth & security",
                                          "Non.crab fishing activity -> Identity < Crab fishing activity -> Identity",
                                          "Winter crab harvest -> Total crab harvest < insurance -> Material wealth & security"),m.insure.no)
 insure.no.sampler <- community.ordering.sampler(m.insure.no.constrained)
@@ -332,7 +356,7 @@ insure.no.sim <- system.simulate(n.sims=50000, # number of randomly generated ma
 
 save
 ```{r}
-out <- list(insure.sim,insure.one.sim,insure.wait.sim, insure.no.sim)
+insure_list <- list(insure.sim,insure.one.sim,insure.wait.sim, insure.no.sim)
 names(out) <- c("Default","Choose one","Wait for crab","No effect")
 saveRDS(out,here('data','HAB_sim_out','Insurance_x_HABhi_50k_rerun.rds'))
 ```
@@ -343,12 +367,13 @@ saveRDS(out,here('data','HAB_sim_out','Insurance_x_HABhi_50k_rerun.rds'))
 read back in
 ```{r}
 insure_list <- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
+names(insure_list)
 insure_list <- list(insure_list[[1]], insure_list[[4]], insure_list[[2]], insure_list[[3]])
+names(insure_list) <- c("Default","Choose one","Wait for crab","No effect")
 ```
 
 
 ```{r fig.height=6, fig.width=6}
-names(insure_list) <- c("Default","Choose one","Wait for crab","No effect")
 compare.insure.sub <- compare.models.impact.tbl(sim.list=insure_list,
                                          perturb.list=list(c(`HAB`=1,`insurance`=1),
                                                            c(`HAB`=1,`insurance`=1),
@@ -359,25 +384,6 @@ compare.insure.sub <- compare.models.impact.tbl(sim.list=insure_list,
                                     variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
 compare.insure.sub[[3]]
 ```
-
-#### Notes:
-
-*Crab Dampens: less crab = more non-crab*:
-
-- Fishing Activity: winter non-crab fishing activity strongly increases - leading to a weak increase in total non-crab harvest and fishing activity. As with the Status Quo model, the strong negative impact of the HAB on winter crab fishing leads to an overall negative response in total crab harvest / fishing activity (despite an increase in spr/sum crab fishing participation).
-
-- Material wealth and security shows a weak positive response from the combination of (1) an increase in non-crab harvest, and (2) an insurance pay-out that offsets or exceeds the loss from winter crab harvest. This is what I would expect! The weak positive response by Material Wealth & Security, along with the increase in total non-crab harvest, leads to equivocal responses in well-being and capacity variables except those tied most closely with crab fishing (cultural values & practices)
-
-
-*Crab Facilitates: less crab = less non-crab*
-
-- Fishing Activity: All fishing activity and harvest declines except spr/sum crab fishing (although this is not enough to outweigh losses in total crab harvest / activity from HAB impacts on the winter crab season). The insurance pay-out is only designed to offset losses from winter crab harvest, not the non-crab harvest. The insurance payout is essentially ineffective
-
-- There are so many strong negative responses in well-being and capacity variables because the model (1) upweights winter crab harvest, and (2) takes crab and non-crab harvest / activity as equivalent inputs for all but a handful of well-being / capacity variables (identity, cultural values & practices). It may be worth changing this equivalence, or at least keeping it in mind for a discussion. Especially since this version of the model could drastically overstate the contribution of winter non-crab fisheries to the crab fishing community. Do we want to assume that non-crab fisheries are very much secondary to crab, such that most fishermen wouldn’t be fishing at all in any given year if they couldn’t fish crab?
-
-*Crab Has No Effect*
-
-- Fishing Activity: 
 
 
 
@@ -921,19 +927,6 @@ with(plotdat, table(group,response))
 ```
 
 
-#### Notes:
-
-- Fishing Activity, Insurance & Disaster Relief: winter non-crab fishing activity strongly increases - leading to a weak increase in total non-crab harvest and fishing activity. As with the Status Quo model, the strong negative impact of the HAB on winter crab fishing leads to an overall negative response in total crab harvest / fishing activity (despite an increase in spr/sum crab fishing participation).
-
-
-- Fishing Activity, Supp Diverse:
-
-- Commonalities: If a reduction in winter crab fishing leads to an increase in winter non-crab fishing, we see less negative outcomes in the altered Status Quo model. *Even without additional adaptive strategies, winter portfolio diversification in fisheries not affected by the HAB mitigates most negative impacts from the HAB.* When the Insurance and Disaster Relief strategies are also undertaken, with direct payouts to fishermen (from an insurance company or the government), Material wealth & security and Job Satisfaction can actually be amplified after a HAB (rather than just equivocal), assuming the payouts fully cover any lost revenue from winter crab closures. Because Disaster Relief Plan 2 includes investment in shoreside infrastructure and support services, those services may also see a positive impact after a HAB. 
-
-- Differences: Even if a reduction in winter crab fishing leads to an increase in winter non-crab fishing, Supplemental Livelihood Diversification can still lead to the amplification or generation of negative impacts from the HAB. For example, when we alter the Status Quo model, Subsistence is unaffected by the HAB. But when we prioritize supplemental livelihood diversification, this takes away from winter non-crab fishing activity (and associated take for personal use), which means that the HAB has a weak negative impact on Subsistence. This, combined with the strong negative impact to Cultural Values & Practices, means that Community learning & cooperation / Social relationships experience a weak negative impact. This can either be considered (a) a failure to mitigate the negative impacts we see in the default Status Quo, or (b) the introduction of additional negative impacts compared to the altered Status Quo. 
-But compared to the number of well-being variables that are impacted are less than in the default Status Quo.
-
-- Supplemental Diversification showed the least sensitivity to the changed relationship, but the Disaster Relief strategies saw the greatest increase in dampening ability. 
 
 
 
@@ -1031,21 +1024,6 @@ plotdat %>% dplyr::select(group,response,variable) %>%
 
 
 
-#### Notes
-
-- Fishing Activity, Insurance and Disaster Relief: All fishing activity and harvest declines except spr/sum crab fishing (although this is not enough to outweigh losses in total crab harvest / activity from HAB impacts on the winter crab season). 
-
-
-- Commonalities: Disaster Relief and Supplemental Livelihood Diversification partially mitigate HAB impacts on Material wealth & security compared to the altered baseline, but effects of the HAB are similar to *no* disaster relief/ diversification in the default Status Quo. Same goes for Identity under DR Spend Plan 1, and Family/Emotional & Mental Health under DR Spend Plan 2.
-
-- Differences: When a reduction in winter crab fishing means a reduction in participation in non-crab fisheries, the insurance pay-out does *not* mitigate HAB impacts on Material wealth & security, which can mean a decline in Job Satisfaction. Fisheries insurance is essentially ineffective. Why does insurance show a different outcome than DR Spend Plan 1? || Family and Emotional & Mental Health fare "best" with DR Spend Plan 2; depending on your perspective, DR Spend Plan 2 is the only strategy for which (a) the HAB impacts aren't amplified for those two variables compared to the default Status Quo, or (b) the HAB impacts are somewhat mitigated compared to the crab facilitates Status Quo. 
-
-- Supplemental diversification was the least sensitive to the relationship change, 
-If we look only at the number of aspects of well-being that changed response when the relationship between winter crab & non-crab fishing is changed, the insurance and supplementary diversification strategies fare "best" (i.e., experienced the least extreme change in outcomes, or the least more negative outcomes).
-
-
-
-
 
 ### No Effect
 
@@ -1124,29 +1102,6 @@ plotdat %>% dplyr::select(group,response,variable) %>%
   pivot_wider(names_from=response, values_from=freq)
 ```
 
-**Notes**
-
-- Fishing Activity, Insurance and Disaster Relief: A decline in winter crab fishing shifts effort to the spring/summer crab fishing season, which means that non-crab fishing also declines in this part of the year. Since there is no change in winter non-crab fishing activity the total non-crab harvest goes down from the potential non-crab harvest without a HAB. The model assumes that high crab fishing effort in the spring/summer can’t totally make up for lost opportunity in the winter, although time on the water is somewhat offset, so the total crab harvest declines.
-
-- Commonalities: Disaster  Relief and Supplemental Diversification are able to fully mitigate the effects of the HAB on Material Wealth & Security in the default and with no effect relationships, but fisheries insurance does not. This is because we've assumed that when effort spills over into the spring / summer crab fishery, the loss of fishing opportunity in other fisheries is as lucrative, or more lucrative, than the spring / summer crab fishery. If this isn't the case, the insurance would also be able to fully mitigate the effects of the HAB on Material Wealth & Security. || Negative impacts to identity, family, and emotional & mental health are (a) mitigated compared to the "no effect" Status Quo / (b) equivalent to the no-strategy "default" Status Quo, for the two Disaster Relief strategies. With additional investments in shoreside infrastructure & trust in institutions, DR Spent Plan 2 shows the same impact on negative outcomes for shoreside infrastructure & support services, Community learning & Cooperation 
-
-- Differences: A "no effect" relationship doesn't impact the ability of the Supplemental Diversification strategy to fully mitigate HAB impacts to Job satisfaction (which is closely linked to Material Wealth & Security, but is not fully mitigated by the other strategies under the "no effect" relationship). Supplemental Diversification also shows *better mitigation* of HAB impacts to Emotional & Mental Health, Family; but an *amplification* of impacts to Identity. 
-
-- Supplementary Diversification is the least sensitive to this change in relationship -- shows the least change in outcomes when moving from the default relationships to the No Effect relationship. Insurance  is the most sensitive.
-
-
-## Major take-aways
-
-
-While implementing any of these strategies, but particularly fisheries insurance and direct relief-only disaster funding, it may still be important to maintain / improve fishing diversification during the winter months. Reason: when not fishing crab means not fishing anything else, insurance was essentially ineffective and mitigated zero impacts. But when the winter non-crab fishing opportunities are strong, the HAB could weakly positively increase those two aspects of well-being! || While DR Spend Plan 1 did lessen the negative impacts to Material Wealth & Security, (a) there was still a weak negative impact, so that "crab facilitates" fishermen will experience reductions in material wealth similar to "more crab=maybe less crab" fishermen who receive no support; and (b) the slight mitigation to material wealth & security from insurance pay-outs may not have the same downstream mitigating effects on Job Satisfaction and Emotional & Mental Health that we saw the strategy have in the "more crab=maybe less crab" model
-
-There are many interacting, non-material aspects of well-being that are contingent on fishing activity, not just harvest, and the ability to access alternative fisheries affects whether and how the different strategies mitigate HAB impacts. For example, when crab fishing facilitates other fishing activity, DR Spent Plan 2 does *not* mitigate HAB impacts on Material wealth & security, which can mean a decline in Job Satisfaction. But when the winter non-crab fishing opportunities are strong, 
-
-Monitoring implications – when looking at the effect of harmful algal blooms and response strategies, it is important to differentiate between individual fishing opportunity and behavior. The well-being impacts of a HAB, and the positive impact of a strategy like insurance, could be differentially distributed across individuals *even if all fishermen have multi-fishery portfolios,* depending on the extent of accessibility and profitability of alternative winter fisheries; and individual decision-making.
-
-Action Items – 
-- how to maintain sustainable access to alternative winter fisheries in a way that allows flexibility and short-term effort change in response to seasonal climate impacts? flexible in-season management has been highlighted as a limitation to climate adaptation by Drakapoulos & Poe. **Flexibility can be important even when other adaptive strategies like insurance are implemented - the listed strategies are not the final fix / their use doesn't mean that changes to fishery management and access don't need to occur.**
-- how to build up markets so that there is flexible demand and processing capacity for winter catch, and so that it is profitable to increase effort in non-crab alternatives?
 
 
 
