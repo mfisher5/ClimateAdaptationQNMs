@@ -42,8 +42,7 @@ source(here('R','get.score.matrix.R') )
 
 Simulations can be read in from **script 01. SQ / Strat x HAB**:
 ```{r echo=TRUE}
-# tmplist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
-tmplist <- out.list
+tmplist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
 sq.sim <- tmplist[[1]]
 insure.sim <- tmplist[[2]]
 dr1.sim <- tmplist[[3]]
@@ -105,7 +104,7 @@ ldiv.sim <- ldiv.list[[1]]
 ldiv2.sim <- ldiv.list[[2]]
 ```
 
-```{r}
+```{r eval=FALSE}
 # optional clean up
 rm(sdiv.list,dr2.list,dr1.list,fdiv1.list, fdiv2.list,insure.list,sq.list, ldiv.list)
 ```

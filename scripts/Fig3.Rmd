@@ -69,7 +69,7 @@ dr1.no.sim <- dr1list[[4]]
 
 
 # ---- disaster relief 2 ----
-dr2list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k_24Jul2025.rds')); names(dr2list)
+dr2list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds')); names(dr2list)
 
 dr2.sim <- dr2list[[1]]
 dr2.one.sim <- dr2list[[2]]
@@ -78,7 +78,7 @@ dr2.no.sim <- dr2list[[4]]
 
 
 # ---- supplemental diversification ----
-sdiv.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k_24Jul2025.rds')); names(sdiv.list)
+sdiv.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds')); names(sdiv.list)
 
 sdiv.sim <- sdiv.list[[1]]
 sdiv.one.sim <- sdiv.list[[2]]
@@ -316,7 +316,7 @@ p3 <- plot3c[[3]] + scale_x_discrete(position = "bottom",expand = c(0.05, 0.05))
 ```
 ```{r}
 
-png(here('doc','drafts','Fig3-change-UPDATE2.png'),res=200,height=1820,width=1400)
+png(here('doc','drafts','Fig3-change-UPDATE.png'),res=200,height=1820,width=1400)
 plot_grid(plotlist=list(p1,p2,p3),nrow=3,rel_heights=c(0.99,0.44,0.90),rel_widths=c(1,0.05),
           labels=c("(a) Waiting for crab","(b) No Effect","(c) Switching targets",""),label_x=c(-0.1,-0.06,-0.115),label_y=c(0.45,1,1.05))
 dev.off()

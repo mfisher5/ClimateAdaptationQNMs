@@ -20,3 +20,10 @@ scripts/02**
 doc/pfmc_scenario_planning/**supplemental**
 doc/pfmc_scenario_planning/**attachment**
 doc/drafts/Ch4_Fig1.pptx
+
+# code check
+doc/check_reruns.R
+doc/drafts/*.png
+doc/drafts/supplement/**.png
+scripts/*.html
+doc/drafts/supplement/*.png
