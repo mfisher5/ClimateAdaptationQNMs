@@ -1,0 +1,436 @@
+---
+title: "QNM Sensitivity Analysis"
+author: "M Fisher"
+date: "2023-07-12"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+## Description 
+
+This RMarkdown explores QNM sensitivity - how sensitive variable responses are to each link in the QNM, under a HAB perturbation.
+
+The focus of the sensitivity analysis is the Status Quo QNM. There are two methods of assessing model sensitivity that we explored:
+
+1. Boosted Regression Trees (BRTs) based on Melbourne-Thomas et al. (2012): https://esapubs.org/archive/mono/M082/019/tree.r
+
+2. Edge strength based on Magel & Francis (2023)
+
+For edge strength (because it's a pretty fast and easy summary) we'll also look into the eight adaptation QNMs. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE)
+
+#---- libraries ----
+library(here)
+library(tidyverse)
+library(ggplot2)
+#Load XML first--dependency not included in QPress
+#To install QPress: 
+#   library(remotes)
+#   remotes::install_github("SWotherspoon/QPress")
+library(XML)
+library(tcltk2)
+library(gridExtra)
+library(cowplot)
+library(QPress)
+
+library(igraph)
+# library(gbm)
+# library(dismo)
+
+#---- custom functions ----
+source(here('R','parse.constraints.SWotherspoon.R'))
+source(here('R','qnm.sensitivity.R'))
+source(here('R','impact.ss.R'))
+```
+
+
+
+## Data
+
+Read in a variable key. 
+```{r}
+sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
+
+# add a hab variable to the key
+sqkey <- sqkey %>%
+  bind_rows(data.frame(variable="HAB",group="ecosystem"))
+
+# save a subset of the variables in a new data frame -- only well-being and capacity variables
+subvars <- sqkey %>% filter(group %in% c("well-being","well-being 2","well-being 3","capacity")) %>%
+  arrange(2)
+```
+
+Status Quo model and simulations:
+```{r echo=TRUE}
+#---- Dia Model ---- 
+m.sq <- model.dia(here::here('data','dia','StatusQuo_HABhi.dia'))
+m.sq <- enforce.limitation(m.sq)
+
+
+#---- Simulations ---- 
+simlist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+
+sq.sim <- sqlist[[1]]
+```
+
+
+Read in the simulations / models for the climate adaptation QNMs, for Magel & Francis method.
+
+Parametric insurance ("Insure")
+```{r echo=TRUE}
+#---- Default Model ---- 
+m.insure.habhi <- model.dia(here::here('data','dia','ParametricInsurance_HABhi.dia'))
+m.insure.habhi <- enforce.limitation(m.insure.habhi)
+
+#---- Sims ---- 
+insure.sim <- simlist[[2]]
+```
+
+
+Existing Fishery Diversification ("Div1")
+```{r echo=TRUE}
+#---- Default Model ---- 
+m.div1 <- model.dia(here::here('data','dia','ExistingFisheriesDiversify_HABhi.dia'))
+m.div1 <- enforce.limitation(m.div1)  
+
+#---- Sims ----
+div1.sim <- simlist[[3]]
+```
+
+
+New Fishery Diversification ("Div2")
+```{r echo=TRUE}
+#---- Default Model ---- 
+m.div2 <- model.dia(here::here('data','dia','NewFisheries_HABhi.dia'))
+m.div2 <- enforce.limitation(m.div2)  
+
+
+#---- Sims ----
+div2.sim <- simlist[[4]]
+```
+
+
+Disaster Relief Spend Plan 1 ("DR1")
+```{r echo=TRUE}
+#---- Default Model ---- 
+m.dr1.habhi <- model.dia(here::here('data','dia','DisasterRelief-1-DirectAssist_HABhi.dia'))
+m.dr1.habhi <- enforce.limitation(m.dr1.habhi)
+
+
+#---- Sims ----
+dr1.sim <- simlist[[5]]
+```
+
+Disaster Relief Spend Plan 2 ("DR2")
+```{r echo=TRUE}
+#---- Default Model ---- 
+m.dr2.habhi <- model.dia(here::here('data','dia','DisasterRelief-2-MultiObj_HABhi.dia'))
+m.dr2.habhi <- enforce.limitation(m.dr2.habhi)
+
+
+#---- Sims ----
+dr2.sim <- simlist[[6]]
+```
+
+Supplementary livelihood diversification
+```{r echo=TRUE}
+#---- Default Model ---- 
+m.sdiv.habhi <- model.dia(here::here('data','dia','SupplementaryDiversify_HABhi.dia'))
+m.sdiv.habhi <- enforce.limitation(m.sdiv.habhi) 
+
+#---- Sims ----
+sdiv.sim <- simlist[[7]]
+```
+
+Livelihood diversification with exit - Imposed ("ldiv1") and Invested ("ldiv2")
+```{r echo=TRUE}
+#---- Default Models ---- 
+m.ldiv1.habhi <- model.dia(here::here('data','dia','LivelihoodDiversify-1-Imposed_HABhi.dia'))
+m.ldiv1.habhi <- enforce.limitation(m.ldiv1.habhi)  
+
+m.ldiv2.habhi <- model.dia(here::here('data','dia','LivelihoodDiversify-2-Invested_HABhi.dia'))
+m.ldiv2.habhi <- enforce.limitation(m.ldiv2.habhi)  
+
+
+#---- Sims ----
+ldiv1.sim <- simlist[[8]]
+ldiv2.sim <- simlist[[9]]
+```
+
+
+## Boosted Regression Trees 
+
+Use boosted regression trees to examine the relative importance of model edges (linkages) in determining the response of a given well-being variable to a HAB simulation in the Status Quo model 
+
+First, create a list object to save influence dataframes
+```{r}
+relinf.list <- list()
+```
+
+Then use the custom function `impact.ss` to produce two matrices: (1) the perturbation response (+1/-1/0) of each well-being variable (column) in each simulation iteration (row); and (2) the randomly simulated weight of each edge (column) in each simulation iteration (row). Bind them together.
+```{r eval=TRUE}
+## two matrices into a list
+temp <- impact.ss(sim=sq.sim,perturb=c("HAB"=1),monitor=NA)
+
+## bind together
+temp2 <- cbind(temp[[1]],temp[[2]])
+
+## save
+write_rds(temp2, here('data','sensitivity','StatusQuo_x_HABhi_GBMin.rds'))
+```
+```{r echo=FALSE, eval=FALSE}
+# read back in
+temp2 <- read_rds(here('data','sensitivity','StatusQuo_x_HABhi_GBMin.rds'))
+```
+
+### Test 
+
+subset Status Quo response variable set to the variable *Emotional & mental health*. the first 41 cols in the matrix are variables, the remaining are links.
+```{r}
+d <- cbind(temp2[,"Emotional & mental health"],temp2[,42:(dim(temp2)[2])])  # the first 41 cols are variables, not links
+```
+
+Run [gbm.step](https://search.r-project.org/CRAN/refmans/dismo/html/gbm.step.html)
+```{r}
+fit3 <- gbm.step(data=d,gbm.x=2:121,gbm.y=1,family="gaussian",tree.complexity=5, learning.rate = 0.01,bag.fraction = 0.5)
+## save
+saveRDS(fit3,file=here('data','sensitivity','StatusQuo_x_HABhi_GBMout_EmotionalMentalHealth.rds'))
+```
+
+Use 'summary' to compute the relative influence of each variable in the gbm object. Save to data frame.
+```{r}
+fit.sq.df <- as.data.frame(summary(fit3), row.names=NULL) %>%
+  rename("Link"=var) %>% mutate(Variable="Emotional & mental health") %>%
+  rownames_to_column("Link2") %>% dplyr::select(-Link2)
+
+#View fit.sq.df
+```
+
+
+
+### Status Quo QNM
+
+Look at influential edges (in the Status Quo model) for aspects of well-being that are featured in the main figures of the paper:
+```{r}
+response.vars <- c("Emotional & mental health",
+                   "Shoreside infrastructure & support services",
+                   "Subsistence",
+                   "Intangible connections to nature",
+                   "Identity",
+                   "Family",
+                   "Community learning & cooperation",
+                   "Social relationships",
+                   "Community",  # all strong negative except fisheries diversification
+                   "Job quality", # did not vary between strategies
+                   "Job satisfication", # did not vary between strategies
+                   "Material wealth & security") # did not vary between strategies
+```
+
+This took awhile on my computer so I did it in two batches.
+
+I start with the second variable because we already did Emotional & Mental Health, in **Test** above. If you didn't run **Test** in the same session, switch which lines are commented out in the code chunk below.
+```{r}
+start_index <- 2
+# start_index <- 1
+# fit.sq.df <- data.frame(Link=as.character(),
+#                         rel.inf=as.numeric(),
+#                         Variable=as.character())
+```
+
+Batch 1
+```{r}
+for(v in response.vars[start_index:8]){
+  if(length(unique(temp2[,v])) > 1){
+  # Fit classification tree model with the variable
+  fit.sq <- gbm.step(data=cbind(temp2[,v],temp2[,42:161]),
+                     gbm.x=2:121,gbm.y=1,family="gaussian",tree.complexity=5, learning.rate = 0.01,bag.fraction = 0.5)
+  
+  # Add to data frame
+  fit.sq.df <- fit.sq.df %>%
+    bind_rows(as.data.frame(summary(fit.sq), row.names=NULL) %>%
+                rename("Link"=var) %>% mutate(Variable=v) %>%
+              rownames_to_column("Link2") %>% dplyr::select(-Link2))
+  
+  rm(fit.sq)
+  }
+  message("completed variable ", v)
+  
+  # save final data frame
+  write_csv(fit.sq.df, here('data','sensitivity','StatusQuo_x_HABhi_GBMout_1.csv'))
+              
+}
+```
+
+Batch 2
+```{r}
+for(v in response.vars[10:12]){
+  if(length(unique(temp2[,v])) > 1){
+  # Fit classification tree model with the variable
+  fit.sq <- gbm.step(data=cbind(temp2[,v],temp2[,42:(dim(temp2)[2])]),
+                     gbm.x=2:121,gbm.y=1,family="gaussian",tree.complexity=5, learning.rate = 0.01,bag.fraction = 0.5)
+  
+  # Add to data frame
+  
+  if(v==response.vars[10]){
+    fit.sq.df <- as.data.frame(summary(fit.sq), row.names=NULL) %>%
+  rename("Link"=var) %>% mutate(Variable=v) %>%
+  rownames_to_column("Link2") %>% dplyr::select(-Link2)
+  } else{
+  
+  fit.sq.df <- fit.sq.df %>%
+    bind_rows(as.data.frame(summary(fit.sq), row.names=NULL) %>%
+                rename("Link"=var) %>% mutate(Variable=v) %>%
+              rownames_to_column("Link2") %>% dplyr::select(-Link2))
+  }
+  rm(fit.sq)
+  }
+  message("completed variable ", v)
+  
+  write_csv(fit.sq.df, here('data','sensitivity','StatusQuo_x_HABhi_GBMout_3.csv'))
+              
+}
+```
+
+
+Calculate ranks for each of the links, for each variable. save as a matrix.
+```{r}
+fit.sq.rank <- fit.sq.df %>%
+  separate(col="Link", into=c("Edge1","Edge2"), remove=FALSE, sep="_") %>%
+  group_by(Variable) %>%
+  mutate(rank=dense_rank(desc(rel.inf))) %>%
+  dplyr::select(Link,Edge1,Edge2,Variable,rank) %>%
+  pivot_wider(names_from="Variable", values_from="rank") %>%
+  mutate(rank_sum=rowSums(across(where(is.numeric)))) %>% arrange(rank_sum)
+
+write_csv(fit.sq.rank,file=here('data','sensitivity','StatusQuo_x_HABhi_GBMout_rankSummary.csv'))
+```
+
+
+
+## Edge Strength
+
+For the Status Quo plus the eight strategy QNMs.
+
+This uses the custom function `qnm_sensitivity`.
+
+Set up:
+```{r}
+# list of simulations
+tmp_sim_list <- list(sq.sim,insure.sim, dr1.sim, dr2.sim, div1.sim, div2.sim, sdiv.sim,ldiv.sim,ldiv2.sim)
+# list of models
+tmp_mod_list <- list(m.sq, m.insure.habhi,m.dr1.habhi,m.dr2.habhi,m.div1,m.div2,m.sdiv.habhi,m.ldiv.habhi,m.ldiv2.habhi)
+# list of simulation names
+tmp_names <- c("Status Quo", "Insurance", "Direct Assist Disaster Relief","Multi-0bj Disaster Relief","Fisheries Diversification","New Fisheries","Supplementary Diversification", "Imposed New Livelihoods","Invested New Livelihoods")
+# list of perturbations 
+tmp_perturbs <- list(c("HAB"),c("HAB","insurance"),
+                     c("HAB","disaster relief (direct)"), c("HAB","disaster relief (direct)","disaster relief (invest)"),
+                     c("HAB"),c("HAB","New fishery"), c("HAB"),
+                     c("HAB"),c("HAB","Transition support"))
+
+sensitivity_all <- list()
+```
+
+
+Run our custom function `qnm_sensitivity` on each simulation / model and save the link weight data frame (`weightdf`), shortest distance dataframe (`distdf`)
+```{r}
+for(i in seq(1, length(tmp_sim_list))){
+  tmpdat <- qnm_sensitivity(dia.mod=tmp_mod_list[[i]], my.sim=tmp_sim_list[[i]], perturb=tmp_perturbs[[i]])
+  tmpdist <- tmpdat[[4]]
+  tmpweight <- tmpdat[[2]]
+  sensitivity_all[[i]] <- tmpdat
+  if(i==1){
+    distdf <- tmpdist %>% mutate(model=tmp_names[[i]])
+    weightdf <- tmpweight %>% mutate(model=tmp_names[[i]])
+  } else{
+    distdf <- bind_rows(distdf, tmpdist %>% mutate(model=tmp_names[[i]]))
+    weightdf <- bind_rows(weightdf, tmpweight %>% mutate(model=tmp_names[[i]]))
+  }
+}
+
+# names for list of all sensitivity information
+names(sensitivity_all) <- tmp_names
+```
+
+
+Start with non-self edges
+```{r fig.width=10,fig.height=7}
+plotweight <-  weightdf %>% filter(abs(round(Mean,1)) < 0.50 | abs(round(Mean,1)) > 0.50)
+plotweight %<>%
+  separate(Edge, into=c("edge_1","edge_2"), sep="\\*", remove=FALSE) %>% filter(!is.na(edge_2)) %>%
+  mutate(edge_1=str_remove(edge_1," -")) %>%
+  bind_rows(plotweight %>%
+              separate(Edge, into=c("edge_1","edge_2"), sep="->", remove=FALSE) %>% filter(!is.na(edge_2)) %>%
+              mutate(edge_1=str_remove(edge_1," -"),
+                     edge_1=str_trim(edge_1,side="both"))) %>%  mutate(edge_2=str_trim(edge_2))  %>%
+  mutate(interaction=ifelse(abs(Mean) < 0.50, "weak","strong"),
+         interaction_dir=ifelse(Mean<0,"negative","positive"))
+
+outstand_edges1 <- plotweight %>% filter(edge_1 != edge_2) %>%
+  mutate(interaction=ifelse(abs(Mean) < 0.50, "weak","strong")) %>%
+  group_by(Edge, interaction,interaction_dir) %>%
+  summarise(n.mods=length(unique(model))) %>%
+  group_by(Edge) %>% mutate(total.mods=sum(n.mods))
+
+ggplot(outstand_edges1,aes(x=Edge,y=n.mods,fill=interaction)) +
+  geom_col() + facet_grid(cols=vars(interaction_dir)) +
+  coord_flip() +
+  labs(x="",y="Number of Models (of 9)") +
+  scale_fill_manual(values=c("darkgreen","darkseagreen1")) +
+  theme_bw() + theme(axis.text.y=element_text(size=12))
+```
+
+Then look at self-edges
+```{r}
+outstand_edges2 <- plotweight %>% filter(edge_1 == edge_2) %>%
+  mutate(interaction=ifelse(abs(Mean) < 0.50, "weak","strong")) %>%
+  group_by(Edge, interaction,interaction_dir) %>%
+  summarise(n.mods=length(unique(model))) %>%
+  group_by(Edge) %>% mutate(total.mods=sum(n.mods))
+ggplot(outstand_edges2,aes(x=Edge,y=n.mods,fill=interaction)) +
+  geom_col() +
+  coord_flip() +
+  labs(x="",y="Number of Models (of 9)") +
+  scale_fill_manual(values=c("darkgreen","darkseagreen1")) +
+  theme_bw() + theme(axis.text.y=element_text(size=12))
+```
+
+Save a summary of edges with particularly high interaction strengths; using carryover variable names, which need to be cleaned up for the figure. 
+```{r}
+
+strong_edges <- plotweight %>%
+  mutate(interaction=ifelse(abs(Mean) < 0.50, "weak","strong")) %>%
+  filter(interaction=="strong") %>%
+  group_by(Edge, interaction,interaction_dir) %>%
+  summarise(n.mods=length(unique(model))) %>%
+  group_by(Edge) %>% mutate(total.mods=sum(n.mods)) %>%
+  mutate(Edge=str_replace_all(Edge, "Spr/Sum crab","Late season crab")) %>%
+  mutate(Edge=str_replace_all(Edge, "Spr/Sum non.crab","Late season other")) %>%
+  mutate(Edge=str_replace_all(Edge, "Winter (primary) crab","Early season crab")) %>%
+  mutate(Edge=str_replace_all(Edge, "Winter non.crab","Early season other")) %>%
+  mutate(Edge=str_replace_all(Edge, "non.crab","other")) %>%
+  mutate(Edge=str_replace_all(Edge, "Spr/Sum non.crab","Late season other"))
+
+strong_edges<- strong_edges %>% mutate(Edge=ifelse(Edge=="Winter (primary) crab fishery participation -* Winter (primary) crab fishery participation", "Early season crab fishery participation -* Early season crab fishery participation",
+                                                   ifelse(Edge=="Winter (primary) crab fishery participation -* Early season other fishery participation","Early season crab fishery participation -* Early season other fishery participation",Edge)))
+
+strong_edges <- strong_edges %>% mutate(Edge=ifelse(Edge=="disaster relief (direct) -> Material wealth & security",
+                                                    "Direct assist (disaster relief) -> Material wealth & security",Edge))
+
+strong_edges <- strong_edges %>% mutate(Edge=ifelse(Edge=="insurance -> Material wealth & security",
+                                                    "Insurance pay-out -> Material wealth & security",Edge))
+
+
+png(here('doc','drafts','supplement','FigS4_StrongEdges_NMods.png'), res=300, width=3200,height=1400)
+ ggplot(strong_edges, aes(x=Edge,y=as.integer(n.mods),fill=interaction_dir)) +
+  geom_col() + facet_grid(cols=vars(interaction_dir)) +
+  coord_flip() +
+  labs(x="",y="Number of QNMs") +
+  scale_fill_manual(values=c("darkorange","darkgreen"), name="Interaction\n  Direction") +
+   scale_y_continuous(breaks=seq(1,10,by=2)) +
+  theme_bw() + theme(axis.text.y=element_text(size=12))
+dev.off()
+```

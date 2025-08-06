@@ -16,7 +16,6 @@ data/sensitivity/**.csv
 doc/drafts/**.docx
 doc/drafts/**.doc
 doc/drafts/**.pdf
-scripts/02**
 doc/pfmc_scenario_planning/**supplemental**
 doc/pfmc_scenario_planning/**attachment**
 doc/drafts/Ch4_Fig1.pptx
