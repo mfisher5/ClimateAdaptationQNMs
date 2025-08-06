@@ -25,7 +25,7 @@ QNM results shown in the main text:
 And then reported in the supplement:
     e. Parametric Insurance
     f. Existing Fisheries Diversification
-    g. New Fisheries
+    g. New Fisheries Diversification
     
     
     
@@ -62,13 +62,17 @@ Variable key
 sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
 ```
 
+simulations without a complete feedback
+```{r}
+tmp.list <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+```
+
 
 For each strategy, read in the simulations without a complete feedback and the dia model with the feedback completed.
 
 status quo
 ```{r echo=TRUE}
 # ---- simulation without fb ----
-tmp.list <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
 sq.sim <- tmp.list[[1]]
 
 # ---- dia model ----
@@ -84,8 +88,7 @@ m.sq.costs.constrained <- parse.constraints(c("Total non.crab harvest -> Materia
 disaster relief 1 (direct assistance)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
-tmp.list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds'))
-dr1.sim <- tmp.list[[1]]
+dr1.sim <- tmp.list[[3]]
 
 # ---- dia model with fb----
 m.dr1.costs <- model.dia(here::here('data','dia','feedback','DisasterRelief-1_FeedbackInfra_HABhi.dia'))
@@ -101,8 +104,7 @@ m.dr1.costs.constrained <- parse.constraints(c("Total non.crab harvest -> Materi
 disaster relief 2 (multi-objective)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
-tmp.list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds'))
-dr2.sim <- tmp.list[[1]]
+dr2.sim <- tmp.list[[4]]
 
 # ---- dia model with fb ----
 m.dr2.costs <- model.dia(here::here('data','dia','feedback','DisasterRelief-2_FeedbackInfra_HABhi.dia'))
@@ -118,8 +120,7 @@ m.dr2.costs.constrained <- parse.constraints(c("Total non.crab harvest -> Materi
 supplemental diversification
 ```{r echo=TRUE}
 # ---- simulation without fb ----
-tmp.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
-sdiv.sim <- tmp.list[[1]]
+sdiv.sim <- tmp.list[[7]]
 
 # ---- dia model with fb---- 
 m.sdiv.costs <- model.dia(here::here('data','dia','feedback','SupplementaryDiversify_FeedbackInfra_HABhi.dia'))
@@ -130,8 +131,7 @@ m.sdiv.costs <- enforce.limitation(m.sdiv.costs)
 insurance
 ```{r echo=TRUE}
 # ---- simulation without fb ----
-tmp.list<- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
-insure.sim <- tmp.list[[1]]
+insure.sim <- tmp.list[[2]]
 
 # ---- dia model ----
 m.insure.costs <- model.dia(here::here('data','dia','feedback','ParametricInsurance_FeedbackInfra_HABhi.dia'))
@@ -148,8 +148,7 @@ m.insure.costs.constrained <- parse.constraints(c("Total non.fishing income -> M
 fisheries diversification 1 (existing)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
-tmp.list <- readRDS(here('data','HAB_sim_out','ExistingFishDiv1_x_HABhi_50k.rds'))
-div1.sim <- tmp.list[[1]]
+div1.sim <- tmp.list[[5]]
 
 # ---- dia model ----
 m.div1.costs <- model.dia(here::here('data','dia','feedback','ExistingFisheriesDiversify_FeedbackInfra_HABhi.dia'))
@@ -164,8 +163,7 @@ m.div1.costs.constrained <- parse.constraints(c("Total non.fishing income -> Mat
 fisheries diversification 2 (new)
 ```{r echo=TRUE}
 # ---- simulation without fb ----
-tmp.list <- readRDS(here('data','HAB_sim_out','NewFishDiv2_x_HABhi_50k.rds'))
-div2.sim <- tmp.list[[1]]
+div2.sim <- tmp.list[[6]]
 rm(tmp.list)
 
 # ---- dia model ----
@@ -179,6 +177,10 @@ m.div2.costs.constrained <- parse.constraints(c("Total non.fishing income -> Mat
 ```
 
 <br>
+
+```{r echo=FALSE}
+rm(tmp.list)
+```
 
 ## Simulate HAB with feedback
 
@@ -324,7 +326,7 @@ names(compare2.list) <- c("Status Quo","(with Feedback)",
                           "Direct Assistance Disaster Relief","(with Feedback) ","Multi-Objective Disaster Relief","(with Feedback)  ",
                           "Insurance","(with Feedback)   ","Existing Fisheries Diversification","(with Feedback)    ","New Fisheries Diversification","(with Feedback)     ","Supplementary Diversification","(with Feedback)      ")
 
-compare2.all <- compare.models.impact.df(sim.list=compare2.list,
+compare2.all <- compare.models.impact.tbl(sim.list=compare2.list,
                                          perturb.list=list(c(`HAB`=1),c(`HAB`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1),c(`HAB`=1,`disaster relief (direct)`=1),
                                                            c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
@@ -342,7 +344,7 @@ compare2.all <- compare.models.impact.df(sim.list=compare2.list,
 
 
 ```{r}
-png(here('drafts','supplement','FigS9-feedbacks-extended.png'), res=200,height=1200,width=1400)
+png(here('doc','drafts','supplement','FigS9-feedbacks-extended.png'), res=200,height=1200,width=1400)
 compare2.all[[3]] + geom_hline(aes(yintercept=2.5),linewidth=1) +
   geom_hline(aes(yintercept=4.5),linewidth=1) +
   geom_hline(aes(yintercept=6.5),linewidth=1) +

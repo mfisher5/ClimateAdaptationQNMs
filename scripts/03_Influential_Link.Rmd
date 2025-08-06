@@ -102,7 +102,7 @@ table.palette.orange <- c("#04BC09", "#ABF1AD","grey85", "#dfc27d","#a6611a","bl
 ## Status Quo
 
 Default
-```{r eval=FALSE}
+```{r eval=TRUE}
 # dia model
 m.sq <- model.dia(here::here('data','dia','StatusQuo_HABhi.dia'))
 m.sq <- enforce.limitation(m.sq)
@@ -153,7 +153,7 @@ sq.no.sampler <- community.ordering.sampler(m.sq.no.constrained)
 
 ### Simulate a HAB
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 ################# HAB x status quo
 sq.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.sq, # the qnm
@@ -188,7 +188,6 @@ sq.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matric
 sq.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.sq.one, # the qnm
                             required.groups = c(0), # allow uncertain edges
-                            sampler=cft.sq.one.sampler,
                             sampler=sq.one.sampler,
                             validators=list(press.validate(
                               m.sq.one,     # the qnm
@@ -197,7 +196,7 @@ sq.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 ```
 
 output into list
-```{r eval=FALSE}
+```{r eval=TRUE}
 out <- list(sq.sim,sq.wait.sim,sq.no.sim, sq.one.sim)
 names(out) <- c("Status Quo","Wait for crab","No effect","Choose one")
 saveRDS(out,here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
@@ -301,7 +300,7 @@ insure.no.sampler <- community.ordering.sampler(m.insure.no.constrained)
 
 ### Simulate HAB
 
-```{r insur.sim, eval=FALSE}
+```{r insur.sim, eval=TRUE}
 
 ## LAST RUN 7/24/2023 to simplify interactions with insurance / crab harvest and emotional & mental health
 
@@ -451,7 +450,7 @@ dr1.no.sampler <- community.ordering.sampler(m.dr1.no.constrained)
 
 ### Simulate HAB
 
-```{r dr1.sim, eval=FALSE}
+```{r dr1.sim, eval=TRUE}
 #---- Default Model with HAB ---- 
 ##### Simulate a HAB
 dr1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
@@ -466,7 +465,7 @@ dr1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices
 
 #---- CHOOSE ONE ----
 ##### Simulate a HAB
-dr1.one.HABhi.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr1.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.dr1.one.habhi, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr1.one.habhi.sampler,
@@ -503,7 +502,7 @@ dr1.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 
 save
 ```{r}
-dr1_list <- list(dr1.sim, dr1.one.HABhi.sim,dr1.wait.sim,dr1.no.sim)
+dr1_list <- list(dr1.sim, dr1.one.sim,dr1.wait.sim,dr1.no.sim)
 names(dr1_list) <- c("Default","Choose one","Wait for crab","No effect")
 saveRDS(dr1_list,here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_50k_run',Sys.Date(), '.rds')))
 # saveRDS(dr1_list,here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds')) # will overwrite
@@ -594,7 +593,7 @@ dr2.no.sampler <- community.ordering.sampler(m.dr2.no.constrained)
 
 ### Simulate HAB
 
-```{r dr2.sim, eval=FALSE}
+```{r dr2.sim, eval=TRUE}
 #---- default Model with HAB ---- 
 #### Simulate a HAB 
 dr2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
@@ -724,7 +723,7 @@ m.sdivS.no <- enforce.limitation(m.sdivS.no)
 
 
 ### Simulate a HAB
-```{r sdiv.sim, eval=FALSE}
+```{r sdiv.sim, eval=TRUE}
 ################# HAB x default
 sdivS.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
                             edges=m.sdivS, # the qnm
@@ -777,7 +776,8 @@ save
 ```{r}
 sdiv_list <- list(sdivS.sim, sdivS.one.sim,sdivS.wait.sim,sdivS.no.sim)
 names(sdiv_list) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(sdiv_list,here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_50k_',format(Sys.Date(),'%d%b%Y'),'.rds')))
+saveRDS(sdiv_list,here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
+# saveRDS(sdiv_list,here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_50k_',format(Sys.Date(),'%d%b%Y'),'.rds')))
 ```
 
 ### View
@@ -802,53 +802,6 @@ compare.sdiv.sub[[3]]
 ```
 
 
-```{r}
-sdiv_list2 <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
-names(sdiv_list2)
-sdiv_list3 <- list(sdiv_list2[[7]],
-                   sdiv_list2[[5]],
-                   sdiv_list2[[3]],
-                   sdiv_list2[[4]])
-names(sdiv_list3) <- c("Default","Choose one","Wait for crab","No effect")
-```
-
-
-```{r fig.height=6, fig.width=6}
-compare.sdiv2.sub <- compare.models.impact.tbl(sim.list=sdiv_list3,
-                                         perturb.list=list(c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1)),
-                                         monitor.list=list(NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
-compare.sdiv2.sub[[3]]
-```
-
-```{r}
-sdiv_list4 <- list(sdiv_list2[[1]],
-                   sdiv_list2[[2]],
-                   sdiv_list2[[3]],
-                   sdiv_list2[[4]])
-names(sdiv_list4) <- c("Default","Choose one","Wait for crab","No effect")
-```
-
-
-```{r fig.height=6, fig.width=6}
-compare.sdiv3.sub <- compare.models.impact.tbl(sim.list=sdiv_list4,
-                                         perturb.list=list(c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1),
-                                                           c(`HAB`=1)),
-                                         monitor.list=list(NA,NA,NA,NA,NA),
-                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
-                                    variable.key = subvars, variable.order="specific_order",plot=TRUE, table.palette=table.palette.orange)
-compare.sdiv3.sub[[3]]
-```
-
-
 ## Visualize Across Strat
 
 Are there commonalities across strategies when we change the *uncertain* dampening relationship between winter crab and non-crab fishing to...
@@ -858,13 +811,13 @@ Are there commonalities across strategies when we change the *uncertain* dampeni
 a *certain* dampening relationship. more crab = less non-crab
 ```{r  fig.height=6, fig.width=8}
 tmp_list <- list(sq.sim, sq.one.sim, insure.sim,insure.one.sim,
-                 dr1.HABhi.sim,dr1.one.sim,
-                 dr2.HABhi.sim,dr2.one.sim,
-                 sdivS.sim,sdivS.one.sim); names(tmp_list) <- c("Status Quo", " ---Choose one SQ",
-                                                                          "Insurance Default"," ---Choose one I",
-                                                                          "Disaster Relief 1 Default"," ---Choose one DR1",
-                                                                          "Disaster Relief 2 Default"," ---Choose one DR2",
-                                                                          "Supp Diverse Default"," ---Choose one SDIV")
+                 dr1.sim,dr1.one.sim,
+                 dr2.sim,dr2.one.sim,
+                 sdivS.sim,sdivS.one.sim); names(tmp_list) <- c("Status Quo", " ---Switch Target SQ",
+                                                                          "Insurance Default"," ---Switch Target I",
+                                                                          "Disaster Relief 1 Default"," ---Switch Target DR1",
+                                                                          "Disaster Relief 2 Default"," ---Switch Target DR2",
+                                                                          "Supp Diverse Default"," ---Switch Target SDIV")
 compare.alt1.sub <- compare.models.impact.tbl(sim.list=tmp_list,
                                          perturb.list=list(c(`HAB`=1),
                                                            c(`HAB`=1),
