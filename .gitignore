@@ -23,6 +23,4 @@ doc/drafts/Ch4_Fig1.pptx
 # code check
 doc/check_reruns.R
 doc/drafts/*.png
-doc/drafts/supplement/**.png
 scripts/*.html
-doc/drafts/supplement/*.png

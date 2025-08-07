@@ -18,7 +18,7 @@ Adaptation to climate change can have trade-offs and unintended outcomes that ma
 
 3. Produce Figure 2 using [`scripts/Fig2.Rmd`](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig2.Rmd), which visualizes simulation output from (2).
 
-4. Run [`scripts/02_Sensitivity`]() to identify influential links according to boosted regression trees (Melbourne-Thomas et al. 2012) and edge strengths (Magel & Francis 2023, ultimately not used in paper). 
+4. Run [`scripts/02_Sensitivity`](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/02_Sensitivity.Rmd) to identify influential links according to boosted regression trees (Melbourne-Thomas et al. 2012) and edge strengths (Magel & Francis 2023, ultimately not used in paper). 
 
 5. Run [`scripts/03_Influential_Link`](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/03_Influential_Link.Rmd) to produce the output for section 3.2.1 *How do model assumptions alter the intensifying / reductive role of adaptation strategies? Altering an influential link.* 
 		

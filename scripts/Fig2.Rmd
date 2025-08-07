@@ -213,7 +213,7 @@ hab.ldiv.plot
 
 ```{r  echo=TRUE, eval=FALSE}
 
-png(here('doc','drafts','FigS5.png'),res=300,width=2200,height=2400)
+png(here('doc','drafts','supplement','FigS5.png'),res=300,width=2200,height=2400)
 plot_grid(plotlist=list(hab.strat.plotA,hab.ldiv.plot),nrow=2, rel_heights=c(1,0.55), labels=c("(a)","(b)"))
 dev.off()
 
