@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="51cm" height="56cm" viewBox="-24 3 1003 1112" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <ellipse style="fill: #c282f0" cx="404.395" cy="748.809" rx="52.6408" ry="51.4554"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="404.395" cy="748.809" rx="52.6408" ry="51.4554"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="404.395" y="753.609">
+      <tspan x="404.395" y="753.609"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #c282f0" cx="733.352" cy="749.909" rx="55.762" ry="53.065"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="733.352" cy="749.909" rx="55.762" ry="53.065"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="733.352" y="754.709">
+      <tspan x="733.352" y="754.709"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #c282f0" cx="827.322" cy="655.796" rx="33.4599" ry="33.414"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="827.322" cy="655.796" rx="33.4599" ry="33.414"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="827.322" y="660.596">
+      <tspan x="827.322" y="660.596"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" x1="772.474" y1="710.728" x2="799.832" y2="683.328"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" points="797.885,692.355 801.412,681.745 790.808,685.289 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="484.39" cy="522.987" rx="33.2617" ry="33.5065"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="484.39" cy="522.987" rx="33.2617" ry="33.5065"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="484.39" y="527.787">
+      <tspan x="484.39" y="527.787"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="399.515" y1="696.569" x2="389.131" y2="585.399"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="394.831,592.664 388.923,583.172 384.875,593.594 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #159915" cx="525.044" cy="1065.31" rx="49.552" ry="47.2983"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="525.044" cy="1065.31" rx="49.552" ry="47.2983"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="525.044" y="1070.11">
+      <tspan x="525.044" y="1070.11"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="521.451" y1="1017.38" x2="486.95" y2="557.146"/>
+    <path style="fill: #6c6a6a" d="M 521.451 1017.38 C 518.958,1017.57 516.278,1015.26 516.091,1012.77 C 515.904,1010.27 518.211,1007.59 520.704,1007.41 C 523.197,1007.22 525.876,1009.53 526.063,1012.02 C 526.25,1014.51 523.944,1017.19 521.451,1017.38z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" d="M 521.451 1017.38 C 518.958,1017.57 516.278,1015.26 516.091,1012.77 C 515.904,1010.27 518.211,1007.59 520.704,1007.41 C 523.197,1007.22 525.876,1009.53 526.063,1012.02 C 526.25,1014.51 523.944,1017.19 521.451,1017.38"/>
+  </g>
+  <g>
+    <ellipse style="fill: #c282f0" cx="576.513" cy="748.373" rx="52.5948" ry="52.545"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="576.513" cy="748.373" rx="52.5948" ry="52.545"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="576.513" y="753.173">
+      <tspan x="576.513" y="753.173"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="379.898" y1="862.674" x2="392.411" y2="804.512"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="395.666,813.154 392.881,802.326 385.89,811.051 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="581.137" y1="695.036" x2="590.481" y2="587.256"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="594.792,595.423 590.674,585.028 584.829,594.559 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="636.462" y1="864.058" x2="601.154" y2="795.923"/>
+    <path style="fill: #6c6a6a" d="M 601.154 795.923 C 603.374,794.773 606.743,795.843 607.894,798.062 C 609.044,800.282 607.975,803.652 605.755,804.802 C 603.535,805.952 600.165,804.883 599.015,802.663 C 597.865,800.444 598.934,797.074 601.154,795.923z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" d="M 601.154 795.923 C 603.374,794.773 606.743,795.843 607.894,798.062 C 609.044,800.282 607.975,803.652 605.755,804.802 C 603.535,805.952 600.165,804.883 599.015,802.663 C 597.865,800.444 598.934,797.074 601.154,795.923"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="488.736" y1="887.522" x2="545.563" y2="797.437"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="545.649,806.671 546.756,795.545 537.192,801.336 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="455.615" y1="887.162" x2="406.667" y2="804.117"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="414.917,808.266 405.531,802.19 406.302,813.344 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #c282f0" cx="476.289" cy="640.648" rx="33.7446" ry="33.0403"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="476.289" cy="640.648" rx="33.7446" ry="33.0403"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="476.289" y="645.448">
+      <tspan x="476.289" y="645.448"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="385.647" cy="548.103" rx="34.3631" ry="31.9793"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="385.647" cy="548.103" rx="34.3631" ry="31.9793"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="385.647" y="552.903">
+      <tspan x="385.647" y="552.903"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="593.727" cy="549.812" rx="34.2332" ry="32.1199"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="593.727" cy="549.812" rx="34.2332" ry="32.1199"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="593.727" y="554.612">
+      <tspan x="593.727" y="554.612"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" x1="419.686" y1="539.445" x2="446.86" y2="532.533"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" points="440.568,539.292 449.027,531.982 438.103,529.601 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" x1="559.633" y1="541.447" x2="522.027" y2="532.221"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" points="530.759,529.215 519.855,531.688 528.376,538.927 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="324.091" cy="374.334" rx="32.0954" ry="25.7357"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="324.091" cy="374.334" rx="32.0954" ry="25.7357"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="324.091" y="379.134">
+      <tspan x="324.091" y="379.134"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="821.827" cy="520.554" rx="33.6588" ry="31.832"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="821.827" cy="520.554" rx="33.6588" ry="31.832"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="821.827" y="525.354">
+      <tspan x="821.827" y="525.354"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="752.927" y1="699.164" x2="808.326" y2="555.552"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="810.197,564.595 809.131,553.465 800.867,560.996 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #6fb4ca" cx="203.139" cy="32.3396" rx="34.1057" ry="28.2953"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="203.139" cy="32.3396" rx="34.1057" ry="28.2953"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="203.139" y="37.1396">
+      <tspan x="203.139" y="37.1396"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #6fb4ca" cx="819.842" cy="32.8935" rx="33.8317" ry="28.755"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="819.842" cy="32.8935" rx="33.8317" ry="28.755"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="819.842" y="37.6935">
+      <tspan x="819.842" y="37.6935"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="438.042" y1="348.586" x2="530.488" y2="153.717"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="531.678,162.875 531.446,151.697 522.643,158.589 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" x1="433.619" y1="704.843" x2="454.852" y2="672.898"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" points="454.718,682.132 456.09,671.036 446.39,676.596 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" x1="540.024" y1="709.153" x2="502.739" y2="669.078"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" points="511.688,671.357 501.216,667.441 504.367,678.168 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="666.967" y1="864.663" x2="705.957" y2="797.264"/>
+    <path style="fill: #6c6a6a" d="M 705.957 797.264 C 708.121,798.516 709.033,801.932 707.781,804.096 C 706.529,806.26 703.113,807.172 700.949,805.92 C 698.785,804.668 697.873,801.252 699.125,799.088 C 700.377,796.924 703.793,796.012 705.957,797.264z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" d="M 705.957 797.264 C 708.121,798.516 709.033,801.932 707.781,804.096 C 706.529,806.26 703.113,807.172 700.949,805.92 C 698.785,804.668 697.873,801.252 699.125,799.088 C 700.377,796.924 703.793,796.012 705.957,797.264"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="680.946" y1="876.726" x2="872.013" y2="777.911"/>
+    <path style="fill: #6c6a6a" d="M 872.013 777.911 C 873.162,780.131 872.09,783.5 869.869,784.649 C 867.648,785.797 864.279,784.725 863.131,782.505 C 861.983,780.284 863.055,776.915 865.275,775.766 C 867.496,774.618 870.865,775.69 872.013,777.911z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" d="M 872.013 777.911 C 873.162,780.131 872.09,783.5 869.869,784.649 C 867.648,785.797 864.279,784.725 863.131,782.505 C 861.983,780.284 863.055,776.915 865.275,775.766 C 867.496,774.618 870.865,775.69 872.013,777.911"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" x1="883.118" y1="712.628" x2="854.57" y2="683.55"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" points="863.577,685.587 853.003,681.954 856.441,692.593 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #9d46dc" points="424.54,796.348 424.54,823.098 712.012,823.098 712.012,798.934 "/>
+    <path style="fill: #9d46dc" d="M 712.012 798.934 C 714.512,798.934 717.012,801.434 717.012,803.934 C 717.012,806.434 714.512,808.934 712.012,808.934 C 709.512,808.934 707.012,806.434 707.012,803.934 C 707.012,801.434 709.512,798.934 712.012,798.934z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" d="M 712.012 798.934 C 714.512,798.934 717.012,801.434 717.012,803.934 C 717.012,806.434 714.512,808.934 712.012,808.934 C 709.512,808.934 707.012,806.434 707.012,803.934 C 707.012,801.434 709.512,798.934 712.012,798.934"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" points="596.64,796.918 596.64,828.55 921.888,828.55 921.888,806.176 "/>
+    <path style="fill: #9d46dc" d="M 596.64 796.918 C 599.14,796.918 601.64,799.418 601.64,801.918 C 601.64,804.418 599.14,806.918 596.64,806.918 C 594.14,806.918 591.64,804.418 591.64,801.918 C 591.64,799.418 594.14,796.918 596.64,796.918z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" d="M 596.64 796.918 C 599.14,796.918 601.64,799.418 601.64,801.918 C 601.64,804.418 599.14,806.918 596.64,806.918 C 594.14,806.918 591.64,804.418 591.64,801.918 C 591.64,799.418 594.14,796.918 596.64,796.918"/>
+    <path style="fill: #9d46dc" d="M 921.888 806.176 C 924.388,806.176 926.888,808.676 926.888,811.176 C 926.888,813.676 924.388,816.176 921.888,816.176 C 919.388,816.176 916.888,813.676 916.888,811.176 C 916.888,808.676 919.388,806.176 921.888,806.176z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #9d46dc" d="M 921.888 806.176 C 924.388,806.176 926.888,808.676 926.888,811.176 C 926.888,813.676 924.388,816.176 921.888,816.176 C 919.388,816.176 916.888,813.676 916.888,811.176 C 916.888,808.676 919.388,806.176 921.888,806.176"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="909.244" y1="701.466" x2="838.157" y2="554.35"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="846.037,559.165 837.184,552.337 837.033,563.516 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="426.117,346.769 426.117,207.076 203.139,207.076 203.139,66.098 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="208.139,73.8619 203.139,63.8619 198.139,73.8619 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="534.609,347.838 534.609,202.358 203.14,202.358 203.14,65.1069 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="208.14,72.8709 203.14,62.8709 198.14,72.8709 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="808.946,491.144 808.946,434.13 177.678,434.13 177.678,405.125 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="182.678,412.889 177.678,402.889 172.678,412.889 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="783.274,949.368 133.175,949.368 133.175,373.724 144.6,373.724 "/>
+    <path style="fill: #6c6a6a" d="M 144.6 373.724 C 144.6,376.224 142.1,378.724 139.6,378.724 C 137.1,378.724 134.6,376.224 134.6,373.724 C 134.6,371.224 137.1,368.724 139.6,368.724 C 142.1,368.724 144.6,371.224 144.6,373.724z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" d="M 144.6 373.724 C 144.6,376.224 142.1,378.724 139.6,378.724 C 137.1,378.724 134.6,376.224 134.6,373.724 C 134.6,371.224 137.1,368.724 139.6,368.724 C 142.1,368.724 144.6,371.224 144.6,373.724"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="374.552" y1="516.784" x2="334.677" y2="404.216"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="341.982,409.865 333.93,402.108 332.556,413.204 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="627.047" y1="348.061" x2="698.638" y2="155.565"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="700.618,164.584 699.417,153.469 691.245,161.099 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="821.04,157.529 821.04,185.372 203.139,185.372 203.139,66.1125 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="826.04,165.293 821.04,155.293 816.04,165.293 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="208.139,73.8764 203.139,63.8764 198.139,73.8764 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="179.683" y1="346.844" x2="200.628" y2="66.012"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="205.037,74.1263 200.794,63.7821 195.064,73.3825 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="484.39,488.48 484.39,450.912 177.678,450.912 177.678,405.153 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="182.678,412.917 177.678,402.917 172.678,412.917 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="261.109" cy="523.32" rx="33.6289" ry="31.7943"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="261.109" cy="523.32" rx="33.6289" ry="31.7943"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="261.109" y="528.12">
+      <tspan x="261.109" y="528.12"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="244.956" y1="494.358" x2="193.218" y2="401.588"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="201.367,405.933 192.129,399.635 192.633,410.804 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="243.802" y1="695.639" x2="257.383" y2="560.418"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="261.582,568.643 257.606,558.193 251.632,567.644 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="787.344" y1="43.5865" x2="578.84" y2="112.192"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="584.652,105.015 576.716,112.89 587.777,114.514 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" x1="772.811" y1="923.724" x2="684.748" y2="912.389"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" points="693.086,908.421 682.53,912.103 691.81,918.339 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" x1="772.496" y1="926.719" x2="506.19" y2="915.893"/>
+    <path style="fill: #c282f0" d="M 506.19 915.893 C 506.292,913.395 508.891,910.999 511.389,911.1 C 513.887,911.202 516.284,913.801 516.182,916.299 C 516.081,918.797 513.481,921.193 510.983,921.092 C 508.485,920.99 506.089,918.391 506.19,915.893z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" d="M 506.19 915.893 C 506.292,913.395 508.891,910.999 511.389,911.1 C 513.887,911.202 516.284,913.801 516.182,916.299 C 516.081,918.797 513.481,921.193 510.983,921.092 C 508.485,920.99 506.089,918.391 506.19,915.893"/>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="282.263" cy="915.56" rx="33.5011" ry="30.0497"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="282.263" cy="915.56" rx="33.5011" ry="30.0497"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="282.263" y="920.36">
+      <tspan x="282.263" y="920.36"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="301.242" y1="889.647" x2="370.515" y2="795.067"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="369.961,804.285 371.836,793.263 361.894,798.376 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" points="806.963,897.334 806.963,855.816 282.264,855.816 282.264,885.51 "/>
+    <path style="fill: #c282f0" d="M 282.264 885.51 C 279.764,885.51 277.264,883.01 277.264,880.51 C 277.264,878.01 279.764,875.51 282.264,875.51 C 284.764,875.51 287.264,878.01 287.264,880.51 C 287.264,883.01 284.764,885.51 282.264,885.51z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #c282f0" d="M 282.264 885.51 C 279.764,885.51 277.264,883.01 277.264,880.51 C 277.264,878.01 279.764,875.51 282.264,875.51 C 284.764,875.51 287.264,878.01 287.264,880.51 C 287.264,883.01 284.764,885.51 282.264,885.51"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="808.946,491.144 808.946,428.534 384.352,428.534 384.352,283.76 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="389.352,291.524 384.352,281.524 379.352,291.524 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="785.033" y1="32.9283" x2="738.61" y2="32.9747"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="746.369,27.9669 736.374,32.9769 746.379,37.9669 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="250.527" cy="358.441" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="250.527" cy="358.441" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="250.527" y="363.241">
+      <tspan x="250.527" y="363.241"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="246.853" y1="331.748" x2="240.616" y2="286.419"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="246.627,293.429 240.311,284.204 236.721,294.792 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="273.377" y1="339.053" x2="345.818" y2="277.587"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="343.133,286.423 347.523,276.14 336.663,278.798 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="794.203" y1="500.726" x2="645.897" y2="394.274"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="655.119,394.739 644.08,392.97 649.288,402.863 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="506.576" y1="496.702" x2="591.889" y2="395.629"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="590.702,404.787 593.332,393.921 583.061,398.337 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="374.569" y1="516.797" x2="214.57" y2="64.6433"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="221.874,70.2946 213.824,62.5354 212.447,73.6305 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #159915" cx="779.999" cy="1066.41" rx="49.7889" ry="47.1983"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="779.999" cy="1066.41" rx="49.7889" ry="47.1983"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="779.999" y="1071.21">
+      <tspan x="779.999" y="1071.21"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="799.995" y1="1022.12" x2="899.467" y2="801.781"/>
+    <path style="fill: #6c6a6a" d="M 799.995 1022.12 C 797.717,1021.09 796.467,1017.78 797.496,1015.5 C 798.524,1013.22 801.832,1011.97 804.11,1013 C 806.389,1014.03 807.639,1017.34 806.61,1019.62 C 805.581,1021.89 802.274,1023.14 799.995,1022.12z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" d="M 799.995 1022.12 C 797.717,1021.09 796.467,1017.78 797.496,1015.5 C 798.524,1013.22 801.832,1011.97 804.11,1013 C 806.389,1014.03 807.639,1017.34 806.61,1019.62 C 805.581,1021.89 802.274,1023.14 799.995,1022.12"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="772.972" y1="1018.73" x2="741.238" y2="803.419"/>
+    <path style="fill: #6c6a6a" d="M 772.972 1018.73 C 770.499,1019.1 767.661,1016.99 767.297,1014.51 C 766.932,1012.04 769.041,1009.2 771.514,1008.84 C 773.987,1008.47 776.825,1010.58 777.19,1013.06 C 777.554,1015.53 775.446,1018.37 772.972,1018.73z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" d="M 772.972 1018.73 C 770.499,1019.1 767.661,1016.99 767.297,1014.51 C 766.932,1012.04 769.041,1009.2 771.514,1008.84 C 773.987,1008.47 776.825,1010.58 777.19,1013.06 C 777.554,1015.53 775.446,1018.37 772.972,1018.73"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="753.296" y1="335.212" x2="569.067" y2="147.941"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="578.076,149.97 567.499,146.347 570.947,156.982 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="483.586" y1="607.384" x2="527.834" y2="405.674"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="531.054,414.329 528.313,403.49 521.287,412.186 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="802.479" y1="631.947" x2="559.22" y2="398.418"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="568.284,400.188 557.607,396.87 561.358,407.402 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="512.683" y1="503.582" x2="673.035" y2="393.603"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="669.46,402.118 674.879,392.339 663.804,393.871 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #4d4d4d" x1="800.635" y1="494.583" x2="723.129" y2="399.593"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #4d4d4d" points="731.911,402.447 721.715,397.86 724.163,408.769 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #6fb4ca" cx="699.115" cy="33.0141" rx="34.0155" ry="28.4985"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="699.115" cy="33.0141" rx="34.0155" ry="28.4985"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="699.115" y="37.8141">
+      <tspan x="699.115" y="37.8141"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="545.693" y1="349.409" x2="673.274" y2="57.264"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="674.749,66.3801 674.169,55.2148 665.585,62.378 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #9cf0fb" cx="710.298" cy="124.213" rx="30.6258" ry="27.6656"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="710.298" cy="124.213" rx="30.6258" ry="27.6656"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="710.298" y="129.013">
+      <tspan x="710.298" y="129.013"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="733.572" y1="104.811" x2="791.535" y2="56.4912"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="788.773,65.3031 793.252,55.0594 782.369,57.6221 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="820.665" y1="95.7701" x2="820.289" y2="67.0883"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="825.39,74.7861 820.26,64.8524 815.391,74.917 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="601.264" y1="350.357" x2="402.424" y2="61.7136"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="410.946,65.2708 401.155,59.8722 402.711,70.9438 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="692.717" y1="347.858" x2="591.14" y2="65.4541"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="598.473,71.0675 590.383,63.35 589.063,74.4521 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="842.713" y1="332.259" x2="724.929" y2="57.2765"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="732.582,62.4446 724.048,55.221 723.39,66.382 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="481.547" y1="229.04" x2="398.056" y2="63.6517"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="406.018,68.3293 397.048,61.6555 397.091,72.8358 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="373.329" y1="228.366" x2="380.847" y2="66.4107"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="385.482,74.3982 380.951,64.1771 375.493,73.9345 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #6fb4ca" x1="279.668" y1="345.942" x2="464.985" y2="266.458"/>
+    <path style="fill: #6fb4ca" d="M 464.985 266.458 C 465.971,268.756 464.658,272.039 462.361,273.024 C 460.063,274.01 456.78,272.698 455.795,270.4 C 454.809,268.103 456.121,264.82 458.419,263.834 C 460.717,262.849 464,264.161 464.985,266.458z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" d="M 464.985 266.458 C 465.971,268.756 464.658,272.039 462.361,273.024 C 460.063,274.01 456.78,272.698 455.795,270.4 C 454.809,268.103 456.121,264.82 458.419,263.834 C 460.717,262.849 464,264.161 464.985,266.458"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" x1="232.349" y1="228.535" x2="208.126" y2="65.8368"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="214.215,72.7798 207.797,63.6251 204.324,74.2523 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="470.005" y1="607.217" x2="431.947" y2="404.739"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="438.295,411.446 431.533,402.542 428.467,413.293 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="799.149" y1="635.989" x2="454.808" y2="393.895"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="464.035,394.27 452.978,392.609 458.283,402.451 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="477.857" y1="606.65" x2="492.678" y2="285.356"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="497.315,293.342 492.781,283.122 487.326,292.881 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="805.348" y1="629.295" x2="515.493" y2="279.727"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="524.297,282.512 514.065,278.006 516.599,288.895 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" x1="532.791" y1="1017.61" x2="567.212" y2="805.645"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="570.903,814.11 567.57,803.438 561.032,812.507 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #000000" cx="45.2709" cy="826.704" rx="68.1709" ry="67.4036"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff0000" cx="45.2709" cy="826.704" rx="68.1709" ry="67.4036"/>
+    <text font-size="50.8" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="45.2709" y="845.754">
+      <tspan x="45.2709" y="845.754">HAB</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 6; stroke: #000000" x1="113.099" y1="840.086" x2="346.192" y2="886.074"/>
+    <path style="fill: #000000" d="M 346.192 886.074 C 345.709,888.527 342.772,890.496 340.319,890.012 C 337.866,889.528 335.898,886.591 336.382,884.138 C 336.865,881.686 339.802,879.717 342.255,880.201 C 344.708,880.685 346.676,883.621 346.192,886.074z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 6; stroke: #000000" d="M 346.192 886.074 C 345.709,888.527 342.772,890.496 340.319,890.012 C 337.866,889.528 335.898,886.591 336.382,884.138 C 336.865,881.686 339.802,879.717 342.255,880.201 C 344.708,880.685 346.676,883.621 346.192,886.074"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 6; stroke-dasharray: 4; stroke: #000000" x1="109.9" y1="850.935" x2="250.426" y2="903.623"/>
+    <path style="fill: #000000" d="M 250.426 903.623 C 249.548,905.964 246.33,907.427 243.989,906.549 C 241.648,905.672 240.185,902.453 241.062,900.112 C 241.94,897.771 245.159,896.308 247.5,897.186 C 249.84,898.064 251.304,901.282 250.426,903.623z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 6; stroke: #000000" d="M 250.426 903.623 C 249.548,905.964 246.33,907.427 243.989,906.549 C 241.648,905.672 240.185,902.453 241.062,900.112 C 241.94,897.771 245.159,896.308 247.5,897.186 C 249.84,898.064 251.304,901.282 250.426,903.623"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="484.39,489.48 484.39,446.718 372.079,446.718 372.079,286.718 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6c6a6a" points="377.079,294.482 372.079,284.482 367.079,294.482 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="324.091,347.594 324.091,164.612 675.064,164.612 675.064,57.6377 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="680.064,65.4017 675.064,55.4017 670.064,65.4017 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="324.092,348.598 324.092,168.386 698.578,168.386 698.578,154.245 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #6fb4ca" points="703.578,162.008 698.578,152.008 693.578,162.008 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="379.897" cy="892.724" rx="33.5011" ry="30.0497"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="379.897" cy="892.724" rx="33.5011" ry="30.0497"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="379.897" y="897.524">
+      <tspan x="379.897" y="897.524"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="471.723" cy="914.492" rx="33.5011" ry="30.0497"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="471.723" cy="914.492" rx="33.5011" ry="30.0497"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="471.723" y="919.292">
+      <tspan x="471.723" y="919.292"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="651.041" cy="892.192" rx="33.5011" ry="30.0497"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="651.041" cy="892.192" rx="33.5011" ry="30.0497"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="651.041" y="896.992">
+      <tspan x="651.041" y="896.992"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #f5ecfa" cx="806.963" cy="928.12" rx="33.5011" ry="30.0497"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="806.963" cy="928.12" rx="33.5011" ry="30.0497"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="806.963" y="932.92">
+      <tspan x="806.963" y="932.92"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #c282f0" cx="921.888" cy="752.117" rx="55.762" ry="53.065"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="921.888" cy="752.117" rx="55.762" ry="53.065"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="921.888" y="756.917">
+      <tspan x="921.888" y="756.917"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #c282f0" cx="238.559" cy="747.835" rx="52.6408" ry="51.4554"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="238.559" cy="747.835" rx="52.6408" ry="51.4554"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="238.559" y="752.635">
+      <tspan x="238.559" y="752.635"></tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 6; stroke: #000000" x1="112.837" y1="812.049" x2="352.03" y2="760.167"/>
+    <path style="fill: #000000" d="M 352.03 760.167 C 352.56,762.611 350.647,765.584 348.203,766.114 C 345.76,766.644 342.787,764.73 342.257,762.287 C 341.727,759.844 343.64,756.871 346.084,756.341 C 348.527,755.811 351.5,757.724 352.03,760.167z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 6; stroke: #000000" d="M 352.03 760.167 C 352.56,762.611 350.647,765.584 348.203,766.114 C 345.76,766.644 342.787,764.73 342.257,762.287 C 341.727,759.844 343.64,756.871 346.084,756.341 C 348.527,755.811 351.5,757.724 352.03,760.167"/>
+  </g>
+  <g>
+    <ellipse style="fill: #9cf0fb" cx="544.888" cy="123.363" rx="30.6258" ry="27.6656"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="544.888" cy="123.363" rx="30.6258" ry="27.6656"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="544.888" y="128.163">
+      <tspan x="544.888" y="128.163"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #9cf0fb" cx="821.04" cy="124.432" rx="30.6258" ry="27.6656"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="821.04" cy="124.432" rx="30.6258" ry="27.6656"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="821.04" y="129.232">
+      <tspan x="821.04" y="129.232"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="177.678" cy="373.723" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="177.678" cy="373.723" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="177.678" y="378.523">
+      <tspan x="177.678" y="378.523"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="236.333" cy="255.295" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="236.333" cy="255.295" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="236.333" y="260.095">
+      <tspan x="236.333" y="260.095"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="372.079" cy="255.305" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="372.079" cy="255.305" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="372.079" y="260.105">
+      <tspan x="372.079" y="260.105"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="426.117" cy="373.723" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="426.117" cy="373.723" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="426.117" y="378.523">
+      <tspan x="426.117" y="378.523"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="494.127" cy="253.959" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="494.127" cy="253.959" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="494.127" y="258.759">
+      <tspan x="494.127" y="258.759"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="534.609" cy="374.791" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="534.609" cy="374.791" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="534.609" y="379.591">
+      <tspan x="534.609" y="379.591"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="617.453" cy="373.857" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="617.453" cy="373.857" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="617.453" y="378.657">
+      <tspan x="617.453" y="378.657"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="773.969" cy="356.225" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="773.969" cy="356.225" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="773.969" y="361.025">
+      <tspan x="773.969" y="361.025"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="853.609" cy="357.695" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="853.609" cy="357.695" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="853.609" y="362.495">
+      <tspan x="853.609" y="362.495"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #d2ebf3" cx="702.021" cy="373.723" rx="32.0727" ry="25.9573"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="702.021" cy="373.723" rx="32.0727" ry="25.9573"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="702.021" y="378.523">
+      <tspan x="702.021" y="378.523"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #6fb4ca" cx="579.542" cy="33.2092" rx="34.1057" ry="28.2953"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="579.542" cy="33.2092" rx="34.1057" ry="28.2953"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="579.542" y="38.0092">
+      <tspan x="579.542" y="38.0092"></tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #6fb4ca" cx="382.414" cy="32.6663" rx="34.1057" ry="28.2953"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="382.414" cy="32.6663" rx="34.1057" ry="28.2953"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="382.414" y="37.4663">
+      <tspan x="382.414" y="37.4663"></tspan>
+    </text>
+  </g>
+</svg>
