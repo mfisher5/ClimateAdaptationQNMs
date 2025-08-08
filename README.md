@@ -1,8 +1,11 @@
 # Climate Adaptation QNMs
 
-### Published as [Fisher et al. 2025 *Ecology & Society*](doi.org)
+#### Published as [Fisher et al. 2025 *Ecology & Society*](doi.org)
 
-### Product of the Ocean Modeling Forum [Climate & Communities Working Group](https://oceanmodelingforum.org/working-groups/climate-and-communities/)
+#### Product of the Ocean Modeling Forum [Climate & Communities Working Group](https://oceanmodelingforum.org/working-groups/climate-and-communities/)
+
+#### Authors:
+Mary C. Fisher, Laura K. Nelson, Tessa Francis, Phillip Levin, Jameal F. Samhouri, Chris Harvey, Laura Dee, Kristin N. Marshall, Steve J. Miller, Stephanie K. Moore, Michele L. Barnes, Curtis Cha, Joshua Eli Cinner, Steven A. Gray, Andre E. Punt, Corey Ridings, Franz W. Simon
 
 
 Adaptation to climate change can have trade-offs and unintended outcomes that may add to climate impacts. Identifying how these consequences may arise in local contexts is an important step in climate adaptation planning, but the tools for doing so are still evolving. We demonstrate how social-ecological Qualitative Network Models (QNMs) can be used to explore the consequences of climate adaptation in fisheries. Drawing on the dynamics of fishers’ participation in the U.S. West Coast Dungeness crab fishery, we simulate a climate-intensified harmful algal bloom in a model fishing community and compare outcomes for human well-being, with and without climate adaptation. We consider a range of climate adaptations, from coping mechanisms to transformational adaptation, based on actions identified during participatory scenario planning initiatives. We first use QNMs to identify how common trade-offs arise across adaptation strategies, specifically highlighting how diverse strategies focusing on material loss result in persistent negative outcomes for community relationships and culture. We then explore alternative configurations of model structure to understand how plausible diversity in a social-ecological system can contribute to unintended, inequitable outcomes from climate adaptation. In our QNMs, altering in-season flexibility - fishers’ capacity to increase effort in alternative fisheries not affected by a harmful algal bloom - greatly influenced the degree to which climate adaptation reduced or intensified HAB impacts on well-being. Based on this exercise, QNMs are a useful tool for climate adaptation planning because they can be used to explore common trade-offs across adaptation options; highlight potentially inequitable adaptation outcomes associated with system complexity and uncertainties; and direct future research and monitoring priorities to help early identification of unintended consequences.
@@ -31,7 +34,7 @@ Adaptation to climate change can have trade-offs and unintended outcomes that ma
 
 **6.** Produce Figure 3 using [Fig3.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig3.Rmd), which visualizes simulation output from (5)
 
-**7.** Run script [04_Feedback.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/04_Feedback.Rmd) to produce the output for Results 3.2.2 *How do model assumptions alter the intensifying / reductive role of adaptation strategies? Altering an influential link.*
+**7.** Run script [04_Feedback.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/04_Feedback.Rmd) to produce the output for Results 3.2.2 *How do model assumptions alter the intensifying / reductive role of adaptation strategies? Completing a feedback.*
 		
 		- Input: QNMs as Dia objects from *data/dia/feedback*. 
 		- Output: *QPress* simulation output in a list, as the .rds object *data/HAB_sim_out/Feedback_Infrastructure_x_HABhi_50k.rds*
@@ -44,3 +47,4 @@ All .Rmd scripts in the steps above can be found in the `**scripts**` folder. Th
 There is extensive supplementary material published with Fisher et al. to explain the rationale behind QNM variables and structure.
 
 #### Acknowledgements
+We are indebted to Dick Ogg, Garrett Dalan, and Mike Conroy for sharing their experiences and knowledge, which directed the questions we focused on and the variables we retained in the final model. We are similarly grateful to Sunny Jardine and Gway Kirchner, for their early reviews of the model structure. Jon Reum provided helpful feedback on an earlier draft of this paper. Genoa Sullaway provided organizational support for working meetings. Funding was provided by The David and Lucile Packard Foundation.
