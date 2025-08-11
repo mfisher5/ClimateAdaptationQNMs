@@ -1,6 +1,6 @@
 # Climate Adaptation QNMs
 
-#### Published as [Fisher et al. 2025 *Ecology & Society*](doi.org)
+#### Published as [Fisher et al. 2025...](doi.org)
 
 #### Product of the Ocean Modeling Forum [Climate & Communities Working Group](https://oceanmodelingforum.org/working-groups/climate-and-communities/)
 
@@ -13,14 +13,14 @@ Adaptation to climate change can have trade-offs and unintended outcomes that ma
 
 ### Replicating Fisher et al. (2025)
 
-**1.** The simplified Status Quo QNM structure in Figure 1 can be view using the [StatusQuo_HABhi_Fig1](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/StatusQuo_HABhi_Fig1.dia) and the [Fig1-StatusQuo-Fishing-Wellbeing](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/Fig1-StatusQuo-Fishing-Wellbeing.dia) Dia objects. You can also find Dia objects for the full Status Quo QNM [Fig S1](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/StatusQuo_HABhi_illustration_FigS1.dia) and the [Imposed](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/LivelihoodDiversify-1_HABhi_illustration.dia) / [Invested](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/LivelihoodDiversify-2_HABhi_illustration.dia) New Livelihoods QNMs (Fig S2-S3) in the `data/dia/figures` folder. These are nicely formatted versions of the dia objects that are read into R in Steps (2), (5), and (7), which are in the `data/dia` folder. *To get high-resolution versions of any Dia object, export the diagram as an SVG.*
+**1.** The simplified Status Quo QNM structure in Figure 1 can be viewed in Dia using [StatusQuo_HABhi_Fig1](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/StatusQuo_HABhi_Fig1.dia) and [Fig1-StatusQuo-Fishing-Wellbeing](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/Fig1-StatusQuo-Fishing-Wellbeing.dia). You can also find Dia objects for the full Status Quo QNM [Fig S1](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/StatusQuo_HABhi_illustration_FigS1.dia) and the Imposed / Invested New Livelihoods QNMs, Fig [S2](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/LivelihoodDiversify-1_HABhi_illustration.dia) - [S3](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/data/dia/figures/LivelihoodDiversify-2_HABhi_illustration.dia) in the `data/dia/figures` folder. These are nicely formatted versions of the dia objects that are read into R for modeling in Steps (2), (5), and (7), which are in the `data/dia` folder. To get high-resolution image files of any Dia object, export the diagram as an SVG.
 
 **2.** Run script [01_StatusQuo_Strat_x_HABhi](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/01_StatusQuo_Strat_x_HABhi.Rmd) to reproduce Results 3.1. *What HAB impacts are intensified / limited across adaptation strategies?* 
 		
 		- Input: QNMs as Dia objects from *data/dia*. 
 		- Output: *QPress* simulation output as an .rds object in *data/HAB_sim_out*.
 
-**3.** Produce Figure 2 using script [Fig2.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig2.Rmd), which visualizes simulation output from (2).
+**3.** Visualize simulation output from (2) as Figure 2 using script [Fig2.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig2.Rmd).
 
 **4.** Run script [02_Sensitivity](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/02_Sensitivity.Rmd) to identify influential links according to boosted regression trees (Melbourne-Thomas et al. 2012) and edge strengths (Magel & Francis 2023; ultimately not used in paper). 
 
@@ -33,14 +33,14 @@ Adaptation to climate change can have trade-offs and unintended outcomes that ma
 		- Input: QNMs as Dia objects from *data/dia/influential_link*. 
 		- Output: *QPress* simulation output in a list, saved as .rds objects in *data/HAB_sim_out*. There is one object per strategy.
 
-**6.** Produce Figure 3 using [Fig3.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig3.Rmd), which visualizes simulation output from (5)
+**6.** Visualize simulation output from (5) as Figure 3 using [Fig3.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig3.Rmd). 
 
 **7.** Run script [04_Feedback.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/04_Feedback.Rmd) to produce the output for Results 3.2.2 *How do model assumptions alter the intensifying / reductive role of adaptation strategies? Completing a feedback.*
 		
 		- Input: QNMs as Dia objects from *data/dia/feedback*. 
 		- Output: *QPress* simulation output in a list, as the .rds object *data/HAB_sim_out/Feedback_Infrastructure_x_HABhi_50k.rds*
 
-**8.** Produce Figure 4 using [Fig4.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig4.Rmd), which visualizes simulation output from (7)
+**8.** Visualize simulation output from (7) as Figure 4 using [Fig4.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig4.Rmd). 
 
 
 All .Rmd scripts in the steps above can be found in the `**scripts**` folder. The `**R**` folder contains custom functions that are called in the scripts listed above. Figures are saved into the `**drafts**` folder. The `**doc**` folder contains a back-up of the publicly available documents / public-facing webpages from the Pacific Fishery Management Council's scenario planning initiative.

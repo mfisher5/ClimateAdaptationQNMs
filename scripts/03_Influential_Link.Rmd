@@ -1,5 +1,5 @@
 ---
-title: "Altering an Influential Link: Winter Fishing Opportunity"
+title: "Altering an Influential Link: Early Season Fishing Flexibility"
 author: "M Fisher"
 date: "run 2023-07-27"
 output: 
@@ -810,6 +810,7 @@ compare.sdiv.sub[[3]]
 
 ## Visualize Across Strat
 
+Use more extensive visualizations than presented in the paper to determine:
 Are there commonalities across strategies when we change the *uncertain* dampening relationship between winter crab and non-crab fishing to...
 
 ### Switching targets
