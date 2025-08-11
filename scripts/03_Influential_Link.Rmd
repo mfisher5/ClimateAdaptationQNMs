@@ -78,6 +78,13 @@ get.score.matrix <- function(x){
 ```
 
 ## Set up 
+
+how many stable matrices do you want *QPress* to reach? (Fisher et al. uses 10,000; any number up to 50,000 should still take a max of 1-2 minutes per QNM) 
+```{r}
+nmat <- 10000
+```
+
+
 variable key - this tells the `impact.table` function which variables to report results for, and in what order.
 ```{r}
 sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
@@ -155,7 +162,7 @@ sq.no.sampler <- community.ordering.sampler(m.sq.no.constrained)
 
 ```{r eval=TRUE}
 ################# HAB x status quo
-sq.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sq.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sq, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=sq.sampler,
@@ -165,7 +172,7 @@ sq.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices 
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
 ################# HAB x status quo - wait for crab
-sq.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sq.wait.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sq.wait, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=sq.wait.sampler,
@@ -175,7 +182,7 @@ sq.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matr
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
 ################# HAB x status quo - no effect
-sq.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sq.no.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sq.no, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=sq.no.sampler,
@@ -185,7 +192,7 @@ sq.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matric
                               monitor = NA))) # a list of expected outcomes that should happen in the simulation (I don't usually use this)
 
 ################# HAB x status quo - choose one
-sq.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sq.one.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sq.one, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=sq.one.sampler,
@@ -199,7 +206,7 @@ output into list
 ```{r eval=TRUE}
 out <- list(sq.sim,sq.wait.sim,sq.no.sim, sq.one.sim)
 names(out) <- c("Status Quo","Wait for crab","No effect","Choose one")
-saveRDS(out,here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
+saveRDS(out,here('data','HAB_sim_out',paste0('StatusQuo_x_HABhi_',nmat/1000,'k.rds')))
 ```
 
 
@@ -208,7 +215,7 @@ saveRDS(out,here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
 
 read back in
 ```{r}
-sqlist <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
+sqlist <- readRDS(here('data','HAB_sim_out',paste0('StatusQuo_x_HABhi_',nmat/1000,'k.rds')))
 
 sq.sim <- sqlist[[1]]
 sq.wait.sim <- sqlist[[2]]
@@ -305,7 +312,7 @@ insure.no.sampler <- community.ordering.sampler(m.insure.no.constrained)
 ## LAST RUN 7/24/2023 to simplify interactions with insurance / crab harvest and emotional & mental health
 
 #---- Default ---- 
-insure.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+insure.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.insure, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=insure.sampler,
@@ -317,7 +324,7 @@ insure.sim <- system.simulate(n.sims=50000, # number of randomly generated matri
 
 #----- CHOOSE ONE ----
 ################# simulate HAB
-insure.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+insure.one.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.insure.one, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=insure.one.sampler,
@@ -330,7 +337,7 @@ insure.one.sim <- system.simulate(n.sims=50000, # number of randomly generated m
 
 #----- Crab Facilitates ----
 ################# simulate HAB
-insure.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+insure.wait.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.insure.wait, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=insure.wait.sampler,
@@ -342,7 +349,7 @@ insure.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated 
 
 #----- No Effect ----
 ################# simulate HAB
-insure.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+insure.no.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.insure.no, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=insure.no.sampler,
@@ -357,7 +364,7 @@ save
 ```{r}
 insure_list <- list(insure.sim,insure.one.sim,insure.wait.sim, insure.no.sim)
 names(out) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(out,here('data','HAB_sim_out','Insurance_x_HABhi_50k_rerun.rds'))
+saveRDS(out,here('data','HAB_sim_out',paste0('Insurance_x_HABhi_',nmat/1000,'k.rds')))
 ```
 
 
@@ -365,7 +372,7 @@ saveRDS(out,here('data','HAB_sim_out','Insurance_x_HABhi_50k_rerun.rds'))
 
 read back in
 ```{r}
-insure_list <- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
+insure_list <- readRDS(here('data','HAB_sim_out',paste0('Insurance_x_HABhi_',nmat/1000,'k.rds')))
 names(insure_list)
 insure_list <- list(insure_list[[1]], insure_list[[4]], insure_list[[2]], insure_list[[3]])
 names(insure_list) <- c("Default","Choose one","Wait for crab","No effect")
@@ -453,7 +460,7 @@ dr1.no.sampler <- community.ordering.sampler(m.dr1.no.constrained)
 ```{r dr1.sim, eval=TRUE}
 #---- Default Model with HAB ---- 
 ##### Simulate a HAB
-dr1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr1.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr1, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr1.sampler,
@@ -465,7 +472,7 @@ dr1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices
 
 #---- CHOOSE ONE ----
 ##### Simulate a HAB
-dr1.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr1.one.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr1.one.habhi, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr1.one.habhi.sampler,
@@ -477,7 +484,7 @@ dr1.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matr
 
 #---- WAIT FOR CRAB ----
 ##### Simulate a HAB
-dr1.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr1.wait.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr1.wait, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr1.wait.sampler,
@@ -489,7 +496,7 @@ dr1.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated mat
 
 #---- NO EFFECT ---- 
 ##### Simulate a HAB 
-dr1.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr1.no.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr1.no, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr1.no.sampler,
@@ -504,7 +511,7 @@ save
 ```{r}
 dr1_list <- list(dr1.sim, dr1.one.sim,dr1.wait.sim,dr1.no.sim)
 names(dr1_list) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(dr1_list,here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_50k_run',Sys.Date(), '.rds')))
+saveRDS(dr1_list,here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_', nmat/1000,'k.rds')))
 # saveRDS(dr1_list,here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds')) # will overwrite
 ```
 
@@ -512,7 +519,7 @@ saveRDS(dr1_list,here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_50k_r
 ### View
 read back in
 ```{r}
-dr1_list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds'))
+dr1_list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_', nmat/1000,'k.rds')))
 ```
 
 
@@ -596,7 +603,7 @@ dr2.no.sampler <- community.ordering.sampler(m.dr2.no.constrained)
 ```{r dr2.sim, eval=TRUE}
 #---- default Model with HAB ---- 
 #### Simulate a HAB 
-dr2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr2.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr2, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr2.sampler,
@@ -609,7 +616,7 @@ dr2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices
 
 #---- CHOOSE ONE ----
 ##### Simulate a HAB
-dr2.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr2.one.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr2.one, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr2.one.sampler,
@@ -622,7 +629,7 @@ dr2.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matr
 
 #---- WAIT FOR CRAB ----
 ##### Simulate a HAB
-dr2.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr2.wait.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr2.wait, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr2.wait.sampler,
@@ -635,7 +642,7 @@ dr2.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated mat
 
 #---- NO EFFECT ---- 
 ##### Simulate a HAB 
-dr2.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr2.no.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr2.no, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr2.no.sampler,
@@ -651,14 +658,14 @@ save
 ```{r}
 dr2_list <- list(dr2.sim,dr2.one.sim, dr2.wait.sim,dr2.no.sim)
 names(dr2_list) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(dr2_list,here('data','HAB_sim_out',paste0('DisasterRelief2_x_HABhi_50k_',format(Sys.Date(),'%d%b%Y'),'.rds')))
+saveRDS(dr2_list,here('data','HAB_sim_out',paste0('DisasterRelief2_x_HABhi_', nmat/1000,'k.rds')))
 ```
 
 ### View
 
 read back in
 ```{r}
-dr2_list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds'))
+dr2_list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief2_x_HABhi_', nmat/1000,'k.rds')))
 ```
 
 ```{r  fig.height=6, fig.width=6}
@@ -725,7 +732,7 @@ m.sdivS.no <- enforce.limitation(m.sdivS.no)
 ### Simulate a HAB
 ```{r sdiv.sim, eval=TRUE}
 ################# HAB x default
-sdivS.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sdivS.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sdivS, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.sdivS, required.groups = c(0)),
@@ -737,7 +744,7 @@ sdivS.sim <- system.simulate(n.sims=50000, # number of randomly generated matric
 
 #---- choose one ---
 ################# HAB
-sdivS.one.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sdivS.one.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sdivS.one, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.sdivS.one, required.groups = c(0)),
@@ -749,7 +756,7 @@ sdivS.one.sim <- system.simulate(n.sims=50000, # number of randomly generated ma
 
 #---- wait for crab ---
 ################# HAB
-sdivS.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sdivS.wait.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sdivS.wait, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.sdivS.wait, required.groups = c(0)),
@@ -761,7 +768,7 @@ sdivS.wait.sim <- system.simulate(n.sims=50000, # number of randomly generated m
 
 #---- crab has no effect ---
 ################# HAB
-sdivS.no.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sdivS.no.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sdivS.no, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.sdivS.no, required.groups = c(0)),
@@ -776,15 +783,14 @@ save
 ```{r}
 sdiv_list <- list(sdivS.sim, sdivS.one.sim,sdivS.wait.sim,sdivS.no.sim)
 names(sdiv_list) <- c("Default","Choose one","Wait for crab","No effect")
-saveRDS(sdiv_list,here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
-# saveRDS(sdiv_list,here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_50k_',format(Sys.Date(),'%d%b%Y'),'.rds')))
+saveRDS(sdiv_list,here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_', nmat/1000,'k.rds')))
 ```
 
 ### View
 
 read back in
 ```{r}
-sdiv_list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
+sdiv_list <- readRDS(here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_', nmat/1000,'k.rds')))
 ```
 
 ```{r fig.height=6, fig.width=6}

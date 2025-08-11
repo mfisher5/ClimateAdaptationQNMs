@@ -34,6 +34,8 @@ source(here('R','compare.models.impact.table.R'))
 source(here('R','compare.baseline.impact.table.R'))
 source(here('R','get.score.matrix.R') )
 
+#---- n stable matin script 01? ----
+nmat <- 10000
 ```
 
 
@@ -42,7 +44,7 @@ source(here('R','get.score.matrix.R') )
 
 Simulations can be read in from **script 01. SQ / Strat x HAB**:
 ```{r echo=TRUE}
-tmplist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+tmplist <- readRDS(here('data','HAB_sim_out',paste0('HABhi_x_StatusQuo_AllStrat_',nmat/1000,'k.rds')))
 sq.sim <- tmplist[[1]]
 insure.sim <- tmplist[[2]]
 dr1.sim <- tmplist[[3]]

@@ -44,7 +44,7 @@ source(here('R','get.score.matrix.R') )
 Simulations required:
 ```{r echo=TRUE}
 # ---- status quo ----
-sqlist <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
+sqlist <- readRDS(here('data','HAB_sim_out',paste0('StatusQuo_x_HABhi_',nmat/1000,'k.rds')))
 
 sq.sim <- sqlist[[1]]
 sq.wait.sim <- sqlist[[2]]
@@ -52,7 +52,7 @@ sq.no.sim <- sqlist[[3]]
 sq.one.sim <- sqlist[[4]]
 
 # ---- insurance ----
-insure.list <- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds')); names(insure.list)
+insure.list <- readRDS(here('data','HAB_sim_out',paste0('Insurance_x_HABhi_',nmat/1000,'k.rds'))); names(insure.list)
 
 insure.sim <- insure.list[[1]]
 insure.one.sim <- insure.list[[2]]
@@ -60,7 +60,7 @@ insure.wait.sim <- insure.list[[3]]
 insure.no.sim <- insure.list[[4]]
 
 # ---- disaster relief 1 ----
-dr1list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds')); names(dr1list)
+dr1list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_',nmat/1000,'k.rds'))); names(dr1list)
 
 dr1.sim <- dr1list[[1]]
 dr1.one.sim <- dr1list[[2]]
@@ -69,7 +69,7 @@ dr1.no.sim <- dr1list[[4]]
 
 
 # ---- disaster relief 2 ----
-dr2list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds')); names(dr2list)
+dr2list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief2_x_HABhi_',nmat/1000,'k.rds'))); names(dr2list)
 
 dr2.sim <- dr2list[[1]]
 dr2.one.sim <- dr2list[[2]]
@@ -78,7 +78,7 @@ dr2.no.sim <- dr2list[[4]]
 
 
 # ---- supplemental diversification ----
-sdiv.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds')); names(sdiv.list)
+sdiv.list <- readRDS(here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_',nmat/1000,'k.rds'))); names(sdiv.list)
 
 sdiv.sim <- sdiv.list[[1]]
 sdiv.one.sim <- sdiv.list[[2]]

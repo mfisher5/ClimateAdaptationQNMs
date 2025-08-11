@@ -41,34 +41,34 @@ Simulations required:
 1. All of the simulations from set 1 (without feedback)
 ```{r echo=TRUE}
 # ---- status quo ----
-tmp.list <- readRDS(here('data','HAB_sim_out','StatusQuo_x_HABhi_50k.rds'))
+tmp.list <- readRDS(here('data','HAB_sim_out',paste0('StatusQuo_x_HABhi_',nmat/1000,'k.rds')))
 sq.HABhi.sim <- tmp.list[[1]]
 
 # ---- insurance ----
-tmp.list<- readRDS(here('data','HAB_sim_out','Insurance_x_HABhi_50k.rds'))
+tmp.list<- readRDS(here('data','HAB_sim_out',paste0('Insurance_x_HABhi_',nmat/1000,'k.rds')))
 insure.HABhi.sim <- tmp.list[[1]]
 
 # ---- disaster relief 1 (direct assistance) ----
-tmp.list <- readRDS(here('data','HAB_sim_out','DisasterRelief1_x_HABhi_50k.rds'))
+tmp.list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_',nmat/1000,'k.rds')))
 dr1.HABhi.sim <- tmp.list[[1]]
 
 
 # ---- disaster relief 2 (multi-objective) ----
-tmp.list <- readRDS(here('data','HAB_sim_out','DisasterRelief2_x_HABhi_50k.rds'))
+tmp.list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief2_x_HABhi_',nmat/1000,'k.rds')))
 dr2.HABhi.sim <- tmp.list[[1]]
 
 # ---- fisheries diversification 1 (existing) ----
-tmp.list <- readRDS(here('data','HAB_sim_out','ExistingFishDiv1_x_HABhi_50k.rds'))
+tmp.list <- readRDS(here('data','HAB_sim_out',paste0('ExistingFishDiv1_x_HABhi_',nmat/1000,'k.rds')))
 fdiv1.HABhi.sim <- tmp.list[[1]]
 
 
 # ---- fisheries diversification 2 (new) ----
-tmp.list <- readRDS(here('data','HAB_sim_out','NewFishDiv2_x_HABhi_50k.rds'))
+tmp.list <- readRDS(here('data','HAB_sim_out',paste0('NewFishDiv2_x_HABhi_',nmat/1000,'k.rds')))
 fdiv2.HABhi.sim <- tmp.list[[1]]
 
 
 # ---- supplemental diversification ----
-tmp.list <- readRDS(here('data','HAB_sim_out','SupplementaryDiv_x_HABhi_50k.rds'))
+tmp.list <- readRDS(here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_',nmat/1000,'k.rds')))
 sdiv.HABhi.sim <- tmp.list[[1]]
 
 rm(tmp.list)
@@ -77,7 +77,7 @@ rm(tmp.list)
 2. All of the simulations with the feedback
 
 ```{r echo=TRUE}
-feedback_infra_list <- readRDS(here('data','HAB_sim_out','Feedback_Infrastructure_x_HABhi_50k.rds'))
+feedback_infra_list <- readRDS(here('data','HAB_sim_out',paste0('Feedback_Infrastructure_x_HABhi_',nmat/1000,'k.rds')))
 names(feedback_infra_list)
 
 sq.costs.HABhi.sim <- feedback_infra_list[[1]]

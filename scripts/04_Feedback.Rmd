@@ -55,7 +55,12 @@ source(here('R','compare.models.impact.table.R'))
 ```
 
 
-## Data
+## Set up
+
+how many stable matrices do you want *QPress* to reach? (Fisher et al. uses 10,000; any number up to 50,000 should still take a max of 1-2 minutes per QNM) This should match scripts 01,02
+```{r}
+nmat <- 10000
+```
 
 Variable key
 ```{r}
@@ -64,10 +69,10 @@ sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
 
 simulations without a complete feedback
 ```{r}
-tmp.list <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+tmp.list <- readRDS(here('data','HAB_sim_out',paste0('HABhi_x_StatusQuo_AllStrat_',nmat/1000,'k.rds')))
 ```
 
-
+## Models
 For each strategy, read in the simulations without a complete feedback and the dia model with the feedback completed.
 
 status quo
@@ -187,7 +192,7 @@ rm(tmp.list)
 Status Quo with feedback
 ```{r}
 sq.costs.sampler <- community.ordering.sampler(m.sq.costs.constrained)
-sq.costs.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sq.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sq.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=sq.costs.sampler,
@@ -201,7 +206,7 @@ Disaster Relief 1 & 2
 ```{r}
 #---- Disaster Relief 1 with feedback ---- 
 dr1.costs.sampler <- community.ordering.sampler(m.dr1.costs.constrained)
-dr1.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+dr1.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr1.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr1.costs.sampler,
@@ -214,7 +219,7 @@ dr1.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated ma
 
 #---- Disaster Relief 2 with feedback ---- 
 dr2.costs.sampler <- community.ordering.sampler(m.dr2.costs.constrained)
-dr2.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+dr2.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr2.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr2.costs.sampler,
@@ -228,7 +233,7 @@ dr2.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated ma
 
 Supplementary Diversification with feedback
 ```{r}
-sdiv.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+sdiv.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sdiv.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.sdiv.costs, required.groups = c(0)),
@@ -242,7 +247,7 @@ sdiv.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated m
 Parametric Insurance with feedback
 ```{r}
 insure.costs.sampler <- community.ordering.sampler(m.insure.costs.constrained)
-insure.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+insure.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.insure.costs, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=insure.costs.sampler,
@@ -257,7 +262,7 @@ Fisheries Diversification 1 & 2
 ```{r}
 #---- Fish Diversify 1 - Existing Fisheries with feedback ----
 div1.costs.sampler <- community.ordering.sampler(m.div1.costs.constrained)
-div1.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+div1.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.div1.costs, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=div1.costs.sampler, # the fx to generate the matrices, created above
@@ -268,7 +273,7 @@ div1.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated m
 
 #---- Fish Diversify 2 - New Fisheries with feedback ----
 div2.costs.sampler <- community.ordering.sampler(m.div2.costs.constrained)
-div2.costs.sim <- system.simulate(n.sims=10000, # number of randomly generated matrices to keep
+div2.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.div2.costs, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=div2.costs.sampler, # the fx to generate the matrices, created above
@@ -292,7 +297,7 @@ feedback_infra_list <- list(
 names(feedback_infra_list) <- c("Status_Quo","Insurance","Disaster_Relief_1","Disaster_Relief_2",
                                 "Fisheries_Diversify_1","Fisheries_Diversify_2","Supplementary_Diversify")
   
-saveRDS(feedback_infra_list, here('data','HAB_sim_out','Feedback_Infrastructure_x_HABhi_50k.rds'))
+saveRDS(feedback_infra_list, here('data','HAB_sim_out',paste0('Feedback_Infrastructure_x_HABhi_',nmat/1000,'k.rds')))
 ```
 
 

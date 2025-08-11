@@ -45,6 +45,9 @@ library(igraph)
 source(here('R','parse.constraints.SWotherspoon.R'))
 source(here('R','qnm.sensitivity.R'))
 source(here('R','impact.ss.R'))
+
+#---- n stable matin script 01? ----
+nmat <- 10000
 ```
 
 
@@ -64,6 +67,12 @@ subvars <- sqkey %>% filter(group %in% c("well-being","well-being 2","well-being
   arrange(2)
 ```
 
+
+Read in simulation output from script 01.
+```{r}
+simlist <- readRDS(here('data','HAB_sim_out',paste0('HABhi_x_StatusQuo_AllStrat_',nmat/1000,'k.rds')))
+```
+
 Status Quo model and simulations:
 ```{r echo=TRUE}
 #---- Dia Model ---- 
@@ -72,9 +81,7 @@ m.sq <- enforce.limitation(m.sq)
 
 
 #---- Simulations ---- 
-simlist <- readRDS(here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
-
-sq.sim <- sqlist[[1]]
+sq.sim <- simlist[[1]]
 ```
 
 
@@ -160,6 +167,12 @@ m.ldiv2.habhi <- enforce.limitation(m.ldiv2.habhi)
 ldiv1.sim <- simlist[[8]]
 ldiv2.sim <- simlist[[9]]
 ```
+
+```{r}
+# clean up
+rm(simlist)
+```
+
 
 
 ## Boosted Regression Trees 
@@ -290,11 +303,16 @@ for(v in response.vars[10:12]){
   }
   message("completed variable ", v)
   
-  write_csv(fit.sq.df, here('data','sensitivity','StatusQuo_x_HABhi_GBMout_3.csv'))
+  write_csv(fit.sq.df, here('data','sensitivity','StatusQuo_x_HABhi_GBMout_2.csv'))
               
 }
 ```
 
+Combine data from batches. 
+```{r}
+fit.sq.df <- read_csv(here('data','sensitivity','StatusQuo_x_HABhi_GBMout_1.csv')) %>%
+  bind_rows(read_csv(here('data','sensitivity','StatusQuo_x_HABhi_GBMout_2.csv')))
+```
 
 Calculate ranks for each of the links, for each variable. save as a matrix.
 ```{r}
@@ -434,3 +452,4 @@ png(here('doc','drafts','supplement','FigS4_StrongEdges_NMods.png'), res=300, wi
   theme_bw() + theme(axis.text.y=element_text(size=12))
 dev.off()
 ```
+

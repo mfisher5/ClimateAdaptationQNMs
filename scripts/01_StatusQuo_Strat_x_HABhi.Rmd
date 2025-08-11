@@ -76,6 +76,13 @@ end.timer <- function(s){Sys.time() - s}
 ```
 
 # Set up 
+
+how many stable matrices do you want *QPress* to reach? (Fisher et al. uses 10,000; any number up to 50,000 should still take a max of 1-2 minutes per QNM) 
+```{r}
+nmat <- 10000
+```
+
+
 variable key - this tells the `impact.table` function which variables to report results for, and in what order.
 ```{r}
 sqkey <- read_csv(here('data','sq_variable_key.csv'), col_names=TRUE)
@@ -117,7 +124,7 @@ Simulate a HAB
 ```{r sq.sim}
 s <- Sys.time()
 
-sq.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sq.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sq, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=sq.sampler,
@@ -148,7 +155,7 @@ Simulate a HAB
 ```{r insur.sim}
 s <- Sys.time()
 
-insure.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+insure.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.insure, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=insure.sampler,
@@ -181,7 +188,7 @@ Simulate a HAB
 ```{r dr1.sim}
 s <- Sys.time()
 
-dr1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr1.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr1, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr1.sampler,
@@ -214,7 +221,7 @@ Simulate a HAB
 ```{r dr2.sim}
 s <- Sys.time()
 
-dr2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+dr2.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.dr2, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=dr2.sampler,
@@ -245,7 +252,7 @@ Simulate a HAB
 ```{r fdiv1.sim}
 s <- Sys.time()
 
-fdiv1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+fdiv1.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.fdiv1, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=fdiv1.sampler, # the fx to generate the matrices, created above
@@ -275,7 +282,7 @@ Simulate a HAB
 ```{r fdiv2.sim}
 s <- Sys.time()
 
-fdiv2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+fdiv2.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.fdiv2, # the qnm
                             required.groups=c(0), # this model contains uncertain edges (group 4)
                             sampler=fdiv2.sampler, # the fx to generate the matrices, created above
@@ -308,7 +315,7 @@ Simulate a HAB
 ```{r}
 s <- Sys.time()
 
-sdivS.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+sdivS.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.sdivS, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.sdivS, required.groups = c(0)),
@@ -335,7 +342,7 @@ Simulate a HAB
 ```{r}
 s <- Sys.time()
 
-ldiv1.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+ldiv1.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.ldiv1, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.ldiv1, required.groups = c(0)),
@@ -365,7 +372,7 @@ Simulate a HAB
 ```{r}
 s <- Sys.time()
 
-ldiv2.sim <- system.simulate(n.sims=50000, # number of randomly generated matrices to keep
+ldiv2.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
                             edges=m.ldiv2, # the qnm
                             required.groups = c(0), # allow uncertain edges
                             sampler=community.sampler(m.ldiv2, required.groups = c(0)),
@@ -383,7 +390,7 @@ end.timer(s)
 Into a list, so it can be called up in later scripts (like 2).
 ```{r}
 out.list <- list(sq.sim,insure.sim,dr1.sim,dr2.sim,fdiv1.sim, fdiv2.sim,sdivS.sim,ldiv1.sim,ldiv2.sim)
-saveRDS(out.list,here('data','HAB_sim_out','HABhi_x_StatusQuo_AllStrat.rds'))
+saveRDS(out.list,here('data','HAB_sim_out',paste0('HABhi_x_StatusQuo_AllStrat_',nmat/1000,'k.rds')))
 ```
 
 
