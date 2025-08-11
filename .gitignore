@@ -24,4 +24,4 @@ doc/drafts/Ch4_Fig1.pptx
 doc/check_reruns.R
 doc/drafts/*.png
 scripts/*.html
-doc/review/**
+#doc/review/**
