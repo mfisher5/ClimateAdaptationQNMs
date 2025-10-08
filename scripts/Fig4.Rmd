@@ -30,6 +30,9 @@ library(magrittr)
 source(here('R','compare.models.impact.table.R'))
 source(here('R','compare.baseline.impact.table.R'))
 source(here('R','get.score.matrix.R') )
+
+#---- how many stable matrices required? ----
+nmat=50000
 ```
 
 
@@ -176,6 +179,7 @@ rm(compare.list)
 ```
 
 
+## Fig 4b
 
 Then, compare output from feedback QNMs to the baseline
 ```{r}
@@ -249,6 +253,9 @@ Check spacing if needed
 plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.375,0.375,0.375))
 ```
 
+
+## Fig 4 wide
+
 Plot side-by-side
 ```{r}
 left <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.23,0.23,0.23))
@@ -310,5 +317,68 @@ ggdraw(p) +
   # draw_line(x=c(0.415,0.482),y=c(0.045,0.18))
 dev.off()
 ```
+
+
+
+
+## Fig 4 for press
+
+Plot stacked with connecting lines
+```{r}
+# adjust themes
+plot.pairs1a <- plot.pairs1[[3]] + 
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
+  labs(subtitle="(a) without v.\n with feedback") +
+  theme(legend.position="none",
+        plot.subtitle=element_text(size=14, vjust=-45,hjust=-.85),
+        plot.margin=margin(unit(c(-35, 60.5, 2, 5.5+(s1*3-2)), "points")))
+```
+
+```{r eval=FALSE}
+
+tmp.palette<- c("#04BC09","#ABF1AD","grey85","#a6611a","#dfc27d","black" )
+lower <- plot.baseline[[3]] + 
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
+  labs(subtitle="(b) with feedback\n\t\t\t\t\t\t\t\t\t\tonly") + 
+  # write over legend to change order of colors
+  scale_fill_discrete(name="Response",type=tmp.palette, drop=FALSE, na.translate=FALSE,
+                      limits=c("Positive-Strong","Positive-Weak","Equivocal","Negative-Strong","Negative-Weak")) +
+  guides(fill = guide_legend(order = 1,ncol=2,title.vjust=0.9),
+         shape = guide_legend(order = 0)) +
+  theme(plot.subtitle=element_text(size=14, vjust=-50,hjust=-0.9),
+        plot.margin=margin(unit(c(10, 70, 5,8), "points")),
+        legend.box.margin = margin(unit(c(-45,0,-50,-30),"points")),
+        legend.background=element_rect(fill=NA),
+        legend.title=element_text(size=10,face='bold'),
+        legend.position='top') ## offset top spacing
+
+
+left <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.25,0.25,0.26))
+
+p <- plot_grid(left,lower,nrow=2, rel_heights=c(1,0.84))
+
+png(here('doc','drafts','Fig4-lines-press.png'), res=300,width=2000,height=2500)
+ggdraw(p) +
+  draw_line(x=c(0.92,0.95),y=c(0.7,0.7), col="gray40", linewidth=0.25) +
+  draw_line(x=c(0.92,0.95),y=c(0.65,0.65), col="gray40", linewidth=0.25) +
+  draw_line(x=c(0.92,0.95),y=c(0.575,0.575), col="gray40", linewidth=0.25) +
+  draw_line(x=c(0.92,0.95),y=c(0.54,0.54), col="gray40", linewidth=0.25) 
+  # draw_line(x=c(0.95,0.95),y=c(0.44,0.0435), col="gray40", linewidth=0.25) + # bracket
+  # draw_line(x=c(0.96,0.485),y=c(0.274,0.274), col="gray40", linewidth=0.25) +# line to (b)
+  # draw_line(x=c(0.485,0.485),y=c(0.01,0.55), col="gray40", linewidth=0.25) +    # left rect
+  # draw_line(x=c(0.485,0.995),y=c(0.01,0.01), col="gray40", linewidth=0.25) +  # bottom rect
+  # draw_line(x=c(0.485,0.995),y=c(0.55,0.55), col="gray40", linewidth=0.25) +  # top rect
+  # draw_line(x=c(0.995,0.995),y=c(0.01,0.55), col="gray40", linewidth=0.25)     # right rect
+  # draw_line(x=c(0.415,0.56),y=c(0.47,0.45)) +
+  # draw_line(x=c(0.415,0.471),y=c(0.32,0.364)) +
+  # draw_line(x=c(0.415,0.482),y=c(0.18,0.27)) +
+  # draw_line(x=c(0.415,0.482),y=c(0.045,0.18))
+dev.off()
+```
+
+
+
 
 

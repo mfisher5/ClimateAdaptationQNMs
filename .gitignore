@@ -21,7 +21,7 @@ doc/pfmc_scenario_planning/**attachment**
 doc/drafts/Ch4_Fig1.pptx
 
 # code check
-doc/check_reruns.R
 doc/drafts/*.png
 scripts/*.html
-#doc/review/**
+doc/review/**
+/doc/drafts/for_press

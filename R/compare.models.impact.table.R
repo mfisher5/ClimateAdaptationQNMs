@@ -225,7 +225,7 @@ compare.models.impact.tbl <- function(sim.list,perturb.list=0,monitor.list=NA,
       
       sq.hab.plot <- ggplot(plotdat) + 
         # show legend makes sure all colors are in key, even if that level isn't in the graph
-          geom_point(aes(x=variable,y=model,fill=response),pch=22,size=8,color="grey60", show.legend=TRUE) +
+          geom_point(aes(x=variable,y=model,fill=response),pch=22,size=8,color="transparent", show.legend=TRUE) +
           geom_point(aes(x=variable,y=model,pch=as.factor(no_input)),size=7,color="grey60") +
           labs(x="",y="") + 
           scale_fill_manual(name="Response",values=table.palette, drop=FALSE, na.translate=FALSE) +
