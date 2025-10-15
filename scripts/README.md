@@ -29,4 +29,4 @@ Replicating Fisher et al. (2025)
 
 
 
- The `**R**` folder contains custom functions that are called in the scripts listed above. Figures are saved into the `**drafts**` folder.
+ The `**R**` folder contains custom functions that are called in the scripts listed above. Figures are saved into the `**doc/drafts**` folder.
