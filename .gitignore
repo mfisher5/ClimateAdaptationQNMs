@@ -16,12 +16,17 @@ data/sensitivity/**.csv
 doc/drafts/**.docx
 doc/drafts/**.doc
 doc/drafts/**.pdf
+/doc/drafts/for_press/*.docx
+/doc/drafts/for_press/*.rtf
+/doc/drafts/for_press/*.pdf
 doc/pfmc_scenario_planning/**supplemental**
 doc/pfmc_scenario_planning/**attachment**
 doc/drafts/Ch4_Fig1.pptx
 
 # code check
-doc/drafts/*.png
+/doc/drafts/*.png
 scripts/*.html
 doc/review/**
-/doc/drafts/for_press
+/data/HAB_sim_out/dep
+doc/drafts/Fig3-change.png
+doc/drafts/Fig3-change.png

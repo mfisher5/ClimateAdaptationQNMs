@@ -81,7 +81,7 @@ get.score.matrix <- function(x){
 
 how many stable matrices do you want *QPress* to reach? (Fisher et al. uses 10,000; any number up to 50,000 should still take a max of 1-2 minutes per QNM) 
 ```{r}
-nmat <- 10000
+nmat <- 50000
 ```
 
 

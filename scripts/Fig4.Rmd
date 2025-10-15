@@ -42,37 +42,54 @@ nmat=50000
 Simulations required: 
 
 1. All of the simulations from set 1 (without feedback)
+Simulations can be read in from **script 01. SQ / Strat x HAB**:
 ```{r echo=TRUE}
+tmplist <- readRDS(here('data','HAB_sim_out',paste0('HABhi_x_StatusQuo_AllStrat_',nmat/1000,'k.rds')))
+sq.sim <- tmplist[[1]]
+insure.sim <- tmplist[[2]]
+dr1.sim <- tmplist[[3]]
+dr2.sim <- tmplist[[4]]
+fdiv1.sim <- tmplist[[5]]
+fdiv2.sim <- tmplist[[6]]
+sdiv.sim <- tmplist[[7]]
+ldiv1.sim <- tmplist[[8]]
+ldiv2.sim <- tmplist[[9]]
+
+rm(tmplist)
+```
+
+**Or** Simulations can be read in from **script 03. Influential Link**:
+```{r echo=TRUE, eval=FALSE}
 # ---- status quo ----
 tmp.list <- readRDS(here('data','HAB_sim_out',paste0('StatusQuo_x_HABhi_',nmat/1000,'k.rds')))
-sq.HABhi.sim <- tmp.list[[1]]
+sq.sim <- tmp.list[[1]]
 
 # ---- insurance ----
 tmp.list<- readRDS(here('data','HAB_sim_out',paste0('Insurance_x_HABhi_',nmat/1000,'k.rds')))
-insure.HABhi.sim <- tmp.list[[1]]
+insure.sim <- tmp.list[[1]]
 
 # ---- disaster relief 1 (direct assistance) ----
 tmp.list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief1_x_HABhi_',nmat/1000,'k.rds')))
-dr1.HABhi.sim <- tmp.list[[1]]
+dr1.sim <- tmp.list[[1]]
 
 
 # ---- disaster relief 2 (multi-objective) ----
 tmp.list <- readRDS(here('data','HAB_sim_out',paste0('DisasterRelief2_x_HABhi_',nmat/1000,'k.rds')))
-dr2.HABhi.sim <- tmp.list[[1]]
+dr2.sim <- tmp.list[[1]]
 
 # ---- fisheries diversification 1 (existing) ----
 tmp.list <- readRDS(here('data','HAB_sim_out',paste0('ExistingFishDiv1_x_HABhi_',nmat/1000,'k.rds')))
-fdiv1.HABhi.sim <- tmp.list[[1]]
+fdiv1.sim <- tmp.list[[1]]
 
 
 # ---- fisheries diversification 2 (new) ----
 tmp.list <- readRDS(here('data','HAB_sim_out',paste0('NewFishDiv2_x_HABhi_',nmat/1000,'k.rds')))
-fdiv2.HABhi.sim <- tmp.list[[1]]
+fdiv2.sim <- tmp.list[[1]]
 
 
 # ---- supplemental diversification ----
 tmp.list <- readRDS(here('data','HAB_sim_out',paste0('SupplementaryDiv_x_HABhi_',nmat/1000,'k.rds')))
-sdiv.HABhi.sim <- tmp.list[[1]]
+sdiv.sim <- tmp.list[[1]]
 
 rm(tmp.list)
 ```
@@ -83,13 +100,13 @@ rm(tmp.list)
 feedback_infra_list <- readRDS(here('data','HAB_sim_out',paste0('Feedback_Infrastructure_x_HABhi_',nmat/1000,'k.rds')))
 names(feedback_infra_list)
 
-sq.costs.HABhi.sim <- feedback_infra_list[[1]]
-insure.costs.HABhi.sim  <- feedback_infra_list[[2]]
-dr1.costs.HABhi.sim <- feedback_infra_list[[3]]
-dr2.costs.HABhi.sim <- feedback_infra_list[[4]]
-div1.costs.HABhi.sim <- feedback_infra_list[[5]]
-div2.costs.HABhi.sim <- feedback_infra_list[[6]]
-sdiv.costs.HABhi.sim <- feedback_infra_list[[7]]
+sq.costs.sim <- feedback_infra_list[[1]]
+insure.costs.sim  <- feedback_infra_list[[2]]
+dr1.costs.sim <- feedback_infra_list[[3]]
+dr2.costs.sim <- feedback_infra_list[[4]]
+div1.costs.sim <- feedback_infra_list[[5]]
+div2.costs.sim <- feedback_infra_list[[6]]
+sdiv.costs.sim <- feedback_infra_list[[7]]
 ```
 ```{r}
 rm(feedback_infra_list)
@@ -98,7 +115,7 @@ rm(feedback_infra_list)
 
 <br>
 
-### Prep to graph
+## Prep for png
 
 Read in a variable key. This tells the `impact.table` function which variables to report results for, and in what order. There is a separate key for the supplementary diversification adaptation. 
 ```{r}
@@ -125,12 +142,12 @@ fig4_vars <- sqkey %>%
 
 
 
-## Fig 4a
+### Fig 4a
 
-First, plot in pairs 
+First, get comparisons in pairs 
 ```{r height=10,width=7}
 # ---- status quo ----
-compare.list <- list(sq.HABhi.sim,sq.costs.HABhi.sim); names(compare.list) <- c("Status Quo","(with Feedback)")
+compare.list <- list(sq.sim,sq.costs.sim); names(compare.list) <- c("Status Quo","(with Feedback)")
 
 plot.pairs1 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1),c(`HAB`=1)),
@@ -141,7 +158,7 @@ plot.pairs1 <- compare.models.impact.tbl(sim.list=compare.list,
                          table.palette = table.palette.orange)
 
 # ---- disaster relief 1 ----
-compare.list <- list(dr1.HABhi.sim,dr1.costs.HABhi.sim); names(compare.list) <- c("Direct Assistance Disaster Relief","(with Feedback)")
+compare.list <- list(dr1.sim,dr1.costs.sim); names(compare.list) <- c("Direct Assistance Disaster Relief","(with Feedback)")
 
 plot.pairs2 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1),
@@ -153,7 +170,7 @@ plot.pairs2 <- compare.models.impact.tbl(sim.list=compare.list,
                          table.palette = table.palette.orange)
 
 # ---- disaster relief 2 ----
-compare.list <- list(dr2.HABhi.sim,dr2.costs.HABhi.sim); names(compare.list) <- c("Multi-Objective Disaster Relief","(with Feedback)")
+compare.list <- list(dr2.sim,dr2.costs.sim); names(compare.list) <- c("Multi-Objective Disaster Relief","(with Feedback)")
 
 plot.pairs3 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
@@ -165,7 +182,7 @@ plot.pairs3 <- compare.models.impact.tbl(sim.list=compare.list,
                          table.palette = table.palette.orange)
 
 # ---- supplementary diversification ----
-compare.list <- list(sdiv.HABhi.sim,sdiv.costs.HABhi.sim); names(compare.list) <- c("Supplementary Diversification","(with Feedback)")
+compare.list <- list(sdiv.sim,sdiv.costs.sim); names(compare.list) <- c("Supplementary Diversification","(with Feedback)")
 
 plot.pairs4 <- compare.models.impact.tbl(sim.list=compare.list,
                                          perturb.list=list(c(`HAB`=1),c(`HAB`=1)),
@@ -178,15 +195,14 @@ plot.pairs4 <- compare.models.impact.tbl(sim.list=compare.list,
 rm(compare.list)
 ```
 
-
-## Fig 4b
+### Fig 4b
 
 Then, compare output from feedback QNMs to the baseline
 ```{r}
-compare2.list <- list(sq.costs.HABhi.sim,
-                     dr1.costs.HABhi.sim,
-                     dr2.costs.HABhi.sim,
-                     sdiv.costs.HABhi.sim)
+compare2.list <- list(sq.costs.sim,
+                     dr1.costs.sim,
+                     dr2.costs.sim,
+                     sdiv.costs.sim)
 names(compare2.list) <- c("Status Quo","Direct Assistance Disaster Relief","Multi-Objective Disaster Relief","Supplementary Diversification")
 
 plot.baseline <- compare.baseline.impact.tbl(sim.list=compare2.list,
@@ -208,6 +224,7 @@ rm(compare2.list)
 ```
 
 
+save plots only, 
 Remove axis labels and legends, adjust spacing to match
 ```{r}
 ## how much space to add to left side for alignment?
@@ -323,10 +340,12 @@ dev.off()
 
 ## Fig 4 for press
 
+(max width 2000, res 300dpi, jpeg output)
+
 Plot stacked with connecting lines
 ```{r}
 # adjust themes
-plot.pairs1a <- plot.pairs1[[3]] + 
+plot.pairs1a <- plot.pairs1[[3]] +
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
   geom_vline(aes(xintercept=12.5), linewidth=0.5) +
   labs(subtitle="(a) without v.\n with feedback") +
@@ -356,8 +375,10 @@ plot.pairs4a <- plot.pairs4[[3]] +
   theme(legend.position="none",axis.text.x=element_blank(),
         axis.text.y=element_text(size=11),
         plot.margin=margin(unit(c(-10, 60.5, 5, s4+10), "points")))
+```
 
 
+```{r}
 tmp.palette<- c("#04BC09","#ABF1AD","grey85","#a6611a","#dfc27d","black" )
 lower <- plot.baseline[[3]] + 
   geom_vline(aes(xintercept=9.5), linewidth=0.5) +
@@ -368,39 +389,101 @@ lower <- plot.baseline[[3]] +
                       limits=c("Positive-Strong","Positive-Weak","Equivocal","Negative-Strong","Negative-Weak")) +
   guides(fill = guide_legend(order = 1,ncol=2,title.vjust=0.9),
          shape = guide_legend(order = 0)) +
-  theme(plot.subtitle=element_text(size=14, vjust=-45,hjust=-1.479),
-        plot.margin=margin(unit(c(10, 50, 5,0), "points")),
+  scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
+  theme_bw() +
+  theme(plot.subtitle=element_text(size=14,vjust=-22.5,hjust=-1.54),
+        panel.grid.major.x=element_line(linewidth=0.5,linetype=3,color='gray60'),
+        plot.margin=margin(unit(c(5, 55, -10,0), "points")),
         axis.text.y=element_text(size=11),
+        axis.text.x=element_text(angle=315,hjust=0),
         legend.position='top',
-        legend.box.margin = margin(unit(c(-35,0,-70,-30),"points")),
+        legend.box.margin = margin(unit(c(-25,0,-5,-30),"points")),
         legend.background=element_rect(fill=NA),
         legend.title=element_text(size=11,face='bold'),
          legend.key.size = unit(0.05, "cm"),
         legend.spacing.x= unit(0.01, "cm")) ## offset top spacing
 
 
-left <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.25,0.25,0.26))
+top <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.265,0.265,0.28))
 
-p <- plot_grid(left,lower,nrow=2, rel_heights=c(1,0.82))
+p <- plot_grid(top,lower,nrow=2, rel_heights=c(1,0.9))
+```
 
-png(here('doc','drafts','Fig4-lines-press.png'), res=300,width=2000,height=2500)
+version 1: brackets around (b)
+```{r}
+jpeg(here('doc','drafts','for_press','Fig4-lines-press.jpeg'), res=300,width=2000,height=2700)
 ggdraw(p) +
-  draw_line(x=c(0.88,0.995),y=c(0.71,0.71), col="gray40", linewidth=0.5) +
-  draw_line(x=c(0.88,0.995),y=c(0.6305,0.6305), col="gray40", linewidth=0.5) +
-  draw_line(x=c(0.88,0.995),y=c(0.5527,0.5527), col="gray40", linewidth=0.5) +
-  draw_line(x=c(0.88,0.995),y=c(0.4759,0.4759), col="gray40", linewidth=0.5) +
+  draw_line(x=c(0.866,0.995),y=c(0.729,0.729), col="gray40", linewidth=0.5) +
+  draw_line(x=c(0.866,0.995),y=c(0.6535,0.6535), col="gray40", linewidth=0.5) +
+  draw_line(x=c(0.866,0.995),y=c(0.5756,0.5756), col="gray40", linewidth=0.5) +
+  draw_line(x=c(0.866,0.995),y=c(0.499,0.499), col="gray40", linewidth=0.5) +
   # draw_line(x=c(0.95,0.95),y=c(0.44,0.0435), col="gray40", linewidth=0.25) + # bracket
   # draw_line(x=c(0.96,0.485),y=c(0.274,0.274), col="gray40", linewidth=0.25) +# line to (b)
   # draw_line(x=c(0.005,0.005),y=c(0.005,0.25), col="gray40", linewidth=0.5) +    # left rect
-  draw_line(x=c(0.9,0.995),y=c(0.008,0.008), col="gray40", linewidth=0.5) +  # bottom rect
-  draw_line(x=c(0.9,0.995),y=c(0.1651,0.1651), col="gray40", linewidth=0.5) +  # top rect
-  draw_line(x=c(0.995,0.995),y=c(0.008,0.71), col="gray40", linewidth=0.5)     # right rect
+  draw_line(x=c(0.89,0.995),y=c(0.211,0.211), col="gray40", linewidth=0.5) +  # bottom rect
+  draw_line(x=c(0.89,0.995),y=c(0.3265,0.3265), col="gray40", linewidth=0.5) +  # top rect
+  draw_line(x=c(0.995,0.995),y=c(0.211,0.729), col="gray40", linewidth=0.5)     # right rect
   # draw_line(x=c(0.415,0.56),y=c(0.47,0.45)) +
   # draw_line(x=c(0.415,0.471),y=c(0.32,0.364)) +
   # draw_line(x=c(0.415,0.482),y=c(0.18,0.27)) +
   # draw_line(x=c(0.415,0.482),y=c(0.045,0.18))
 dev.off()
 ```
+
+version 2: box around 4(b)
+```{r}
+tmp.palette<- c("#04BC09","#ABF1AD","grey85","#a6611a","#dfc27d","black" )
+lower <- plot.baseline[[3]] + 
+  geom_vline(aes(xintercept=9.5), linewidth=0.5) +
+  geom_vline(aes(xintercept=12.5), linewidth=0.5) +
+  labs(subtitle="(b) with feedback only") + 
+  # write over legend to change order of colors
+  scale_fill_discrete(name="Response",type=tmp.palette, drop=FALSE, na.translate=FALSE,
+                      limits=c("Positive-Strong","Positive-Weak","Equivocal","Negative-Strong","Negative-Weak")) +
+  guides(fill = guide_legend(order = 1,ncol=2,title.vjust=0.9),
+         shape = guide_legend(order = 0)) +
+  scale_x_discrete(position = "bottom",expand = c(0.05, 0.05)) +
+  theme_bw() +
+  theme(plot.subtitle=element_text(size=14,vjust=-22.5,hjust=-1.54),
+        panel.grid.major.x=element_line(linewidth=0.5,linetype=3,color='gray60'),
+        plot.margin=margin(unit(c(5, 55, -10,0), "points")),
+        axis.text.y=element_text(size=11),
+        axis.text.x=element_text(angle=315,hjust=0),
+        legend.position='top',
+        legend.box.margin = margin(unit(c(-25,0,-5,-30),"points")),
+        legend.background=element_rect(fill=NA),
+        legend.title=element_text(size=11,face='bold'),
+         legend.key.size = unit(0.05, "cm"),
+        legend.key.spacing.y=unit(0.0009,"cm"),
+        legend.spacing.x= unit(0.01, "cm")) ## offset top spacing
+
+
+top <- plot_grid(plot.pairs1a, plot.pairs2a, plot.pairs3a, plot.pairs4a, ncol=1, nrow=4, rel_heights=c(1,0.265,0.265,0.28))
+
+p <- plot_grid(top,lower,nrow=2, rel_heights=c(1,0.9))
+```
+```{r}
+jpeg(here('doc','drafts','for_press','Fig4-lines-v2.jpeg'), res=300,width=2000,height=2700)
+ggdraw(p) +
+  draw_line(x=c(0.866,0.995),y=c(0.729,0.729), col="gray40", linewidth=0.5) +
+  draw_line(x=c(0.866,0.995),y=c(0.6535,0.6535), col="gray40", linewidth=0.5) +
+  draw_line(x=c(0.866,0.995),y=c(0.5756,0.5756), col="gray40", linewidth=0.5) +
+  draw_line(x=c(0.866,0.995),y=c(0.499,0.499), col="gray40", linewidth=0.5) +
+  # draw_line(x=c(0.95,0.95),y=c(0.44,0.0435), col="gray40", linewidth=0.25) + # bracket
+  # draw_line(x=c(0.96,0.485),y=c(0.274,0.274), col="gray40", linewidth=0.25) +# line to (b)
+  draw_line(x=c(0.004,0.004),y=c(0.008,0.361), col="gray40", linewidth=0.5) +    # left rect
+  draw_line(x=c(0.004,0.995),y=c(0.008,0.008), col="gray40", linewidth=0.5) +  # bottom rect
+  draw_line(x=c(0.004,0.995),y=c(0.361,0.361), col="gray40", linewidth=0.5) +  # top rect
+  draw_line(x=c(0.995,0.995),y=c(0.008,0.729), col="gray40", linewidth=0.5)     # right rect
+  # draw_line(x=c(0.415,0.56),y=c(0.47,0.45)) +
+  # draw_line(x=c(0.415,0.471),y=c(0.32,0.364)) +
+  # draw_line(x=c(0.415,0.482),y=c(0.18,0.27)) +
+  # draw_line(x=c(0.415,0.482),y=c(0.045,0.18))
+dev.off()
+```
+
+
+
 
 
 

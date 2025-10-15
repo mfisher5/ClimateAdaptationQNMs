@@ -59,7 +59,7 @@ source(here('R','compare.models.impact.table.R'))
 
 how many stable matrices do you want *QPress* to reach? (Fisher et al. uses 10,000; any number up to 50,000 should still take a max of 1-2 minutes per QNM) This should match scripts 01,02
 ```{r}
-nmat <- 10000
+nmat <- 50000
 ```
 
 Variable key
@@ -204,6 +204,7 @@ sq.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matr
 
 Disaster Relief 1 & 2
 ```{r}
+
 #---- Disaster Relief 1 with feedback ---- 
 dr1.costs.sampler <- community.ordering.sampler(m.dr1.costs.constrained)
 dr1.costs.sim <- system.simulate(n.sims=nmat, # number of randomly generated matrices to keep
@@ -321,6 +322,20 @@ fig4_vars <- sqkey %>%
   filter(!(variable %in% c("Physical health","Physical safety","Entry of next generation","Equity in resource access")))
 ```
 
+check out a strategy of interest. 
+```{r}
+compare1.list <- list(dr2.sim,dr2.costs.sim); 
+names(compare1.list) <- c("Multi-Objective Disaster Relief","(with Feedback)  ")
+
+compare1 <- compare.models.impact.tbl(sim.list=compare1.list,
+                                         perturb.list=list(c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1),
+                                                           c(`HAB`=1,`disaster relief (direct)`=1,`disaster relief (invest)`=1)),
+                                         monitor.list=list(NA,NA),
+                                    strong_lower=0.8, weak_lower=0.6, epsilon=1.0E-5,
+                                    variable.key = fig4_vars, variable.order="specific_order",plot=TRUE,
+                                    table.palette = table.palette.orange, plot.perturbed=FALSE, main.axis = "Y")
+compare1[[3]]
+```
 
 for supplement: all variables, all strategies (focus strat listed first)
 ```{r}
