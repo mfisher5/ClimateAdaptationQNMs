@@ -1,6 +1,7 @@
 # Climate Adaptation QNMs
 
-#### Published as [Fisher et al. 2025](doi.org) Exploring unintended outcomes and trade-offs of climate adaptation for human well-being, using qualitative network models (QNMs). *Ecology & Society*.
+#### Published as 
+[Fisher et al. 2025](doi.org) Exploring unintended outcomes and trade-offs of climate adaptation for human well-being, using qualitative network models (QNMs). *Ecology & Society*.
 
 #### Product of the Ocean Modeling Forum [Climate & Communities Working Group](https://oceanmodelingforum.org/working-groups/climate-and-communities/)
 
