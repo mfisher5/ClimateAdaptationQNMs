@@ -1,9 +1,10 @@
 # Climate Adaptation QNMs
 
+#### Product of the Ocean Modeling Forum [Climate & Communities Working Group](https://oceanmodelingforum.org/working-groups/climate-and-communities/)
+
 #### Published as:
 [Fisher et al. 2025](doi.org) Exploring unintended outcomes and trade-offs of climate adaptation for human well-being, using qualitative network models (QNMs). *Ecology & Society*.
 
-#### Product of the Ocean Modeling Forum [Climate & Communities Working Group](https://oceanmodelingforum.org/working-groups/climate-and-communities/)
 
 #### Authors:
 Mary C. Fisher, Laura K. Nelson, Tessa Francis, Phillip Levin, Jameal F. Samhouri, Chris Harvey, Laura Dee, Kristin N. Marshall, Steve J. Miller, Stephanie K. Moore, Michele L. Barnes, Curtis Cha, Joshua Eli Cinner, Steven A. Gray, Andre E. Punt, Corey Ridings, Franz W. Simon
@@ -18,39 +19,48 @@ Adaptation to climate change can have trade-offs and unintended outcomes that ma
 
 **2.** Run script [01_StatusQuo_Strat_x_HABhi](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/01_StatusQuo_Strat_x_HABhi.Rmd) to reproduce Results 3.1. *What HAB impacts are intensified / limited across adaptation strategies?* 
 		
-		- Input: QNMs as Dia objects from *data/dia*. 
-		- Output: *QPress* simulation output as an .rds object in *data/HAB_sim_out*.
+- Input: QNMs as Dia objects from `data/dia`.
+- Output: *QPress* simulation output as an .rds object in `data/HAB_sim_out`.
 
 **3.** Visualize simulation output from (2) as Figure 2 using script [Fig2.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig2.Rmd).
 
 **4.** Run script [02_Sensitivity](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/02_Sensitivity.Rmd) to identify influential links according to boosted regression trees (Melbourne-Thomas et al. 2012) and edge strengths (Magel & Francis 2023; ultimately not used in paper). 
 
-		- Input: *QPress* simulation output as an .rds object in *data/HAB_sim_out*. QNMs as Dia objects from *data/dia*. 
-		- Intermediate output: GBM input matrix as an .rds object and in a .csv, in *data/sensitivity*.
-		- Output: A matrix or dataframe containing relative influence values associated with each link for each variable, as a .csv object in *data/sensitivity*.
+- Input: *QPress* simulation output as an .rds object in `data/HAB_sim_out`. QNMs as Dia objects from `data/dia`. 
+- Intermediate output: GBM input matrix as an .rds object and in a .csv, in `data/sensitivity`.
+- Output: A matrix or dataframe containing relative influence values associated with each link for each variable, as a .csv object in `data/sensitivity`.
 
 **5.** Run script [03_Influential_Link](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/03_Influential_Link.Rmd) to produce the output for Results 3.2.1 *How do model assumptions alter the intensifying / reductive role of adaptation strategies? Altering an influential link.* 
 		
-		- Input: QNMs as Dia objects from *data/dia/influential_link*. 
-		- Output: *QPress* simulation output in a list, saved as .rds objects in *data/HAB_sim_out*. There is one object per strategy.
+- Input: QNMs as Dia objects from `data/dia/influential_link`. 
+- Output: *QPress* simulation output in a list, saved as .rds objects in `data/HAB_sim_out`. There is one object per strategy.
 
 **6.** Visualize simulation output from (5) as Figure 3 using [Fig3.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig3.Rmd). 
 
 **7.** Run script [04_Feedback.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/04_Feedback.Rmd) to produce the output for Results 3.2.2 *How do model assumptions alter the intensifying / reductive role of adaptation strategies? Completing a feedback.*
 		
-		- Input: QNMs as Dia objects from *data/dia/feedback*. 
-		- Output: *QPress* simulation output in a list, as the .rds object *data/HAB_sim_out/Feedback_Infrastructure_x_HABhi_50k.rds*
+- Input: QNMs as Dia objects from `data/dia/feedback`. 
+- Output: *QPress* simulation output in a list, as the .rds object `data/HAB_sim_out/Feedback_Infrastructure_x_HABhi_50k.rds`
 
 **8.** Visualize simulation output from (7) as Figure 4 using [Fig4.Rmd](https://github.com/mfisher5/ClimateAdaptationQNMs/blob/main/scripts/Fig4.Rmd). 
 
 
-All .Rmd scripts in the steps above can be found in the `**scripts**` folder. The `**R**` folder contains custom functions that are called in the scripts listed above. Figures are saved into the `**drafts**` folder. The `**doc**` folder contains a back-up of the publicly available documents / public-facing webpages from the Pacific Fishery Management Council's scenario planning initiative.
-
 If you want to replicate the figures without re-running perturbations with *QPress*, you can access the R data files containing output from steps 2, 5, and 7 above on Zenodo [DOI:10.5281/zenodo.17353735](doi.org/10.5281/zenodo.17353735).
+
 
 There is extensive supplementary material published with Fisher et al. to explain the rationale behind QNM variables and structure.
 
+#### Folders
+
+All .Rmd scripts in the steps above can be found in the `**scripts**` folder. 
+
+The `**R**` folder contains custom functions that are called in the scripts listed above. 
+
+Figures are saved into the `**drafts**` folder. 
+
+The `**doc**` folder contains a back-up of the publicly available documents / public-facing webpages from the Pacific Fishery Management Council's scenario planning initiative.
 
 
-#### Acknowledgements
+
+### Acknowledgements
 We are indebted to Dick Ogg, Garrett Dalan, and Mike Conroy for sharing their experiences and knowledge, which directed the questions we focused on and the variables we retained in the final model. We are similarly grateful to Sunny Jardine and Gway Kirchner, for their early reviews of the model structure. Jon Reum provided helpful feedback on an earlier draft of this paper. Genoa Sullaway provided organizational support for working meetings. Funding was provided by The David and Lucile Packard Foundation.
